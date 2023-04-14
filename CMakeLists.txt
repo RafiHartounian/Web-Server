@@ -37,9 +37,11 @@ include_directories(include)
 add_library(session_class src/session.cc)
 add_library(server_class src/server.cc)
 add_library(config_parser src/config_parser.cc)
+add_library(request_parser src/request_parser.cc src/reply.cc)
+add_library(reply_class src/reply.cc)
 
 add_executable(server src/server_main.cc)
-target_link_libraries(server config_parser server_class session_class pthread Boost::system)
+target_link_libraries(server config_parser request_parser reply_class server_class session_class pthread Boost::system)
 
 add_executable(config_parser_test tests/config_parser_test.cc)
 target_link_libraries(config_parser_test config_parser gtest_main)
