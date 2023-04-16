@@ -45,11 +45,14 @@ target_link_libraries(server config_parser request_parser reply_class server_cla
 
 add_executable(config_parser_test tests/config_parser_test.cc)
 add_executable(reply_test tests/reply_test.cc)
+add_executable(request_parser_test tests/request_parser_test.cc)
 target_link_libraries(config_parser_test config_parser gtest_main)
 target_link_libraries(reply_test reply_class gtest_main Boost::system)
+target_link_libraries(request_parser_test request_parser gtest_main)
 
 gtest_discover_tests(config_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(reply_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(request_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 # TODO(!): Update with target/test targets
 # include(cmake/CodeCoverageReportConfig.cmake)
