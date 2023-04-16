@@ -1,21 +1,20 @@
 #ifndef REQUEST_HANDLER_H
 #define REQUEST_HANDLER_H
 
+#include "config_parser.h"
 #include <iostream>
-#include "../config_parser.h"
 
-#include "../request_parser.h"
-#include "../request.h"
-#include "../reply.h"
+#include "reply.h"
+#include "request.h"
+#include "request_parser.h"
 
+using http::server::reply;
 using http::server::request;
 using http::server::request_parser;
-using http::server::reply;
 
 class RequestHandler {
 public:
-    virtual void handleRequest(const request &request_, reply *reply_) = 0;
-    
+  virtual void handleRequest(const request &request_, reply *reply_) = 0;
 };
 
-#endif  
+#endif

@@ -11,16 +11,15 @@
 #ifndef HTTP_REQUEST_HPP
 #define HTTP_REQUEST_HPP
 
+#include "header.h"
 #include <string>
 #include <vector>
-#include "header.h"
 
 namespace http {
 namespace server {
 
 /// A request received from a client.
-struct request
-{
+struct request {
   std::string method;
   std::string uri;
   int http_version_major;
