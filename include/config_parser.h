@@ -20,13 +20,7 @@ class NginxConfig {
 public:
   std::string ToString(int depth = 0);
   std::vector<std::shared_ptr<NginxConfigStatement>> statements_;
-
-  void set_listen_port(int port); // { listen_port = port; }
-
-  int get_listen_port() { return listen_port; }
-
-private:
-  int listen_port = 80;
+  int get_listen_port();
 };
 
 // The driver that parses a config file and generates an NginxConfig.

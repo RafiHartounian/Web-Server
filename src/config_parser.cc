@@ -26,12 +26,22 @@ std::string NginxConfig::ToString(int depth) {
   return serialized_config;
 }
 
-void NginxConfig::set_listen_port(int port) {
+int NginxConfig::get_listen_port() {
+  int port;
+  for (auto s : statements_) {
+    if (s->child_block_.get() != nullptr) {
+      port = s->child_block_->get_listen_port();
+    } else {
+      if (s->tokens_.size() == 2 && s->tokens_[0] == "listen") {
+        port = stoi(s->tokens_[1]);
+      }
+    }
+  }
   if (port < 1 || port > 65535) {
     throw std::invalid_argument("Port " + std::to_string(port) +
                                 " out of range");
   }
-  listen_port = port;
+  return port;
 }
 
 std::string NginxConfigStatement::ToString(int depth) {
@@ -250,7 +260,6 @@ bool NginxConfigParser::Parse(std::istream *config_file, NginxConfig *config) {
           if (s->tokens_.size() != 2) {
             break;
           }
-          config_stack.top()->set_listen_port(std::stoi(s->tokens_[1]));
         }
       }
       config_stack.pop();

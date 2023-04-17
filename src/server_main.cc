@@ -32,8 +32,8 @@ int main(int argc, char *argv[]) {
       return 1;
     }
 
-    std::cout << "LISTEN PORT: " << std::to_string(config.get_listen_port())
-              << "\n";
+    std::cout << "Listening on port "
+              << std::to_string(config.get_listen_port()) << "\n";
 
     boost::asio::io_service io_service;
 

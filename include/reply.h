@@ -41,8 +41,10 @@ struct reply {
     service_unavailable = 503
   } status;
 
+  std::string test();
+
   /// The headers to be included in the reply.
-  std::vector<header> headers;
+  std::vector<http::server::header> headers;
 
   /// The content to be sent in the reply.
   std::string content;
@@ -50,6 +52,8 @@ struct reply {
   /// Convert the reply into a vector of buffers. The buffers do not own the
   /// underlying memory blocks, therefore the reply object must remain valid and
   /// not be changed until the write operation has completed.
+  // std::vector<boost::asio::const_buffer>
+  // to_buffers(const std::string &req = "", size_t bytes_transferred = 0);
   std::vector<boost::asio::const_buffer> to_buffers();
 
   /// Get a stock reply.
