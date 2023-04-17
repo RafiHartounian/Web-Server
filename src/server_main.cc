@@ -8,6 +8,7 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
+#include "config_parser.h"
 #include "server.h"
 #include "session.h"
 #include <boost/asio.hpp>
@@ -23,10 +24,20 @@ int main(int argc, char *argv[]) {
       return 1;
     }
 
+    NginxConfig config;
+    NginxConfigParser parser;
+    bool config_is_valid = parser.Parse(argv[1], &config);
+    if (!config_is_valid) {
+      std::cerr << "Invalid config file provided\n";
+      return 1;
+    }
+
+    std::cout << "LISTEN PORT: " << std::to_string(config.get_listen_port())
+              << "\n";
+
     boost::asio::io_service io_service;
 
-    using namespace std; // For atoi.
-    server s(io_service, atoi(argv[1]));
+    server s(io_service, config.get_listen_port());
 
     io_service.run();
   } catch (std::exception &e) {

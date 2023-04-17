@@ -12,6 +12,7 @@
 #include <iostream>
 #include <memory>
 #include <stack>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -23,6 +24,14 @@ std::string NginxConfig::ToString(int depth) {
     serialized_config.append(statement->ToString(depth));
   }
   return serialized_config;
+}
+
+void NginxConfig::set_listen_port(int port) {
+  if (port < 1 || port > 65535) {
+    throw std::invalid_argument("Port " + std::to_string(port) +
+                                " out of range");
+  }
+  listen_port = port;
 }
 
 std::string NginxConfigStatement::ToString(int depth) {
@@ -235,6 +244,14 @@ bool NginxConfigParser::Parse(std::istream *config_file, NginxConfig *config) {
           last_token_type != TOKEN_TYPE_END_BLOCK) {
         // Error.
         break;
+      }
+      for (auto s : config_stack.top()->statements_) {
+        if (s->tokens_[0] == "listen") {
+          if (s->tokens_.size() != 2) {
+            break;
+          }
+          config_stack.top()->set_listen_port(std::stoi(s->tokens_[1]));
+        }
       }
       config_stack.pop();
     } else if (token_type == TOKEN_TYPE_EOF) {
