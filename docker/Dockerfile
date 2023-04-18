@@ -14,7 +14,7 @@ RUN ctest --output-on_failure
 
 ### Deploy container ###
 # Define deploy stage
-FROM ubuntu:jammy as deploy
+FROM ubuntu:focal as deploy
 
 # Copy server output binary to "."
 COPY --from=builder /usr/src/project/build/bin/server .

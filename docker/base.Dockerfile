@@ -1,6 +1,6 @@
 ### Base environment container ###
 # Get the base Ubuntu image from Docker Hub
-FROM ubuntu:jammy as base
+FROM ubuntu:focal as base
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -15,4 +15,5 @@ RUN apt-get update && apt-get install -y \
     libboost-system-dev \
     libgmock-dev \
     libgtest-dev \
-    netcat
+    netcat \
+    gcovr
