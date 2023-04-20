@@ -23,4 +23,11 @@ steps:
     '-t', 'gcr.io/$PROJECT_ID/crazy-code:latest',
     '.'
   ]
-images: ['gcr.io/$PROJECT_ID/crazy-code:base', 'gcr.io/$PROJECT_ID/crazy-code:latest']
+- name: 'gcr.io/cloud-builders/docker'
+  args: [
+    'build',
+    '-f', 'docker/coverage.Dockerfile',
+    '-t', 'gcr.io/$PROJECT_ID/crazy-code:coverage',
+    '.'
+  ]
+images: ['gcr.io/$PROJECT_ID/crazy-code:base', 'gcr.io/$PROJECT_ID/crazy-code:latest', 'gcr.io/$PROJECT_ID/crazy-code:coverage']
