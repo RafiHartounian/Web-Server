@@ -71,3 +71,7 @@ bool session::handle_write(const boost::system::error_code &error) {
     return false;
   }
 }
+
+session_interface *session::get_session(boost::asio::io_service &io_service) {
+  return new session(io_service);
+}

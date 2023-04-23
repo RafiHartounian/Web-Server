@@ -37,7 +37,10 @@ int main(int argc, char *argv[]) {
 
     boost::asio::io_service io_service;
 
-    server s(io_service, config.get_listen_port());
+    session s(io_service);
+
+    server serv(s, io_service, config.get_listen_port());
+    serv.start_accept();
 
     io_service.run();
   } catch (std::exception &e) {

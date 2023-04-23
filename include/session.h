@@ -1,13 +1,13 @@
 #pragma once
 
-#include <boost/asio.hpp>
+#include "session_interface.h"
 #include <boost/bind.hpp>
 #include <cstdlib>
 #include <iostream>
 
 using boost::asio::ip::tcp;
 
-class session {
+class session : public session_interface {
 public:
   session(boost::asio::io_service &io_service);
   tcp::socket &socket();
@@ -16,6 +16,7 @@ public:
   std::string handle_read(const boost::system::error_code &error,
                           size_t bytes_transferred);
   bool handle_write(const boost::system::error_code &error);
+  session_interface *get_session(boost::asio::io_service &io_service);
 
 private:
   tcp::socket socket_;
