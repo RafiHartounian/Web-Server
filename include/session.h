@@ -13,8 +13,9 @@ public:
   tcp::socket &socket();
   boost::asio::streambuf req_buf_;
   bool start();
-  std::string handle_read(const boost::system::error_code &error, size_t bytes_transferred);
-  bool handle_write(const boost::system::error_code &error);	
+  std::string handle_read(const boost::system::error_code &error,
+                          size_t bytes_transferred);
+  bool handle_write(const boost::system::error_code &error);
 
 private:
   tcp::socket socket_;

@@ -22,7 +22,7 @@ bool session::start() {
 }
 
 std::string session::handle_read(const boost::system::error_code &error,
-                          size_t bytes_transferred) {
+                                 size_t bytes_transferred) {
   std::string req = "";
   if (!error) {
     std::istream req_stream(&req_buf_);
@@ -58,14 +58,14 @@ std::string session::handle_read(const boost::system::error_code &error,
 
 bool session::handle_write(const boost::system::error_code &error) {
   if (!error) {
-	  /**boost::asio::async_read_until(
-        socket_, req_buf_, "\r\n\r\n",
-        boost::bind(&session::handle_read, this,
-        boost::asio::placeholders::error,
-        boost::asio::placeholders::bytes_transferred));**/
-	boost::system::error_code ignored_err;
-    	socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_err);
-	return true;
+    /**boost::asio::async_read_until(
+  socket_, req_buf_, "\r\n\r\n",
+  boost::bind(&session::handle_read, this,
+  boost::asio::placeholders::error,
+  boost::asio::placeholders::bytes_transferred));**/
+    boost::system::error_code ignored_err;
+    socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_err);
+    return true;
   } else {
     delete this;
     return false;
