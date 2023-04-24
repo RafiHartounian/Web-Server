@@ -62,5 +62,7 @@ gtest_discover_tests(request_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURC
 gtest_discover_tests(session_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(server_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
+add_test(NAME integration_tests COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration_tests.sh WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+
 include(cmake/CodeCoverageReportConfig.cmake)
 generate_coverage_report(TARGETS server_class session_class config_parser request_parser reply_class TESTS session_test config_parser_test request_parser_test reply_test server_test)
