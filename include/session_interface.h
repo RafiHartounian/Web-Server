@@ -11,7 +11,8 @@ using boost::asio::ip::tcp;
  * Session objects contain socket information and
  * data that is passed from a read or write operation.
  */
-class session_interface {
+class session_interface
+{
 public:
   virtual tcp::socket &socket() = 0;
   virtual bool start() = 0;

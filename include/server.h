@@ -4,7 +4,8 @@
 #include "session_interface.h"
 
 using boost::asio::ip::tcp;
-class server {
+class server
+{
 public:
   server(session_interface &new_s, boost::asio::io_service &io_service,
          short port);

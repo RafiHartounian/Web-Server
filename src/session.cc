@@ -13,7 +13,8 @@ session::session(boost::asio::io_service &io_service) : socket_(io_service) {}
 
 tcp::socket &session::socket() { return socket_; }
 
-bool session::start() {
+bool session::start()
+{
   boost::asio::async_read_until(
       socket_, req_buf_, "\r\n\r\n",
       boost::bind(&session::handle_read, this, boost::asio::placeholders::error,
@@ -22,12 +23,15 @@ bool session::start() {
 }
 
 std::string session::handle_read(const boost::system::error_code &error,
-                                 size_t bytes_transferred) {
+                                 size_t bytes_transferred)
+{
   std::string req = "";
-  if (!error) {
+  if (!error)
+  {
     std::istream req_stream(&req_buf_);
     std::string req_build;
-    while (req_build.find("\r\n\r\n") == std::string::npos) {
+    while (req_build.find("\r\n\r\n") == std::string::npos)
+    {
       char req_tok;
       req_stream.get(req_tok);
       req_build += req_tok;
@@ -49,15 +53,19 @@ std::string session::handle_read(const boost::system::error_code &error,
                              boost::bind(&session::handle_write, this,
                                          boost::asio::placeholders::error));
     req_build.clear();
-  } else {
+  }
+  else
+  {
     delete this;
   }
 
   return req;
 }
 
-bool session::handle_write(const boost::system::error_code &error) {
-  if (!error) {
+bool session::handle_write(const boost::system::error_code &error)
+{
+  if (!error)
+  {
     /**boost::asio::async_read_until(
   socket_, req_buf_, "\r\n\r\n",
   boost::bind(&session::handle_read, this,
@@ -66,12 +74,15 @@ bool session::handle_write(const boost::system::error_code &error) {
     boost::system::error_code ignored_err;
     socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_err);
     return true;
-  } else {
+  }
+  else
+  {
     delete this;
     return false;
   }
 }
 
-session_interface *session::get_session(boost::asio::io_service &io_service) {
+session_interface *session::get_session(boost::asio::io_service &io_service)
+{
   return new session(io_service);
 }

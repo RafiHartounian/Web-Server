@@ -18,59 +18,78 @@
 
 #include "config_parser.h"
 
-std::string NginxConfig::ToString(int depth) {
+std::string NginxConfig::ToString(int depth)
+{
   std::string serialized_config;
-  for (const auto &statement : statements_) {
+  for (const auto &statement : statements_)
+  {
     serialized_config.append(statement->ToString(depth));
   }
   return serialized_config;
 }
 
-int NginxConfig::get_listen_port() {
+int NginxConfig::get_listen_port()
+{
   int port;
-  for (auto s : statements_) {
-    if (s->child_block_.get() != nullptr) {
+  for (auto s : statements_)
+  {
+    if (s->child_block_.get() != nullptr)
+    {
       port = s->child_block_->get_listen_port();
-    } else {
-      if (s->tokens_.size() == 2 && s->tokens_[0] == "listen") {
+    }
+    else
+    {
+      if (s->tokens_.size() == 2 && s->tokens_[0] == "listen")
+      {
         port = stoi(s->tokens_[1]);
       }
     }
   }
-  if (port < 1 || port > 65535) {
+  if (port < 1 || port > 65535)
+  {
     throw std::invalid_argument("Port " + std::to_string(port) +
                                 " out of range");
   }
   return port;
 }
 
-std::string NginxConfigStatement::ToString(int depth) {
+std::string NginxConfigStatement::ToString(int depth)
+{
   std::string serialized_statement;
-  for (int i = 0; i < depth; ++i) {
+  for (int i = 0; i < depth; ++i)
+  {
     serialized_statement.append("  ");
   }
-  for (unsigned int i = 0; i < tokens_.size(); ++i) {
-    if (i != 0) {
+  for (unsigned int i = 0; i < tokens_.size(); ++i)
+  {
+    if (i != 0)
+    {
       serialized_statement.append(" ");
     }
     serialized_statement.append(tokens_[i]);
   }
-  if (child_block_.get() != nullptr) {
+  if (child_block_.get() != nullptr)
+  {
     serialized_statement.append(" {\n");
     serialized_statement.append(child_block_->ToString(depth + 1));
-    for (int i = 0; i < depth; ++i) {
+    for (int i = 0; i < depth; ++i)
+    {
       serialized_statement.append("  ");
     }
     serialized_statement.append("}");
-  } else {
+  }
+  else
+  {
     serialized_statement.append(";");
   }
   serialized_statement.append("\n");
   return serialized_statement;
 }
 
-const char *NginxConfigParser::TokenTypeAsString(TokenType type) {
-  switch (type) {
+const char *NginxConfigParser::TokenTypeAsString(TokenType type)
+{
+  switch (type)
+  {
   case TOKEN_TYPE_START:
     return "TOKEN_TYPE_START";
   case TOKEN_TYPE_NORMAL:
@@ -93,16 +112,21 @@ const char *NginxConfigParser::TokenTypeAsString(TokenType type) {
 }
 
 NginxConfigParser::TokenType NginxConfigParser::ParseToken(std::istream *input,
-                                                           std::string *value) {
+                                                           std::string *value)
+{
   TokenParserState state = TOKEN_STATE_INITIAL_WHITESPACE;
-  while (input->good()) {
+  while (input->good())
+  {
     const char c = input->get();
-    if (!input->good()) {
+    if (!input->good())
+    {
       break;
     }
-    switch (state) {
+    switch (state)
+    {
     case TOKEN_STATE_INITIAL_WHITESPACE:
-      switch (c) {
+      switch (c)
+      {
       case '{':
         *value = c;
         return TOKEN_TYPE_START_BLOCK;
@@ -136,45 +160,59 @@ NginxConfigParser::TokenType NginxConfigParser::ParseToken(std::istream *input,
       }
     case TOKEN_STATE_SINGLE_QUOTE:
       *value += c;
-      if (c == '\'') {
+      if (c == '\'')
+      {
         const char next_c = input->get();
         if (next_c == ' ' || next_c == '\n' || next_c == '\t' ||
-            next_c == '{' || next_c == '}' || next_c == ';') {
+            next_c == '{' || next_c == '}' || next_c == ';')
+        {
           input->unget();
-        } else {
+        }
+        else
+        {
           return TOKEN_TYPE_ERROR;
         }
         return TOKEN_TYPE_NORMAL;
-      } else if (c == '\\') {
+      }
+      else if (c == '\\')
+      {
         value->pop_back();
         state = TOKEN_STATE_ESCAPE_SINGLE_QUOTE;
       }
       continue;
     case TOKEN_STATE_DOUBLE_QUOTE:
       *value += c;
-      if (c == '"') {
+      if (c == '"')
+      {
         const char next_c = input->get();
         if (next_c == ' ' || next_c == '\n' || next_c == '\t' ||
-            next_c == '{' || next_c == '}' || next_c == ';') {
+            next_c == '{' || next_c == '}' || next_c == ';')
+        {
           input->unget();
-        } else {
+        }
+        else
+        {
           return TOKEN_TYPE_ERROR;
         }
         return TOKEN_TYPE_NORMAL;
-      } else if (c == '\\') {
+      }
+      else if (c == '\\')
+      {
         value->pop_back();
         state = TOKEN_STATE_ESCAPE_DOUBLE_QUOTE;
       }
       continue;
     case TOKEN_STATE_TOKEN_TYPE_COMMENT:
-      if (c == '\n' || c == '\r') {
+      if (c == '\n' || c == '\r')
+      {
         return TOKEN_TYPE_COMMENT;
       }
       *value += c;
       continue;
     case TOKEN_STATE_TOKEN_TYPE_NORMAL:
       if (c == ' ' || c == '\t' || c == '\n' || c == '\t' || c == ';' ||
-          c == '{' || c == '}') {
+          c == '{' || c == '}')
+      {
         input->unget();
         return TOKEN_TYPE_NORMAL;
       }
@@ -192,56 +230,74 @@ NginxConfigParser::TokenType NginxConfigParser::ParseToken(std::istream *input,
   }
 
   // If we get here, we reached the end of the file.
-  if (state == TOKEN_STATE_SINGLE_QUOTE || state == TOKEN_STATE_DOUBLE_QUOTE) {
+  if (state == TOKEN_STATE_SINGLE_QUOTE || state == TOKEN_STATE_DOUBLE_QUOTE)
+  {
     return TOKEN_TYPE_ERROR;
   }
 
   return TOKEN_TYPE_EOF;
 }
 
-bool NginxConfigParser::Parse(std::istream *config_file, NginxConfig *config) {
+bool NginxConfigParser::Parse(std::istream *config_file, NginxConfig *config)
+{
   std::stack<NginxConfig *> config_stack;
   config_stack.push(config);
   TokenType last_token_type = TOKEN_TYPE_START;
   TokenType token_type;
-  while (true) {
+  while (true)
+  {
     std::string token;
     token_type = ParseToken(config_file, &token);
     printf("%s: %s\n", TokenTypeAsString(token_type), token.c_str());
-    if (token_type == TOKEN_TYPE_ERROR) {
+    if (token_type == TOKEN_TYPE_ERROR)
+    {
       break;
     }
 
-    if (token_type == TOKEN_TYPE_COMMENT) {
+    if (token_type == TOKEN_TYPE_COMMENT)
+    {
       // Skip comments.
       continue;
     }
 
-    if (token_type == TOKEN_TYPE_START) {
+    if (token_type == TOKEN_TYPE_START)
+    {
       // Error.
       break;
-    } else if (token_type == TOKEN_TYPE_NORMAL) {
+    }
+    else if (token_type == TOKEN_TYPE_NORMAL)
+    {
       if (last_token_type == TOKEN_TYPE_START ||
           last_token_type == TOKEN_TYPE_STATEMENT_END ||
           last_token_type == TOKEN_TYPE_START_BLOCK ||
           last_token_type == TOKEN_TYPE_END_BLOCK ||
-          last_token_type == TOKEN_TYPE_NORMAL) {
-        if (last_token_type != TOKEN_TYPE_NORMAL) {
+          last_token_type == TOKEN_TYPE_NORMAL)
+      {
+        if (last_token_type != TOKEN_TYPE_NORMAL)
+        {
           config_stack.top()->statements_.emplace_back(
               new NginxConfigStatement);
         }
         config_stack.top()->statements_.back().get()->tokens_.push_back(token);
-      } else {
+      }
+      else
+      {
         // Error.
         break;
       }
-    } else if (token_type == TOKEN_TYPE_STATEMENT_END) {
-      if (last_token_type != TOKEN_TYPE_NORMAL) {
+    }
+    else if (token_type == TOKEN_TYPE_STATEMENT_END)
+    {
+      if (last_token_type != TOKEN_TYPE_NORMAL)
+      {
         // Error.
         break;
       }
-    } else if (token_type == TOKEN_TYPE_START_BLOCK) {
-      if (last_token_type != TOKEN_TYPE_NORMAL) {
+    }
+    else if (token_type == TOKEN_TYPE_START_BLOCK)
+    {
+      if (last_token_type != TOKEN_TYPE_NORMAL)
+      {
         // Error.
         break;
       }
@@ -249,33 +305,45 @@ bool NginxConfigParser::Parse(std::istream *config_file, NginxConfig *config) {
       config_stack.top()->statements_.back().get()->child_block_.reset(
           new_config);
       config_stack.push(new_config);
-    } else if (token_type == TOKEN_TYPE_END_BLOCK) {
+    }
+    else if (token_type == TOKEN_TYPE_END_BLOCK)
+    {
       if (last_token_type != TOKEN_TYPE_STATEMENT_END &&
-          last_token_type != TOKEN_TYPE_END_BLOCK) {
+          last_token_type != TOKEN_TYPE_END_BLOCK)
+      {
         // Error.
         break;
       }
-      for (auto s : config_stack.top()->statements_) {
-        if (s->tokens_[0] == "listen") {
-          if (s->tokens_.size() != 2) {
+      for (auto s : config_stack.top()->statements_)
+      {
+        if (s->tokens_[0] == "listen")
+        {
+          if (s->tokens_.size() != 2)
+          {
             break;
           }
         }
       }
       config_stack.pop();
-    } else if (token_type == TOKEN_TYPE_EOF) {
+    }
+    else if (token_type == TOKEN_TYPE_EOF)
+    {
       if (last_token_type != TOKEN_TYPE_STATEMENT_END &&
           last_token_type != TOKEN_TYPE_END_BLOCK &&
-          last_token_type != TOKEN_TYPE_START) {
+          last_token_type != TOKEN_TYPE_START)
+      {
         // Error.
         break;
       }
       config_stack.pop();
-      if (config_stack.size() > 0) {
+      if (config_stack.size() > 0)
+      {
         break;
       }
       return true;
-    } else {
+    }
+    else
+    {
       // Error. Unknown token.
       break;
     }
@@ -287,10 +355,12 @@ bool NginxConfigParser::Parse(std::istream *config_file, NginxConfig *config) {
   return false;
 }
 
-bool NginxConfigParser::Parse(const char *file_name, NginxConfig *config) {
+bool NginxConfigParser::Parse(const char *file_name, NginxConfig *config)
+{
   std::ifstream config_file;
   config_file.open(file_name);
-  if (!config_file.good()) {
+  if (!config_file.good())
+  {
     printf("Failed to open config file: %s\n", file_name);
     return false;
   }

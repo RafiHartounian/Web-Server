@@ -13,9 +13,11 @@ server::server(session_interface &new_s, boost::asio::io_service &io_service,
     : io_service_(io_service), session_(new_s),
       acceptor_(io_service, tcp::endpoint(tcp::v4(), port)) {}
 
-bool server::start_accept() {
+bool server::start_accept()
+{
   session_interface *new_session = session_.get_session(io_service_);
-  if (new_session == NULL) {
+  if (new_session == NULL)
+  {
     return false;
   }
   acceptor_.async_accept(new_session->socket(),
@@ -25,12 +27,16 @@ bool server::start_accept() {
 }
 
 bool server::handle_accept(session_interface *new_session,
-                           const boost::system::error_code &error) {
+                           const boost::system::error_code &error)
+{
   bool result = false;
-  if (!error) {
+  if (!error)
+  {
     new_session->start();
     result = true;
-  } else {
+  }
+  else
+  {
     delete new_session;
   }
 

@@ -7,7 +7,8 @@
 
 using boost::asio::ip::tcp;
 
-class session : public session_interface {
+class session : public session_interface
+{
 public:
   session(boost::asio::io_service &io_service);
   tcp::socket &socket();
@@ -20,6 +21,9 @@ public:
 
 private:
   tcp::socket socket_;
-  enum { max_length = 1024 };
+  enum
+  {
+    max_length = 1024
+  };
   char data_[max_length];
 };

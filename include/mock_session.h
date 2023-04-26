@@ -7,7 +7,8 @@
 /**
  * Mock session class.
  */
-class mock_session : public session_interface {
+class mock_session : public session_interface
+{
 public:
   MOCK_METHOD(tcp::socket &, socket, (), (override));
   MOCK_METHOD(bool, start, (), (override));

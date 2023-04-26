@@ -1,13 +1,15 @@
 #include "reply.h"
 #include "gtest/gtest.h"
 
-class ReplyTest : public ::testing::Test {
+class ReplyTest : public ::testing::Test
+{
 protected:
   http::server::reply reply_;
   std::vector<boost::asio::const_buffer> buffers;
 };
 
-TEST_F(ReplyTest, OkReply) {
+TEST_F(ReplyTest, OkReply)
+{
   reply_ = http::server::reply::stock_reply(http::server::reply::ok);
   bool success_1 = reply_.status == http::server::reply::ok &&
                    reply_.content == "" && reply_.headers.size() == 2;
@@ -21,7 +23,8 @@ TEST_F(ReplyTest, OkReply) {
   EXPECT_TRUE(success_2);
 }
 
-TEST_F(ReplyTest, CreatedReply) {
+TEST_F(ReplyTest, CreatedReply)
+{
   reply_ = http::server::reply::stock_reply(http::server::reply::created);
   bool success_1 = reply_.status == http::server::reply::created &&
                    reply_.content == "<html>"
@@ -39,7 +42,8 @@ TEST_F(ReplyTest, CreatedReply) {
   EXPECT_TRUE(success_2);
 }
 
-TEST_F(ReplyTest, AcceptedReply) {
+TEST_F(ReplyTest, AcceptedReply)
+{
   reply_ = http::server::reply::stock_reply(http::server::reply::accepted);
   bool success_1 = reply_.status == http::server::reply::accepted &&
                    reply_.content == "<html>"
@@ -57,7 +61,8 @@ TEST_F(ReplyTest, AcceptedReply) {
   EXPECT_TRUE(success_2);
 }
 
-TEST_F(ReplyTest, NoContentReply) {
+TEST_F(ReplyTest, NoContentReply)
+{
   reply_ = http::server::reply::stock_reply(http::server::reply::no_content);
   bool success_1 = reply_.status == http::server::reply::no_content &&
                    reply_.content == "<html>"
@@ -75,7 +80,8 @@ TEST_F(ReplyTest, NoContentReply) {
   EXPECT_TRUE(success_2);
 }
 
-TEST_F(ReplyTest, MultipleChoicesReply) {
+TEST_F(ReplyTest, MultipleChoicesReply)
+{
   reply_ =
       http::server::reply::stock_reply(http::server::reply::multiple_choices);
   bool success_1 = reply_.status == http::server::reply::multiple_choices &&
@@ -95,7 +101,8 @@ TEST_F(ReplyTest, MultipleChoicesReply) {
   EXPECT_TRUE(success_2);
 }
 
-TEST_F(ReplyTest, MovedPermanently) {
+TEST_F(ReplyTest, MovedPermanently)
+{
   reply_ =
       http::server::reply::stock_reply(http::server::reply::moved_permanently);
   bool success_1 = reply_.status == http::server::reply::moved_permanently &&
@@ -115,7 +122,8 @@ TEST_F(ReplyTest, MovedPermanently) {
   EXPECT_TRUE(success_2);
 }
 
-TEST_F(ReplyTest, MovedTemporarilyReply) {
+TEST_F(ReplyTest, MovedTemporarilyReply)
+{
   reply_ =
       http::server::reply::stock_reply(http::server::reply::moved_temporarily);
   bool success_1 = reply_.status == http::server::reply::moved_temporarily &&
@@ -135,7 +143,8 @@ TEST_F(ReplyTest, MovedTemporarilyReply) {
   EXPECT_TRUE(success_2);
 }
 
-TEST_F(ReplyTest, NotModifiedReply) {
+TEST_F(ReplyTest, NotModifiedReply)
+{
   reply_ = http::server::reply::stock_reply(http::server::reply::not_modified);
   bool success_1 = reply_.status == http::server::reply::not_modified &&
                    reply_.content == "<html>"
@@ -153,7 +162,8 @@ TEST_F(ReplyTest, NotModifiedReply) {
   EXPECT_TRUE(success_2);
 }
 
-TEST_F(ReplyTest, BadRequestReply) {
+TEST_F(ReplyTest, BadRequestReply)
+{
   reply_ = http::server::reply::stock_reply(http::server::reply::bad_request);
   bool success_1 = reply_.status == http::server::reply::bad_request &&
                    reply_.content == "<html>"
@@ -171,7 +181,8 @@ TEST_F(ReplyTest, BadRequestReply) {
   EXPECT_TRUE(success_2);
 }
 
-TEST_F(ReplyTest, UnauthorizedReply) {
+TEST_F(ReplyTest, UnauthorizedReply)
+{
   reply_ = http::server::reply::stock_reply(http::server::reply::unauthorized);
   bool success_1 = reply_.status == http::server::reply::unauthorized &&
                    reply_.content == "<html>"
@@ -189,7 +200,8 @@ TEST_F(ReplyTest, UnauthorizedReply) {
   EXPECT_TRUE(success_2);
 }
 
-TEST_F(ReplyTest, ForbiddenReply) {
+TEST_F(ReplyTest, ForbiddenReply)
+{
   reply_ = http::server::reply::stock_reply(http::server::reply::forbidden);
   bool success_1 = reply_.status == http::server::reply::forbidden &&
                    reply_.content == "<html>"
@@ -207,7 +219,8 @@ TEST_F(ReplyTest, ForbiddenReply) {
   EXPECT_TRUE(success_2);
 }
 
-TEST_F(ReplyTest, NotFoundReply) {
+TEST_F(ReplyTest, NotFoundReply)
+{
   reply_ = http::server::reply::stock_reply(http::server::reply::not_found);
   bool success_1 = reply_.status == http::server::reply::not_found &&
                    reply_.content == "<html>"
@@ -225,7 +238,8 @@ TEST_F(ReplyTest, NotFoundReply) {
   EXPECT_TRUE(success_2);
 }
 
-TEST_F(ReplyTest, InternalServerErrorReply) {
+TEST_F(ReplyTest, InternalServerErrorReply)
+{
   reply_ = http::server::reply::stock_reply(
       http::server::reply::internal_server_error);
   bool success_1 =
@@ -245,7 +259,8 @@ TEST_F(ReplyTest, InternalServerErrorReply) {
   EXPECT_TRUE(success_2);
 }
 
-TEST_F(ReplyTest, NotImplementedReply) {
+TEST_F(ReplyTest, NotImplementedReply)
+{
   reply_ =
       http::server::reply::stock_reply(http::server::reply::not_implemented);
   bool success_1 = reply_.status == http::server::reply::not_implemented &&
@@ -265,7 +280,8 @@ TEST_F(ReplyTest, NotImplementedReply) {
   EXPECT_TRUE(success_2);
 }
 
-TEST_F(ReplyTest, BadGatewayReply) {
+TEST_F(ReplyTest, BadGatewayReply)
+{
   reply_ = http::server::reply::stock_reply(http::server::reply::bad_gateway);
   bool success_1 = reply_.status == http::server::reply::bad_gateway &&
                    reply_.content == "<html>"
@@ -283,7 +299,8 @@ TEST_F(ReplyTest, BadGatewayReply) {
   EXPECT_TRUE(success_2);
 }
 
-TEST_F(ReplyTest, ServiceUnavailableReply) {
+TEST_F(ReplyTest, ServiceUnavailableReply)
+{
   reply_ = http::server::reply::stock_reply(
       http::server::reply::service_unavailable);
   bool success_1 = reply_.status == http::server::reply::service_unavailable &&

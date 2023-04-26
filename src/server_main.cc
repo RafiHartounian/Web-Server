@@ -17,9 +17,12 @@
 #include <iostream>
 using boost::asio::ip::tcp;
 
-int main(int argc, char *argv[]) {
-  try {
-    if (argc != 2) {
+int main(int argc, char *argv[])
+{
+  try
+  {
+    if (argc != 2)
+    {
       std::cerr << "Usage: async_tcp_echo_server <port>\n";
       return 1;
     }
@@ -27,7 +30,8 @@ int main(int argc, char *argv[]) {
     NginxConfig config;
     NginxConfigParser parser;
     bool config_is_valid = parser.Parse(argv[1], &config);
-    if (!config_is_valid) {
+    if (!config_is_valid)
+    {
       std::cerr << "Invalid config file provided\n";
       return 1;
     }
@@ -43,7 +47,9 @@ int main(int argc, char *argv[]) {
     serv.start_accept();
 
     io_service.run();
-  } catch (std::exception &e) {
+  }
+  catch (std::exception &e)
+  {
     std::cerr << "Exception: " << e.what() << "\n";
   }
 

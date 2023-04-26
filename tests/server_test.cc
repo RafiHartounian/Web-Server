@@ -3,14 +3,16 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
-class ServerTest : public ::testing::Test {
+class ServerTest : public ::testing::Test
+{
 protected:
   mock_session mock_sesh;
   short port = 8080;
   boost::asio::io_service io_service;
 };
 
-TEST_F(ServerTest, StartServer) {
+TEST_F(ServerTest, StartServer)
+{
   session s(io_service);
 
   server serv(s, io_service, port);
@@ -19,7 +21,8 @@ TEST_F(ServerTest, StartServer) {
 }
 
 // Test mock session with no socket defintion
-TEST_F(ServerTest, StartBadServer) {
+TEST_F(ServerTest, StartBadServer)
+{
   // Session.start() should not be called with no socket
   EXPECT_CALL(mock_sesh, start()).Times(0);
 
@@ -29,7 +32,8 @@ TEST_F(ServerTest, StartBadServer) {
 }
 
 // Test mock session with valid session object
-TEST_F(ServerTest, ServerAccept) {
+TEST_F(ServerTest, ServerAccept)
+{
   mock_session test_mock;
 
   // Check session.start() is called once

@@ -2,14 +2,16 @@
 #include "request_parser.h"
 #include "gtest/gtest.h"
 
-class RequestParserTest : public ::testing::Test {
+class RequestParserTest : public ::testing::Test
+{
 protected:
   http::server::request_parser parser;
   http::server::request request_;
   boost::logic::tribool result;
 };
 
-TEST_F(RequestParserTest, GoodRequest) {
+TEST_F(RequestParserTest, GoodRequest)
+{
   char input[100] =
       "GET / HTTP/1.1\r\nHost: www.wesbite.com\r\nConnection: close\r\n\r\n";
   boost::tie(result, boost::tuples::ignore) =
@@ -17,7 +19,8 @@ TEST_F(RequestParserTest, GoodRequest) {
   EXPECT_TRUE(result);
 }
 
-TEST_F(RequestParserTest, SlashMissingRequest) {
+TEST_F(RequestParserTest, SlashMissingRequest)
+{
 
   char input[100] =
       "GET HTTP/1.1\r\nHost: www.website.com\r\nConnection: close\r\n\r\n";
@@ -26,7 +29,8 @@ TEST_F(RequestParserTest, SlashMissingRequest) {
   EXPECT_FALSE(result);
 }
 
-TEST_F(RequestParserTest, WrongProtocalRequest1) {
+TEST_F(RequestParserTest, WrongProtocalRequest1)
+{
 
   char input[100] =
       "GET / ATTP/1.1\r\nHost: www.website.com\r\nConnection: close\r\n\r\n";
@@ -35,7 +39,8 @@ TEST_F(RequestParserTest, WrongProtocalRequest1) {
   EXPECT_FALSE(result);
 }
 
-TEST_F(RequestParserTest, WrongProtocalRequest2) {
+TEST_F(RequestParserTest, WrongProtocalRequest2)
+{
 
   char input[100] =
       "GET / HATP/1.1\r\nHost: www.website.com\r\nConnection: close\r\n\r\n";
@@ -44,7 +49,8 @@ TEST_F(RequestParserTest, WrongProtocalRequest2) {
   EXPECT_FALSE(result);
 }
 
-TEST_F(RequestParserTest, WrongProtocalRequest3) {
+TEST_F(RequestParserTest, WrongProtocalRequest3)
+{
 
   char input[100] =
       "GET / HTAP/1.1\r\nHost: www.website.com\r\nConnection: close\r\n\r\n";
@@ -53,7 +59,8 @@ TEST_F(RequestParserTest, WrongProtocalRequest3) {
   EXPECT_FALSE(result);
 }
 
-TEST_F(RequestParserTest, WrongProtocalRequest4) {
+TEST_F(RequestParserTest, WrongProtocalRequest4)
+{
 
   char input[100] =
       "GET / HTTA/1.1\r\nHost: www.website.com\r\nConnection: close\r\n\r\n";
@@ -62,7 +69,8 @@ TEST_F(RequestParserTest, WrongProtocalRequest4) {
   EXPECT_FALSE(result);
 }
 
-TEST_F(RequestParserTest, BadVersionMinorRequest) {
+TEST_F(RequestParserTest, BadVersionMinorRequest)
+{
 
   char input[100] =
       "GET / HTTP/1.a\r\nHost: www.website.com\r\nConnection: close\r\n\r\n";
@@ -71,7 +79,8 @@ TEST_F(RequestParserTest, BadVersionMinorRequest) {
   EXPECT_FALSE(result);
 }
 
-TEST_F(RequestParserTest, BadVersionMinorRequest2) {
+TEST_F(RequestParserTest, BadVersionMinorRequest2)
+{
 
   char input[100] =
       "GET / HTTP/1.1a\r\nHost: www.website.com\r\nConnection: close\r\n\r\n";
@@ -80,7 +89,8 @@ TEST_F(RequestParserTest, BadVersionMinorRequest2) {
   EXPECT_FALSE(result);
 }
 
-TEST_F(RequestParserTest, BadVersionMajorRequest) {
+TEST_F(RequestParserTest, BadVersionMajorRequest)
+{
 
   char input[100] =
       "GET / HTTP/a.1\r\nHost: www.website.com\r\nConnection: close\r\n\r\n";
@@ -89,7 +99,8 @@ TEST_F(RequestParserTest, BadVersionMajorRequest) {
   EXPECT_FALSE(result);
 }
 
-TEST_F(RequestParserTest, BadVersionMajorRequest2) {
+TEST_F(RequestParserTest, BadVersionMajorRequest2)
+{
 
   char input[100] =
       "GET / HTTP/1a.1\r\nHost: www.website.com\r\nConnection: close\r\n\r\n";
@@ -98,7 +109,8 @@ TEST_F(RequestParserTest, BadVersionMajorRequest2) {
   EXPECT_FALSE(result);
 }
 
-TEST_F(RequestParserTest, WrongEndingAfterVersionRequest) {
+TEST_F(RequestParserTest, WrongEndingAfterVersionRequest)
+{
 
   char input[100] =
       "GET / HTTP/1.1\r Host: www.website.com\r\nConnection: close\r\n\r\n";
@@ -107,7 +119,8 @@ TEST_F(RequestParserTest, WrongEndingAfterVersionRequest) {
   EXPECT_FALSE(result);
 }
 
-TEST_F(RequestParserTest, WrongEndingRequest) {
+TEST_F(RequestParserTest, WrongEndingRequest)
+{
 
   char input[100] =
       "GET / HTTP/1.1\r\nHost: www.website.com\r\nConnection: close\r\n\rend";
@@ -116,7 +129,8 @@ TEST_F(RequestParserTest, WrongEndingRequest) {
   EXPECT_FALSE(result);
 }
 
-TEST_F(RequestParserTest, InvalidSpacesRequest) {
+TEST_F(RequestParserTest, InvalidSpacesRequest)
+{
 
   char input[100] = "GET / HTTP /1 . 1\r\n  Host: www.website.com \r\n\t  "
                     "Type: test\r\n Connection: close\r\n\r\n";
@@ -125,7 +139,8 @@ TEST_F(RequestParserTest, InvalidSpacesRequest) {
   EXPECT_FALSE(result);
 }
 
-TEST_F(RequestParserTest, InvalidHeaderRequest) {
+TEST_F(RequestParserTest, InvalidHeaderRequest)
+{
 
   char input[100] =
       "GET / HTTP/1.1\r\nHost:www.website.com\r\nConnection: close\r\n\r\n";
@@ -134,7 +149,8 @@ TEST_F(RequestParserTest, InvalidHeaderRequest) {
   EXPECT_FALSE(result);
 }
 
-TEST_F(RequestParserTest, InvalidHeaderRequest2) {
+TEST_F(RequestParserTest, InvalidHeaderRequest2)
+{
 
   char input[100] =
       "GET / HTTP/1.1\r\nHost www.website.com\r\nConnection: close\r\n\r\n";
@@ -143,7 +159,8 @@ TEST_F(RequestParserTest, InvalidHeaderRequest2) {
   EXPECT_FALSE(result);
 }
 
-TEST_F(RequestParserTest, ValidSpecialCharRequest) {
+TEST_F(RequestParserTest, ValidSpecialCharRequest)
+{
 
   char input[100] = "GET / HTTP/1.1\r\nHost: www.website.com \r\nType: "
                     "test()@#$%^&*!\r\n Connection: close\r\n\r\n";
@@ -152,7 +169,8 @@ TEST_F(RequestParserTest, ValidSpecialCharRequest) {
   EXPECT_TRUE(result);
 }
 
-TEST_F(RequestParserTest, InvalidSpecialCharRequest) {
+TEST_F(RequestParserTest, InvalidSpecialCharRequest)
+{
 
   char input[100] = "GET / HTTP/1.1\r\nHost: www.website.com \r\nType: "
                     "test\\r\n Connection: close\r\n\r\n";
@@ -161,41 +179,54 @@ TEST_F(RequestParserTest, InvalidSpecialCharRequest) {
   EXPECT_FALSE(result);
 }
 
-TEST_F(RequestParserTest, IncompleteRequest) {
+TEST_F(RequestParserTest, IncompleteRequest)
+{
   // incomplete request gives a result that is neither true nor false
   char input[100] =
       "GET / HTTP/1.1\r\nHost: www.website.com\r\nConnection: close\r\n";
   boost::tie(result, boost::tuples::ignore) =
       parser.parse(request_, input, input + strlen(input));
   bool success;
-  if (result) {
+  if (result)
+  {
     success = false;
-  } else if (!result) {
+  }
+  else if (!result)
+  {
     success = false;
-  } else {
+  }
+  else
+  {
     success = true;
   }
   EXPECT_TRUE(success);
 }
 
-TEST_F(RequestParserTest, IncompleteRequest2) {
+TEST_F(RequestParserTest, IncompleteRequest2)
+{
   // incomplete request gives a result that is neither true nor false
   char input[100] =
       "GET / HTTP/1.1\r\nHost: www.website.com\r\nConnection: close";
   boost::tie(result, boost::tuples::ignore) =
       parser.parse(request_, input, input + strlen(input));
   bool success;
-  if (result) {
+  if (result)
+  {
     success = false;
-  } else if (!result) {
+  }
+  else if (!result)
+  {
     success = false;
-  } else {
+  }
+  else
+  {
     success = true;
   }
   EXPECT_TRUE(success);
 }
 
-TEST_F(RequestParserTest, ParserValidRequest) {
+TEST_F(RequestParserTest, ParserValidRequest)
+{
 
   char input[100] =
       "GET / HTTP/1.1\r\nHost: www.website.com\r\nConnection: close\r\n\r\n";
@@ -213,7 +244,8 @@ TEST_F(RequestParserTest, ParserValidRequest) {
   EXPECT_TRUE(success3);
 }
 
-TEST_F(RequestParserTest, ParserInvalidRequest) {
+TEST_F(RequestParserTest, ParserInvalidRequest)
+{
 
   char input[100] =
       "GET HTTP/1.1\r\nHost: www.website.com\r\nConnection: close\r\n\r\n";

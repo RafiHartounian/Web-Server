@@ -12,7 +12,8 @@ using http::server::reply;
 using http::server::request;
 using http::server::request_parser;
 
-class RequestHandler {
+class RequestHandler
+{
 public:
   virtual void handleRequest(const request &request_, reply *reply_) = 0;
 };
