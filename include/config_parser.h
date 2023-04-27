@@ -6,7 +6,13 @@
 #include <vector>
 
 class NginxConfig;
-
+enum endpoint_type { static_, echo, invalid };
+struct path 
+{
+  endpoint_type type = echo;
+  std::string endpoint = "";
+  std::string root = "";
+};
 // The parsed representation of a single config statement.
 class NginxConfigStatement
 {
@@ -23,6 +29,9 @@ public:
   std::string ToString(int depth = 0);
   std::vector<std::shared_ptr<NginxConfigStatement>> statements_;
   int get_listen_port();
+  std::vector<path> getPaths();
+private:
+    std::vector<path> paths;
 };
 
 // The driver that parses a config file and generates an NginxConfig.

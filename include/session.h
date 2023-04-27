@@ -1,6 +1,9 @@
 #pragma once
 
 #include "session_interface.h"
+#include "request_handler_interface.h"
+#include "request_parser.h"
+#include "request.h"
 #include <boost/bind.hpp>
 #include <cstdlib>
 #include <iostream>
@@ -18,6 +21,9 @@ public:
                           size_t bytes_transferred);
   bool handle_write(const boost::system::error_code &error);
   session_interface *get_session(boost::asio::io_service &io_service);
+  void write_to_socket(request_handler_interface* handler);
+  bool set_paths(std::vector<path> paths);
+  path get_endpoint();
 
 private:
   tcp::socket socket_;
@@ -26,4 +32,8 @@ private:
     max_length = 1024
   };
   char data_[max_length];
+  std::string client_ip_;
+  http::server::request_parser request_parser_;
+  http::server::request request_;
+  std::vector<path> paths_;
 };
