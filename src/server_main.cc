@@ -15,6 +15,7 @@
 #include <boost/bind.hpp>
 #include <cstdlib>
 #include <iostream>
+#include <boost/log/trivial.hpp>
 using boost::asio::ip::tcp;
 
 int main(int argc, char *argv[])
@@ -23,7 +24,7 @@ int main(int argc, char *argv[])
   {
     if (argc != 2)
     {
-      std::cerr << "Usage: async_tcp_echo_server <port>\n";
+      BOOST_LOG_TRIVIAL(fatal) << "Usage: async_tcp_echo_server <port>\n";
       return 1;
     }
 
@@ -32,12 +33,12 @@ int main(int argc, char *argv[])
     bool config_is_valid = parser.Parse(argv[1], &config);
     if (!config_is_valid)
     {
-      std::cerr << "Invalid config file provided\n";
+      BOOST_LOG_TRIVIAL(fatal) << "Invalid config file provided\n";
       return 1;
     }
 
-    std::cout << "Listening on port "
-              << std::to_string(config.get_listen_port()) << "\n";
+    BOOST_LOG_TRIVIAL(info) << "Listening on port "
+                            << std::to_string(config.get_listen_port()) << "\n";
 
     boost::asio::io_service io_service;
 
@@ -50,7 +51,7 @@ int main(int argc, char *argv[])
   }
   catch (std::exception &e)
   {
-    std::cerr << "Exception: " << e.what() << "\n";
+    BOOST_LOG_TRIVIAL(error) << "Exception: " << e.what() << "\n";
   }
 
   return 0;
