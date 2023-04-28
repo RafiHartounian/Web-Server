@@ -22,7 +22,7 @@ public:
   bool handle_write(const boost::system::error_code &error);
   session_interface *get_session(boost::asio::io_service &io_service);
   void write_to_socket(request_handler_interface* handler);
-  bool set_paths(std::vector<path> paths);
+  bool set_configured_paths(std::vector<path> paths);
   path get_endpoint();
 
 private:

@@ -13,6 +13,12 @@ session::session(boost::asio::io_service &io_service) : socket_(io_service) {}
 
 tcp::socket &session::socket() { return socket_; }
 
+bool session::set_configured_paths(std::vector<path> paths)
+{
+  paths_ = paths;
+  return true;
+}
+
 bool session::start()
 {
   boost::asio::async_read_until(

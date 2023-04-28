@@ -53,6 +53,55 @@ int NginxConfig::get_listen_port()
   return port;
 }
 
+std::vector<path> NginxConfig::getPaths()
+{
+  for (auto s : statements_)
+  {
+    if (s->tokens_[0] == "static" &&
+        s->child_block_.get() != nullptr)
+    {
+      for (auto child_statement : s->child_block_->statements_)
+      {
+        if (child_statement->tokens_[0] == "location" && 
+            child_statement->tokens_.size() >= 2 && 
+            child_statement->child_block_.get() != nullptr)
+        {
+          for (auto location_statement : child_statement->child_block_->statements_)
+          {
+            if (location_statement->tokens_[0] == "root" && 
+                location_statement->tokens_.size() >= 2 && 
+                child_statement->child_block_.get() != nullptr)         
+            {
+              path cur_path;
+              cur_path.type = static_;
+              cur_path.endpoint = child_statement->tokens_[1];
+              cur_path.root = location_statement->tokens_[1];
+              paths.push_back(cur_path);
+            }
+          }        
+        }
+      }
+    } else if (s->tokens_[0] == "echo" &&
+               s->child_block_.get() != nullptr)
+    {
+      for (auto child_statement : s->child_block_->statements_)
+      {
+        if (child_statement->tokens_[0] == "location" && 
+            child_statement->tokens_.size() >= 2)
+        {
+          path cur_path;
+          cur_path.type = echo;
+          cur_path.endpoint = child_statement->tokens_[1];
+          cur_path.root = "";
+          paths.push_back(cur_path);
+        }
+      }
+    }
+  }
+
+  return paths;
+}
+
 std::string NginxConfigStatement::ToString(int depth)
 {
   std::string serialized_statement;

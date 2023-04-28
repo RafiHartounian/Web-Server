@@ -35,7 +35,7 @@ message(STATUS "Boost version: ${Boost_VERSION}")
 include_directories(include)
 
 add_library(server_class src/server.cc)
-add_library(session_class src/session.cc)
+add_library(session_class src/session.cc src/request_parser.cc)
 add_library(config_parser src/config_parser.cc)
 add_library(request_parser src/request_parser.cc src/reply.cc)
 add_library(reply_class src/reply.cc)
