@@ -8,11 +8,11 @@
 #include "request.h"
 #include <string>
 
-class static_handler : public request_handler_interface
+class request_static_handler : public request_handler_interface
 {
   public:
-    static_handler();
-    static_handler(http::server::request request, std::string root);
+    request_static_handler();
+    request_static_handler(http::server::request request, std::string root);
     void set_request(http::server::request request, std::string root);
     http::server::reply get_reply();
 
