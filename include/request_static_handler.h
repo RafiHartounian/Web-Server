@@ -17,12 +17,12 @@ class static_handler : public request_handler_interface
     http::server::reply get_reply();
 
   private:
-    http::server::reply::status_type ec;
-    http::server::reply rep;
+    http::server::reply::status_type err_code;
+    http::server::reply reply;
     std::string uri;
     std::string method;
     std::string extension;
-    std::string root;
+    std::string root_;
 };
 
 #endif

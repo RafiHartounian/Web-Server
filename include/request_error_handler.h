@@ -14,7 +14,7 @@ class request_error_handler : public request_handler_interface
 
   private:
     http::server::reply::status_type err_code;
-    http::server::reply rep;
+    http::server::reply reply;
 
 };
 

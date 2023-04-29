@@ -11,15 +11,14 @@ class request_echo_handler : public request_handler_interface
 {
   public:
     request_echo_handler();
-    request_echo_handler(http::server::request request_, size_t bytes_transferred);
-
-    void set_request(http::server::request request_, size_t bytes_transferred);
+    request_echo_handler(http::server::request request, size_t bytes_transferred);
+    void set_request(http::server::request request, size_t bytes_transferred);
     http::server::reply get_reply();
 
   private:
     std::string request_body;
     size_t size;
-    http::server::reply rep;
+    http::server::reply reply;
 
 };
 

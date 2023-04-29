@@ -39,9 +39,13 @@ add_library(session_class src/session.cc src/request_parser.cc)
 add_library(config_parser src/config_parser.cc)
 add_library(request_parser src/request_parser.cc src/reply.cc)
 add_library(reply_class src/reply.cc)
+add_library(request_echo_handler src/request_echo_handler.cc)
+add_library(request_static_handler src/request_static_handler.cc)
+add_library(request_error_handler src/request_error_handler.cc)
+add_library(mime_types_class src/mime_types.cc)
 
 add_executable(server src/server_main.cc)
-target_link_libraries(server config_parser request_parser server_class session_class reply_class pthread Boost::system Boost::log_setup Boost::log)
+target_link_libraries(server mime_types_class request_echo_handler request_static_handler request_error_handler config_parser request_parser server_class session_class reply_class pthread Boost::system Boost::log_setup Boost::log)
 
 # Testing
 add_executable(config_parser_test tests/config_parser_test.cc)
@@ -65,4 +69,4 @@ gtest_discover_tests(server_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/t
 add_test(NAME integration_tests COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration_tests.sh WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 include(cmake/CodeCoverageReportConfig.cmake)
-generate_coverage_report(TARGETS server_class session_class config_parser request_parser reply_class TESTS session_test config_parser_test request_parser_test reply_test server_test)
+generate_coverage_report(TARGETS mime_types_class request_echo_handler request_static_handler request_error_handler server_class session_class config_parser request_parser reply_class TESTS session_test config_parser_test request_parser_test reply_test server_test)
