@@ -57,7 +57,7 @@ add_executable(request_echo_handler_test tests/request_echo_handler_test)
 add_executable(request_error_handler_test tests/request_error_handler_test)
 add_executable(request_static_handler_test tests/request_static_handler_test)
 
-target_link_libraries(config_parser_test config_parser gtest_main)
+target_link_libraries(config_parser_test config_parser gtest_main Boost::log_setup Boost::log)
 target_link_libraries(reply_test reply_class gtest_main Boost::system)
 target_link_libraries(request_parser_test request_parser gtest_main)
 target_link_libraries(session_test session_class reply_class gtest_main)
