@@ -6,9 +6,9 @@
 
 class request_handler_interface
 {
-  public:
-    virtual http::server::reply get_reply() = 0;
-    virtual ~request_handler_interface() {}
+public:
+  virtual http::server::reply get_reply() = 0;
+  virtual ~request_handler_interface() {}
 
 };
 

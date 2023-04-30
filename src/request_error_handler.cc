@@ -5,7 +5,7 @@ request_error_handler::request_error_handler()
   err_code = http::server::reply::status_type::ok;
 }
 
-request_error_handler::request_error_handler(http::server::reply::status_type ec) : err_code(ec)
+request_error_handler::request_error_handler(http::server::reply::status_type ec): err_code(ec)
 {
 
 }

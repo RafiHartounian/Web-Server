@@ -1,5 +1,5 @@
 // An nginx config file parser.
-#ifndef CONFIG_PARSER_H 
+#ifndef CONFIG_PARSER_H
 #define CONFIG_PARSER_H
 
 #include <iostream>
@@ -8,8 +8,13 @@
 #include <vector>
 
 class NginxConfig;
-enum endpoint_type { static_, echo, invalid };
-struct path 
+enum endpoint_type
+{
+  static_,
+  echo,
+  invalid
+};
+struct path
 {
   endpoint_type type = echo;
   std::string endpoint = "";
@@ -32,8 +37,9 @@ public:
   std::vector<std::shared_ptr<NginxConfigStatement>> statements_;
   int get_listen_port();
   std::vector<path> getPaths();
+
 private:
-    std::vector<path> paths;
+  std::vector<path> paths;
 };
 
 // The driver that parses a config file and generates an NginxConfig.
@@ -45,8 +51,8 @@ public:
   // Take a opened config file or file name (respectively) and store the
   // parsed config in the provided NginxConfig out-param.  Returns true
   // iff the input config file is valid.
-  bool Parse(std::istream *config_file, NginxConfig *config);
-  bool Parse(const char *file_name, NginxConfig *config);
+  bool Parse(std::istream* config_file, NginxConfig* config);
+  bool Parse(const char* file_name, NginxConfig* config);
 
 private:
   enum TokenType
@@ -60,7 +66,7 @@ private:
     TOKEN_TYPE_EOF = 6,
     TOKEN_TYPE_ERROR = 7
   };
-  const char *TokenTypeAsString(TokenType type);
+  const char* TokenTypeAsString(TokenType type);
 
   enum TokenParserState
   {
@@ -73,7 +79,7 @@ private:
     TOKEN_STATE_ESCAPE_DOUBLE_QUOTE = 6
   };
 
-  TokenType ParseToken(std::istream *input, std::string *value);
+  TokenType ParseToken(std::istream* input, std::string* value);
 };
 
 #endif

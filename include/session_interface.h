@@ -15,10 +15,10 @@ using boost::asio::ip::tcp;
 class session_interface
 {
 public:
-  virtual tcp::socket &socket() = 0;
+  virtual tcp::socket& socket() = 0;
   virtual bool start() = 0;
-  virtual session_interface *
-  get_session(boost::asio::io_service &io_service) = 0;
+  virtual session_interface*
+    get_session(boost::asio::io_service& io_service) = 0;
   virtual bool set_configured_paths(std::vector<path> paths) = 0;
 };
 

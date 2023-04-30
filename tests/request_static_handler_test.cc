@@ -2,17 +2,17 @@
 #include "request_static_handler.h"
 #include "boost/filesystem.hpp"
 
-class StaticHandlerFixture : public :: testing::Test
+class StaticHandlerFixture: public ::testing::Test
 {
-  protected:
-    request_static_handler handler;
-    std::string root = "static_files";
+protected:
+  request_static_handler handler;
+  std::string root = "static_files";
 };
 
 TEST_F(StaticHandlerFixture, NormalHTMLFileResponseTest)
 {
   std::string file = "/example.html";
-  http::server::request request;  
+  http::server::request request;
   request.uri = file;
   http::server::reply reply;
   handler.set_request(request, root);
@@ -29,13 +29,13 @@ TEST_F(StaticHandlerFixture, NormalHTMLFileResponseTest)
   }
   file_.close();
 
-  bool success = 
-        reply.status == http::server::reply::ok &&
-        reply.content == expected &&
-        reply.headers[0].name == "Content-Length" &&
-        reply.headers[0].value == std::to_string(reply.content.size()) && 
-        reply.headers[1].name == "Content-Type" &&
-        reply.headers[1].value == "text/html";
+  bool success =
+    reply.status == http::server::reply::ok &&
+    reply.content == expected &&
+    reply.headers[0].name == "Content-Length" &&
+    reply.headers[0].value == std::to_string(reply.content.size()) &&
+    reply.headers[1].name == "Content-Type" &&
+    reply.headers[1].value == "text/html";
 
   EXPECT_TRUE(success);
 }
@@ -43,7 +43,7 @@ TEST_F(StaticHandlerFixture, NormalHTMLFileResponseTest)
 TEST_F(StaticHandlerFixture, NormalTxtFileResponseTest)
 {
   std::string file = "/example.txt";
-  http::server::request request;  
+  http::server::request request;
   request.uri = file;
   http::server::reply reply;
   handler.set_request(request, root);
@@ -60,13 +60,13 @@ TEST_F(StaticHandlerFixture, NormalTxtFileResponseTest)
   }
   file_.close();
 
-  bool success = 
-        reply.status == http::server::reply::ok &&
-        reply.content == expected &&
-        reply.headers[0].name == "Content-Length" &&
-        reply.headers[0].value == std::to_string(reply.content.size()) && 
-        reply.headers[1].name == "Content-Type" &&
-        reply.headers[1].value == "text/plain";
+  bool success =
+    reply.status == http::server::reply::ok &&
+    reply.content == expected &&
+    reply.headers[0].name == "Content-Length" &&
+    reply.headers[0].value == std::to_string(reply.content.size()) &&
+    reply.headers[1].name == "Content-Type" &&
+    reply.headers[1].value == "text/plain";
 
   EXPECT_TRUE(success);
 }
@@ -74,7 +74,7 @@ TEST_F(StaticHandlerFixture, NormalTxtFileResponseTest)
 TEST_F(StaticHandlerFixture, BadFileResponseTest)
 {
   std::string file = "/non_existant.html";
-  http::server::request request;  
+  http::server::request request;
   request.uri = file;
   http::server::reply reply;
   handler.set_request(request, root);

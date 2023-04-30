@@ -8,21 +8,21 @@
 #include "request.h"
 #include <string>
 
-class request_static_handler : public request_handler_interface
+class request_static_handler: public request_handler_interface
 {
-  public:
-    request_static_handler();
-    request_static_handler(http::server::request request, std::string root);
-    void set_request(http::server::request request, std::string root);
-    http::server::reply get_reply();
+public:
+  request_static_handler();
+  request_static_handler(http::server::request request, std::string root);
+  void set_request(http::server::request request, std::string root);
+  http::server::reply get_reply();
 
-  private:
-    http::server::reply::status_type err_code;
-    http::server::reply reply;
-    std::string uri;
-    std::string method;
-    std::string extension;
-    std::string root_;
+private:
+  http::server::reply::status_type err_code;
+  http::server::reply reply;
+  std::string uri;
+  std::string method;
+  std::string extension;
+  std::string root_;
 };
 
 #endif

@@ -1,7 +1,7 @@
 #include "config_parser.h"
 #include "gtest/gtest.h"
 
-class NginxConfigParserTest : public ::testing::Test
+class NginxConfigParserTest: public ::testing::Test
 {
 protected:
   void SetUp() override { return; }

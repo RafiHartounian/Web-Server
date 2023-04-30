@@ -9,9 +9,9 @@
 
 using boost::asio::ip::tcp;
 
-session::session(boost::asio::io_service &io_service) : socket_(io_service) {}
+session::session(boost::asio::io_service& io_service): socket_(io_service) {}
 
-tcp::socket &session::socket() { return socket_; }
+tcp::socket& session::socket() { return socket_; }
 
 bool session::set_configured_paths(std::vector<path> paths)
 {
@@ -24,11 +24,11 @@ bool session::start()
   boost::asio::async_read_until(
       socket_, req_buf_, "\r\n\r\n",
       boost::bind(&session::handle_read, this, boost::asio::placeholders::error,
-                  boost::asio::placeholders::bytes_transferred));
+        boost::asio::placeholders::bytes_transferred));
   return true;
 }
 
-std::string session::handle_read(const boost::system::error_code &error,
+std::string session::handle_read(const boost::system::error_code& error,
                                  size_t bytes_transferred)
 {
   std::string req = "";
@@ -57,7 +57,7 @@ std::string session::handle_read(const boost::system::error_code &error,
                              //  res.to_buffers(req_build, bytes_transferred),
                              res.to_buffers(),
                              boost::bind(&session::handle_write, this,
-                                         boost::asio::placeholders::error));
+                               boost::asio::placeholders::error));
     req_build.clear();
   }
   else
@@ -68,7 +68,7 @@ std::string session::handle_read(const boost::system::error_code &error,
   return req;
 }
 
-bool session::handle_write(const boost::system::error_code &error)
+bool session::handle_write(const boost::system::error_code& error)
 {
   if (!error)
   {
@@ -88,7 +88,7 @@ bool session::handle_write(const boost::system::error_code &error)
   }
 }
 
-session_interface *session::get_session(boost::asio::io_service &io_service)
+session_interface* session::get_session(boost::asio::io_service& io_service)
 {
   return new session(io_service);
 }

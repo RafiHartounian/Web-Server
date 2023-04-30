@@ -3,7 +3,7 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
-class ServerTest : public ::testing::Test
+class ServerTest: public ::testing::Test
 {
 protected:
   mock_session mock_sesh;
@@ -41,11 +41,11 @@ TEST_F(ServerTest, ServerAccept)
 
   // Ensure test session mock is only returned once
   EXPECT_CALL(mock_sesh, get_session)
-      .WillOnce(testing::Return(&test_mock))
-      .WillRepeatedly(testing::Return((session_interface *)NULL));
+    .WillOnce(testing::Return(&test_mock))
+    .WillRepeatedly(testing::Return((session_interface*)NULL));
 
   server serv(mock_sesh, io_service, port);
 
   EXPECT_TRUE(serv.handle_accept(mock_sesh.get_session(io_service),
-                                 boost::system::error_code()));
+    boost::system::error_code()));
 }

@@ -10,7 +10,7 @@ request_echo_handler::request_echo_handler()
   size = 0;
 }
 
-request_echo_handler::request_echo_handler(http::server::request request, size_t byte_transferred) 
+request_echo_handler::request_echo_handler(http::server::request request, size_t byte_transferred)
   : request_body(request.original_req), size(byte_transferred)
 {
 

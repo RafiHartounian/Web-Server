@@ -10,17 +10,17 @@
 
 using boost::asio::ip::tcp;
 
-class session : public session_interface
+class session: public session_interface
 {
 public:
-  session(boost::asio::io_service &io_service);
-  tcp::socket &socket();
+  session(boost::asio::io_service& io_service);
+  tcp::socket& socket();
   boost::asio::streambuf req_buf_;
   bool start();
-  std::string handle_read(const boost::system::error_code &error,
+  std::string handle_read(const boost::system::error_code& error,
                           size_t bytes_transferred);
-  bool handle_write(const boost::system::error_code &error);
-  session_interface *get_session(boost::asio::io_service &io_service);
+  bool handle_write(const boost::system::error_code& error);
+  session_interface* get_session(boost::asio::io_service& io_service);
   void write_to_socket(request_handler_interface* handler);
   bool set_configured_paths(std::vector<path> paths);
   path get_endpoint();

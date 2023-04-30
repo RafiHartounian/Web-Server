@@ -61,7 +61,7 @@ void log_init()
   logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::info);
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   // Initialize the logging
   signal(SIGINT, signal_logger);
@@ -93,14 +93,14 @@ int main(int argc, char *argv[])
 
     int max_port = 65535;
     int port = config.get_listen_port();
-    if(port < 0 || port > max_port)
+    if (port < 0 || port > max_port)
     {
       BOOST_LOG_TRIVIAL(fatal) << "Invalid Port number of " << std::to_string(port) << " provided.";
       return -1;
     }
 
     BOOST_LOG_TRIVIAL(info) << "Listening on port "
-                            << std::to_string(port);
+      << std::to_string(port);
 
     boost::asio::io_service io_service;
 
@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
 
     io_service.run();
   }
-  catch (std::exception &e)
+  catch (std::exception& e)
   {
     BOOST_LOG_TRIVIAL(error) << "Exception: " << e.what();
   }
