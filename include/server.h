@@ -1,6 +1,8 @@
 #pragma once
 
-#include "session.h"
+#include <boost/bind.hpp>
+#include <boost/asio.hpp>
+
 #include "session_interface.h"
 
 using boost::asio::ip::tcp;
@@ -12,7 +14,7 @@ public:
   bool start_accept();
   bool handle_accept(session_interface* new_session,
                      const boost::system::error_code& error);
-  bool set_paths(std::vector<path> paths);
+  bool set_configured_paths(std::vector<path> paths);
 
 private:
   boost::asio::io_service& io_service_;

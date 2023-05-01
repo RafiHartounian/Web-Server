@@ -4,7 +4,8 @@
 #include <iostream>
 
 #include "server.h"
-#include "session.h"
+
+
 
 using boost::asio::ip::tcp;
 
@@ -13,6 +14,12 @@ server::server(session_interface& new_s, boost::asio::io_service& io_service,
   : io_service_(io_service), session_(new_s),
   acceptor_(io_service, tcp::endpoint(tcp::v4(), port)) {}
 
+bool server::set_configured_paths(std::vector<path> paths)
+{
+  paths_ = paths;
+  return true;
+}
+
 bool server::start_accept()
 {
   session_interface* new_session = session_.get_session(io_service_);
@@ -20,6 +27,7 @@ bool server::start_accept()
   {
     return false;
   }
+  new_session->set_configured_paths(paths_);
   acceptor_.async_accept(new_session->socket(),
                          boost::bind(&server::handle_accept, this, new_session,
                            boost::asio::placeholders::error));

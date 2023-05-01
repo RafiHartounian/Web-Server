@@ -11,19 +11,15 @@
 #ifndef HTTP_REQUEST_PARSER_HPP
 #define HTTP_REQUEST_PARSER_HPP
 
-#include <boost/logic/tribool.hpp>
 #include <boost/tuple/tuple.hpp>
 
-namespace http
-{
-  namespace server
-  {
+namespace http {
+  namespace server {
 
     struct request;
 
     /// Parser for incoming requests.
-    class request_parser
-    {
+    class request_parser {
     public:
       /// Construct ready to parse the request method.
       request_parser();
@@ -31,27 +27,27 @@ namespace http
       /// Reset to initial parser state.
       void reset();
 
-      /// Parse some data. The tribool return value is true when a complete request
+      enum parse_result { good, bad, indeterminate };
+
+      /// Parse some data. The tribool parse_result return value is true when a complete request
       /// has been parsed, false if the data is invalid, indeterminate when more
       /// data is required. The InputIterator return value indicates how much of the
       /// input has been consumed.
       template <typename InputIterator>
-      boost::tuple<boost::tribool, InputIterator>
-        parse(request& req, InputIterator begin, InputIterator end)
-      {
-        while (begin != end)
-        {
-          boost::tribool result = consume(req, *begin++);
-          if (result || !result)
+      boost::tuple<parse_result, InputIterator>
+        parse(request& req, InputIterator begin, InputIterator end) {
+        while (begin != end) {
+          parse_result result = consume(req, *begin++);
+          if (result != parse_result::indeterminate)
             return boost::make_tuple(result, begin);
         }
-        boost::tribool result = boost::indeterminate;
+        parse_result result = parse_result::indeterminate;
         return boost::make_tuple(result, begin);
       }
 
     private:
       /// Handle the next character of input.
-      boost::tribool consume(request& req, char input);
+      parse_result consume(request& req, char input);
 
       /// Check if a byte is an HTTP character.
       static bool is_char(int c);
@@ -66,8 +62,7 @@ namespace http
       static bool is_digit(int c);
 
       /// The current state of the parser.
-      enum state
-      {
+      enum state {
         method_start,
         method,
         uri,

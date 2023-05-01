@@ -16,7 +16,7 @@ TEST_F(SessionFixture, SessionStart)
 TEST_F(SessionFixture, RequestBuilt)
 {
   session s(io_service);
-  std::ostream os(&s.req_buf_);
+  std::ostream os(&s.buf);
   std::string example = "example\r\n\r\n";
   os << example;
   std::string result =
@@ -27,7 +27,7 @@ TEST_F(SessionFixture, RequestBuilt)
 TEST_F(SessionFixture, SocketShutdown)
 {
   session s(io_service);
-  std::ostream os(&s.req_buf_);
+  std::ostream os(&s.buf);
   std::string example = "example\r\n\r\n";
   os << example;
   std::string result =

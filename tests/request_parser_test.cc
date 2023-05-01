@@ -7,7 +7,9 @@ class RequestParserTest: public ::testing::Test
 protected:
   http::server::request_parser parser;
   http::server::request request_;
-  boost::logic::tribool result;
+  http::server::request_parser::parse_result result;
+  http::server::request_parser::parse_result bad_result = http::server::request_parser::parse_result::bad;
+  http::server::request_parser::parse_result good_result = http::server::request_parser::parse_result::good;
 };
 
 TEST_F(RequestParserTest, GoodRequest)
@@ -16,7 +18,7 @@ TEST_F(RequestParserTest, GoodRequest)
     "GET / HTTP/1.1\r\nHost: www.wesbite.com\r\nConnection: close\r\n\r\n";
   boost::tie(result, boost::tuples::ignore) =
     parser.parse(request_, input, input + strlen(input));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(result, good_result);
 }
 
 TEST_F(RequestParserTest, SlashMissingRequest)
@@ -26,7 +28,7 @@ TEST_F(RequestParserTest, SlashMissingRequest)
     "GET HTTP/1.1\r\nHost: www.website.com\r\nConnection: close\r\n\r\n";
   boost::tie(result, boost::tuples::ignore) =
     parser.parse(request_, input, input + strlen(input));
-  EXPECT_FALSE(result);
+  EXPECT_EQ(result, bad_result);
 }
 
 TEST_F(RequestParserTest, WrongProtocalRequest1)
@@ -36,7 +38,7 @@ TEST_F(RequestParserTest, WrongProtocalRequest1)
     "GET / ATTP/1.1\r\nHost: www.website.com\r\nConnection: close\r\n\r\n";
   boost::tie(result, boost::tuples::ignore) =
     parser.parse(request_, input, input + strlen(input));
-  EXPECT_FALSE(result);
+  EXPECT_EQ(result, bad_result);
 }
 
 TEST_F(RequestParserTest, WrongProtocalRequest2)
@@ -46,7 +48,7 @@ TEST_F(RequestParserTest, WrongProtocalRequest2)
     "GET / HATP/1.1\r\nHost: www.website.com\r\nConnection: close\r\n\r\n";
   boost::tie(result, boost::tuples::ignore) =
     parser.parse(request_, input, input + strlen(input));
-  EXPECT_FALSE(result);
+  EXPECT_EQ(result, bad_result);
 }
 
 TEST_F(RequestParserTest, WrongProtocalRequest3)
@@ -56,7 +58,7 @@ TEST_F(RequestParserTest, WrongProtocalRequest3)
     "GET / HTAP/1.1\r\nHost: www.website.com\r\nConnection: close\r\n\r\n";
   boost::tie(result, boost::tuples::ignore) =
     parser.parse(request_, input, input + strlen(input));
-  EXPECT_FALSE(result);
+  EXPECT_EQ(result, bad_result);
 }
 
 TEST_F(RequestParserTest, WrongProtocalRequest4)
@@ -66,7 +68,7 @@ TEST_F(RequestParserTest, WrongProtocalRequest4)
     "GET / HTTA/1.1\r\nHost: www.website.com\r\nConnection: close\r\n\r\n";
   boost::tie(result, boost::tuples::ignore) =
     parser.parse(request_, input, input + strlen(input));
-  EXPECT_FALSE(result);
+  EXPECT_EQ(result, bad_result);
 }
 
 TEST_F(RequestParserTest, BadVersionMinorRequest)
@@ -76,7 +78,7 @@ TEST_F(RequestParserTest, BadVersionMinorRequest)
     "GET / HTTP/1.a\r\nHost: www.website.com\r\nConnection: close\r\n\r\n";
   boost::tie(result, boost::tuples::ignore) =
     parser.parse(request_, input, input + strlen(input));
-  EXPECT_FALSE(result);
+  EXPECT_EQ(result, bad_result);
 }
 
 TEST_F(RequestParserTest, BadVersionMinorRequest2)
@@ -86,7 +88,7 @@ TEST_F(RequestParserTest, BadVersionMinorRequest2)
     "GET / HTTP/1.1a\r\nHost: www.website.com\r\nConnection: close\r\n\r\n";
   boost::tie(result, boost::tuples::ignore) =
     parser.parse(request_, input, input + strlen(input));
-  EXPECT_FALSE(result);
+  EXPECT_EQ(result, bad_result);
 }
 
 TEST_F(RequestParserTest, BadVersionMajorRequest)
@@ -96,7 +98,7 @@ TEST_F(RequestParserTest, BadVersionMajorRequest)
     "GET / HTTP/a.1\r\nHost: www.website.com\r\nConnection: close\r\n\r\n";
   boost::tie(result, boost::tuples::ignore) =
     parser.parse(request_, input, input + strlen(input));
-  EXPECT_FALSE(result);
+  EXPECT_EQ(result, bad_result);
 }
 
 TEST_F(RequestParserTest, BadVersionMajorRequest2)
@@ -106,7 +108,7 @@ TEST_F(RequestParserTest, BadVersionMajorRequest2)
     "GET / HTTP/1a.1\r\nHost: www.website.com\r\nConnection: close\r\n\r\n";
   boost::tie(result, boost::tuples::ignore) =
     parser.parse(request_, input, input + strlen(input));
-  EXPECT_FALSE(result);
+  EXPECT_EQ(result, bad_result);
 }
 
 TEST_F(RequestParserTest, WrongEndingAfterVersionRequest)
@@ -116,7 +118,7 @@ TEST_F(RequestParserTest, WrongEndingAfterVersionRequest)
     "GET / HTTP/1.1\r Host: www.website.com\r\nConnection: close\r\n\r\n";
   boost::tie(result, boost::tuples::ignore) =
     parser.parse(request_, input, input + strlen(input));
-  EXPECT_FALSE(result);
+  EXPECT_EQ(result, bad_result);
 }
 
 TEST_F(RequestParserTest, WrongEndingRequest)
@@ -126,7 +128,7 @@ TEST_F(RequestParserTest, WrongEndingRequest)
     "GET / HTTP/1.1\r\nHost: www.website.com\r\nConnection: close\r\n\rend";
   boost::tie(result, boost::tuples::ignore) =
     parser.parse(request_, input, input + strlen(input));
-  EXPECT_FALSE(result);
+  EXPECT_EQ(result, bad_result);
 }
 
 TEST_F(RequestParserTest, InvalidSpacesRequest)
@@ -136,7 +138,7 @@ TEST_F(RequestParserTest, InvalidSpacesRequest)
     "Type: test\r\n Connection: close\r\n\r\n";
   boost::tie(result, boost::tuples::ignore) =
     parser.parse(request_, input, input + strlen(input));
-  EXPECT_FALSE(result);
+  EXPECT_EQ(result, bad_result);
 }
 
 TEST_F(RequestParserTest, InvalidHeaderRequest)
@@ -146,7 +148,7 @@ TEST_F(RequestParserTest, InvalidHeaderRequest)
     "GET / HTTP/1.1\r\nHost:www.website.com\r\nConnection: close\r\n\r\n";
   boost::tie(result, boost::tuples::ignore) =
     parser.parse(request_, input, input + strlen(input));
-  EXPECT_FALSE(result);
+  EXPECT_EQ(result, bad_result);
 }
 
 TEST_F(RequestParserTest, InvalidHeaderRequest2)
@@ -156,7 +158,7 @@ TEST_F(RequestParserTest, InvalidHeaderRequest2)
     "GET / HTTP/1.1\r\nHost www.website.com\r\nConnection: close\r\n\r\n";
   boost::tie(result, boost::tuples::ignore) =
     parser.parse(request_, input, input + strlen(input));
-  EXPECT_FALSE(result);
+  EXPECT_EQ(result, bad_result);
 }
 
 TEST_F(RequestParserTest, ValidSpecialCharRequest)
@@ -166,7 +168,7 @@ TEST_F(RequestParserTest, ValidSpecialCharRequest)
     "test()@#$%^&*!\r\n Connection: close\r\n\r\n";
   boost::tie(result, boost::tuples::ignore) =
     parser.parse(request_, input, input + strlen(input));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(result, good_result);
 }
 
 TEST_F(RequestParserTest, InvalidSpecialCharRequest)
@@ -176,7 +178,7 @@ TEST_F(RequestParserTest, InvalidSpecialCharRequest)
     "test\\r\n Connection: close\r\n\r\n";
   boost::tie(result, boost::tuples::ignore) =
     parser.parse(request_, input, input + strlen(input));
-  EXPECT_FALSE(result);
+  EXPECT_EQ(result, bad_result);
 }
 
 TEST_F(RequestParserTest, IncompleteRequest)

@@ -36,7 +36,7 @@ public:
   std::string ToString(int depth = 0);
   std::vector<std::shared_ptr<NginxConfigStatement>> statements_;
   int get_listen_port();
-  std::vector<path> getPaths();
+  std::vector<path> get_paths();
 
 private:
   std::vector<path> paths;

@@ -46,6 +46,8 @@ add_library(mime_types_class src/mime_types.cc)
 
 add_executable(server src/server_main.cc)
 target_link_libraries(server mime_types_class request_echo_handler request_static_handler request_error_handler config_parser request_parser server_class session_class reply_class pthread Boost::system Boost::log_setup Boost::log)
+target_link_libraries(session_class mime_types_class request_echo_handler request_static_handler request_error_handler request_parser reply_class pthread Boost::system)
+target_link_libraries(request_static_handler mime_types_class Boost::filesystem)
 
 # Testing
 add_executable(config_parser_test tests/config_parser_test.cc)

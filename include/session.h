@@ -17,7 +17,7 @@ class session: public session_interface
 public:
   session(boost::asio::io_service& io_service);
   tcp::socket& socket();
-  boost::asio::streambuf req_buf_;
+  boost::asio::streambuf buf;
   bool start();
   std::string handle_read(const boost::system::error_code& error,
                           size_t bytes_transferred);
@@ -37,8 +37,8 @@ private:
     max_length = 1024
   };
   char data_[max_length];
-  boost::asio::ip::address client_ip_;
-  http::server::request_parser request_parser_;
+  boost::asio::ip::address dest_ip;
+  http::server::request_parser req_parser;
   http::server::request request_;
   std::vector<path> paths_;
 };

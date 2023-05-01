@@ -1,0 +1,17 @@
+server {
+    listen 8080;
+
+    static {
+        location /static1 {
+            root ../static_files/static1;
+        }
+    }
+
+    echo {
+        location /echo {
+        }
+        
+        location /echo2 {
+        }
+    }
+}

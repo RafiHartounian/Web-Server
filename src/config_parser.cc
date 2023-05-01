@@ -49,7 +49,7 @@ int NginxConfig::get_listen_port() {
   return port;
 }
 
-std::vector<path> NginxConfig::getPaths() {
+std::vector<path> NginxConfig::get_paths() {
   for (auto s : statements_) {
     if (s->tokens_[0] == "static" && s->child_block_.get() != nullptr) {
       for (auto child_statement : s->child_block_->statements_) {
@@ -84,7 +84,7 @@ std::vector<path> NginxConfig::getPaths() {
       }
     }
     else if (s->child_block_.get() != nullptr) {
-      for (auto path : s->child_block_->getPaths()) {
+      for (auto path : s->child_block_->get_paths()) {
         paths.push_back(path);
       }
     }

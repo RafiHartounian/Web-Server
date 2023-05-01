@@ -93,11 +93,6 @@ int main(int argc, char* argv[])
 
     int max_port = 65535;
     int port = config.get_listen_port();
-    if (port < 0 || port > max_port)
-    {
-      BOOST_LOG_TRIVIAL(fatal) << "Invalid Port number of " << std::to_string(port) << " provided.";
-      return -1;
-    }
 
     BOOST_LOG_TRIVIAL(info) << "Listening on port "
       << std::to_string(port);
@@ -107,6 +102,7 @@ int main(int argc, char* argv[])
     session s(io_service);
 
     server serv(s, io_service, config.get_listen_port());
+    serv.set_configured_paths(config.get_paths());
     serv.start_accept();
 
     BOOST_LOG_TRIVIAL(info) << "Now accepting connections";

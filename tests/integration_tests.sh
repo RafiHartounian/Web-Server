@@ -14,7 +14,7 @@ SERVER_PORT=8080
 
 # test valid request
 VALID_REQ_SUCCESS=0
-timeout $TIMEOUT curl -s -i -H "Host:" -H "User-Agent:" $SERVER_IP:$SERVER_PORT > integ_test_valid_req_out
+timeout $TIMEOUT curl -s -i -H "Host:" -H "User-Agent:" $SERVER_IP:$SERVER_PORT/echo > integ_test_valid_req_out
 diff integ_test_valid_req_out integ_test_valid_req_expected
 
 MATCHES=$?
@@ -28,7 +28,39 @@ else
 fi
 
 rm integ_test_valid_req_out
+#no headers
+VALID_REQ_SUCCESS1=0
+timeout $TIMEOUT curl -s -i -H "Host:" -H "User-Agent:" $SERVER_IP:$SERVER_PORT > integ_test_res_out
+diff integ_test_res_out integ_test_res_expected
 
+MATCHES=$?
+echo $MATCHES
+if [ $MATCHES -eq 1 ];
+then
+  echo "Test Valid Request Failed"
+else 
+  VALID_REQ_SUCCESS1=1
+  echo "Test Valid Request Succeeded"
+fi
+
+rm integ_test_res_out
+
+#static
+VALID_REQ_SUCCESS2=0
+timeout $TIMEOUT curl -s -i -H "Host:" -H "User-Agent:" $SERVER_IP:$SERVER_PORT/static1/example.txt > integ_test_static_res_out
+diff integ_test_static_res_out integ_test_static_res_expected
+
+MATCHES=$?
+echo $MATCHES
+if [ $MATCHES -eq 1 ];
+then
+  echo "Test Valid Request Failed"
+else 
+  VALID_REQ_SUCCESS2=1
+  echo "Test Valid Request Succeeded"
+fi
+
+rm integ_test_static_res_out
 
 # test invalid request
 INVALID_REQ_SUCCESS=0
