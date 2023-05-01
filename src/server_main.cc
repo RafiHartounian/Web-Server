@@ -72,8 +72,8 @@ int main(int argc, char* argv[])
   {
     if (argc != 2)
     {
-      // no config file was given
-      BOOST_LOG_TRIVIAL(fatal) << "Usage: async_tcp_echo_server <port>";
+      // no config file was given/too many arguments
+      BOOST_LOG_TRIVIAL(fatal) << "Usage: server <path_to_config>";
       return -1;
     }
 

@@ -4,6 +4,8 @@
 #include "request_handler_interface.h"
 #include "request_parser.h"
 #include "request.h"
+
+#include <boost/asio/ip/address.hpp>
 #include <boost/bind.hpp>
 #include <cstdlib>
 #include <iostream>
@@ -26,13 +28,16 @@ public:
   path get_endpoint();
 
 private:
+  void log_info(std::string func_name, std::string message);
+  void log_error(std::string func_name, std::string message);
+
   tcp::socket socket_;
   enum
   {
     max_length = 1024
   };
   char data_[max_length];
-  std::string client_ip_;
+  boost::asio::ip::address client_ip_;
   http::server::request_parser request_parser_;
   http::server::request request_;
   std::vector<path> paths_;
