@@ -21,7 +21,7 @@ COPY --from=builder /usr/src/project/build/bin/server .
 COPY --from=builder /usr/src/project/configs/main_config .
 COPY --from=builder /usr/src/project/static_files .
 # Expose some port(s)
-EXPOSE 80
+EXPOSE 8080
 
 # Use ENTRYPOINT to specify the binary name
 #  Update with real server name
