@@ -18,7 +18,8 @@ FROM ubuntu:focal as deploy
 
 # Copy server output binary to "."
 COPY --from=builder /usr/src/project/build/bin/server .
-COPY --from=builder /usr/src/project/configs/port_config .
+COPY --from=builder /usr/src/project/configs/test_config .
+COPY --from=builder /usr/src/project/static_files .
 # Expose some port(s)
 EXPOSE 80
 
