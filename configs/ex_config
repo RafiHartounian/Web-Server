@@ -5,7 +5,15 @@ server {
         location /static1 {
             root ../static_files/static1;
         }
+        location /static2 {
+            root ../static_files/static2;
+        }
+        location /static3 {
+            root ../static_files/static3;
+        }
     }
+
+
 
     echo {
         location /echo {
