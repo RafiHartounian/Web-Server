@@ -15,7 +15,7 @@
 
 using boost::asio::ip::tcp;
 
-session::session(boost::asio::io_service& io_service): socket_(io_service) {}
+session::session(boost::asio::io_service& io_service) : socket_(io_service) {}
 
 tcp::socket& session::socket() { return socket_; }
 
@@ -27,8 +27,9 @@ bool session::set_configured_paths(std::vector<path> paths) {
 bool session::start() {
   boost::system::error_code error_code;
   auto remote_ep = socket_.remote_endpoint(error_code);
-  dest_ip = error_code ? boost::asio::ip::address::from_string("127.0.0.1")
-    : remote_ep.address(); // local host address
+  dest_ip = error_code ? boost::asio::ip::address::from_string("127.0.0.1") : remote_ep.address(); // local host address
+  log_info("start", "Accepting incoming requests.");
+
   boost::asio::async_read_until(
       socket_, buf, "\r\n\r\n",
       boost::bind(&session::handle_read, this, boost::asio::placeholders::error,
@@ -36,17 +37,17 @@ bool session::start() {
   return true;
 }
 
-std::string session::handle_read(const boost::system::error_code& error,
-                                 size_t bytes_transferred) {
-  std::string req = "";
+std::string session::handle_read(const boost::system::error_code& error, size_t bytes_transferred) {
   http::server::request_parser::parse_result bad_res = http::server::request_parser::parse_result::bad;
   http::server::request_parser::parse_result good_res = http::server::request_parser::parse_result::good;
   http::server::request_parser::parse_result indeterminate_res = http::server::request_parser::parse_result::indeterminate;
   if (!error) {
+    log_info("handle_read", "request parser valid");
     http::server::request_parser::parse_result res;
     // keep an eye on this, maybe need to be in the while statement
     std::istreambuf_iterator<char> st{&buf}, end;
     boost::tie(res, std::ignore) = req_parser.parse(request_, st, end);
+
     while (res == indeterminate_res) {
       std::istreambuf_iterator<char> st{&buf}, end;
       boost::tie(res, std::ignore) = req_parser.parse(request_, st, end);
@@ -54,7 +55,7 @@ std::string session::handle_read(const boost::system::error_code& error,
 
     request_handler_interface* req_handler_int;
     if (res == good_res) {
-      // LOG info about good request
+      BOOST_LOG_TRIVIAL(info) << "valid request received";
       path req_ep = get_endpoint();
       if (req_ep.type == endpoint_type::echo) {
         req_handler_int = new request_echo_handler(request_, bytes_transferred);
@@ -68,14 +69,14 @@ std::string session::handle_read(const boost::system::error_code& error,
       }
     }
     else if (res == bad_res) {
-   // lOG info about bad request
+      BOOST_LOG_TRIVIAL(info) << "received bad request";
       req_handler_int = new request_error_handler(
           http::server::reply::status_type::bad_request);
     }
-    else if (res == indeterminate_res) {
-    }
     else {
-   // DO SOME ERROR HERE IF POSSIBLE or default to 404
+      // Should never get here
+      BOOST_LOG_TRIVIAL(fatal) << "response in indeterminant state";
+      exit(1);
     }
     write_to_socket(req_handler_int);
   }
@@ -114,7 +115,7 @@ void session::write_to_socket(request_handler_interface* req_h) {
     handle_write(boost::system::error_code());
   }
   else {
-    // log error
+    BOOST_LOG_TRIVIAL(error) << "Unable to write to socket. Error code: " << boost::system::system_error(ec).what();
     return;
   }
 }
@@ -138,11 +139,9 @@ session_interface* session::get_session(boost::asio::io_service& io_service) {
 }
 
 void session::log_info(std::string func_name, std::string message) {
-  BOOST_LOG_TRIVIAL(info) << "Client IP: " << dest_ip.to_string()
-    << "\tsession::" << func_name << ":" << message;
+  BOOST_LOG_TRIVIAL(info) << "Client IP: " << dest_ip.to_string() << "\tRequest url: " << request_.uri  << "\tsession::" << func_name << ":\t" << message;
 }
 
 void session::log_error(std::string func_name, std::string message) {
-  BOOST_LOG_TRIVIAL(error) << "Client IP: " << dest_ip.to_string()
-    << "\tsession::" << func_name << ":" << message;
+  BOOST_LOG_TRIVIAL(error) << "Client IP: " << dest_ip.to_string() << "\tRequest url: " << request_.uri  << "\tsession::" << func_name << ":\t" << message;
 }

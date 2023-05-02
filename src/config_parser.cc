@@ -89,11 +89,10 @@ std::vector<path> NginxConfig::get_paths() {
       }
     }
   }
-  printf("\n\nTHESE ARE THE PATHS\n");
   for (auto p : paths) {
-    printf("\n\npath endpoint_type %d\n", p.type);
-    printf("path endpoint: %s\n", p.endpoint.c_str());
-    printf("path root: %s\n", p.root.c_str());
+    BOOST_LOG_TRIVIAL(info) << "path endpoint_type " << p.type;
+    BOOST_LOG_TRIVIAL(info) << "path endpoint: " << p.endpoint;
+    BOOST_LOG_TRIVIAL(info) << "path root: " << p.root;
   }
 
   return paths;
