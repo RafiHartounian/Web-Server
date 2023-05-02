@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SERVER_PATH=../build/bin/server
-CONFIG_PATH=../configs/port_config
+CONFIG_PATH=../configs/test_config
 
 # start server in the background
 $SERVER_PATH $CONFIG_PATH &
@@ -28,39 +28,59 @@ else
 fi
 
 rm integ_test_valid_req_out
-#no headers
-VALID_REQ_SUCCESS1=0
-timeout $TIMEOUT curl -s -i -H "Host:" -H "User-Agent:" $SERVER_IP:$SERVER_PORT > integ_test_res_out
-diff integ_test_res_out integ_test_res_expected
+
+# #static
+VALID_STATIC_SUCCESS=0
+timeout $TIMEOUT curl -s -i -H "Host:" -H "User-Agent:" $SERVER_IP:$SERVER_PORT/static1/example.html > integ_test_html_res_out
+diff integ_test_html_res_out integ_test_html_res_expected
 
 MATCHES=$?
 echo $MATCHES
 if [ $MATCHES -eq 1 ];
 then
-  echo "Test Valid Request Failed"
+  echo "Test Valid Static HTML Request Failed"
 else 
-  VALID_REQ_SUCCESS1=1
-  echo "Test Valid Request Succeeded"
+  VALID_STATIC_SUCCESS=1
+  echo "Test Valid Static HTML Request Succeeded"
 fi
 
-rm integ_test_res_out
+rm integ_test_html_res_out
 
-#static
-VALID_REQ_SUCCESS2=0
-timeout $TIMEOUT curl -s -i -H "Host:" -H "User-Agent:" $SERVER_IP:$SERVER_PORT/static1/example.txt > integ_test_static_res_out
-diff integ_test_static_res_out integ_test_static_res_expected
+# #txt
+VALID_TEXT_SUCCESS=0
+timeout $TIMEOUT curl -s -i -H "Host:" -H "User-Agent:" $SERVER_IP:$SERVER_PORT/static1/example.txt > integ_test_example_text_out
+diff integ_test_example_text_out integ_test_example_expected
 
 MATCHES=$?
 echo $MATCHES
 if [ $MATCHES -eq 1 ];
 then
-  echo "Test Valid Request Failed"
+  echo "Test Valid Static Text Request Failed"
 else 
-  VALID_REQ_SUCCESS2=1
-  echo "Test Valid Request Succeeded"
+  VALID_TEXT_SUCCESS=1
+  echo "Test Valid Static Text Request Succeeded"
 fi
 
-rm integ_test_static_res_out
+rm integ_test_example_text_out
+#empty header
+NOT_FOUND_SUCCESS=0
+timeout $TIMEOUT curl -s -i -H "Host:" -H "User-Agent:" $SERVER_IP:$SERVER_PORT > integ_test_not_found_res_out
+diff integ_test_not_found_res_out integ_test_not_found_res_expected
+
+MATCHES=$?
+echo $MATCHES
+if [ $MATCHES -eq 1 ];
+then
+  echo "Test NOT_FOUND Request Failed"
+else 
+  NOT_FOUND_SUCCESS=1
+  echo "Test NOT_FOUND Request Succeeded"
+fi
+
+rm integ_test_not_found_res_out
+
+
+
 
 # test invalid request
 INVALID_REQ_SUCCESS=0
@@ -82,7 +102,7 @@ rm integ_test_invalid_req_out
 # kill server and return test results
 kill -9 $SERVER_PID
 
-if [ $VALID_REQ_SUCCESS -eq 1 ] && [ $INVALID_REQ_SUCCESS -eq 1 ];
+if [ $VALID_REQ_SUCCESS -eq 1 ] && [ $VALID_STATIC_SUCCESS -eq 1 ] && [ $INVALID_REQ_SUCCESS -eq 1 ] && [ $NOT_FOUND_SUCCESS -eq 1 ] && [ $VALID_TEXT_SUCCESS -eq 1 ];
 then
   exit 0
 fi
