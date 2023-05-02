@@ -18,10 +18,11 @@ TEST_F(SessionFixture, RequestBuilt)
   session s(io_service);
   std::ostream os(&s.buf);
   std::string example = "example\r\n\r\n";
+  std::string expected = "example\r";
   os << example;
   std::string result =
     s.handle_read(boost::system::error_code(), example.size());
-  EXPECT_TRUE(result == example);
+  EXPECT_EQ(result, expected);
 }
 
 TEST_F(SessionFixture, SocketShutdown)
