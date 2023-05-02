@@ -27,7 +27,7 @@ namespace http {
         { "jpeg", "image/jpeg" },
         { "png", "image/png" },
         { "txt", "text/plain" },
-        { "zip", "application/zip "}
+        { "zip", "application/zip"}
       };
 
       std::string extension_to_type(const std::string& extension)
