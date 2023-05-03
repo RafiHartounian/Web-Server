@@ -1,237 +1,487 @@
-<!DOCTYPE html>
+
 <html>
 
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title>GCC Code Coverage Report</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <link rel="stylesheet" href="index.css">
-  </head>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <title>Head</title>
+  <style media="screen" type="text/css">
 
-  <body>
-    <h1>GCC Code Coverage Report</h1>
+    body
+    {
+      color: #000000;
+      background-color: #FFFFFF;
+    }
 
-    <hr/>
+    /* Link formats: use maroon w/underlines */
+    a:link
+    {
+      color: navy;
+      text-decoration: underline;
+    }
+    a:visited
+    {
+      color: maroon;
+      text-decoration: underline;
+    }
+    a:active
+    {
+      color: navy;
+      text-decoration: underline;
+    }
 
-    <div class="summary">
-<div>
-  <table class="legend">
+    /*** TD formats ***/
+    td
+    {
+      font-family: sans-serif;
+    }
+    td.title
+    {
+      text-align: center;
+      padding-bottom: 10px;
+      font-size: 20pt;
+      font-weight: bold;
+    }
+
+    /* TD Header Information */
+    td.headerName
+    {
+      text-align: right;
+      color: black;
+      padding-right: 6px;
+      font-weight: bold;
+      vertical-align: top;
+      white-space: nowrap;
+    }
+    td.headerValue
+    {
+      text-align: left;
+      color: blue;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+    td.headerTableEntry
+    {
+      text-align: right;
+      color: black;
+      font-weight: bold;
+      white-space: nowrap;
+      padding-left: 12px;
+      padding-right: 4px;
+      background-color: LightBlue;
+    }
+    td.headerValueLeg
+    {
+      text-align: left;
+      color: black;
+      font-size: 80%;
+      white-space: nowrap;
+      padding-left: 10px;
+      padding-right: 10px;
+      padding-top: 2px;
+    }
+
+    /* Color of horizontal ruler */
+    td.hr
+    {
+      background-color: navy;
+      height:3px;
+    }
+    /* Footer format */
+    td.footer
+    {
+      text-align: center;
+      padding-top: 3px;
+      font-family: sans-serif;
+    }
+
+    /* Coverage Table */
+
+    td.coverTableHead
+    {
+      text-align: center;
+      color: white;
+      background-color: SteelBlue;
+      font-family: sans-serif;
+      font-size: 120%;
+      white-space: nowrap;
+      padding-left: 4px;
+      padding-right: 4px;
+    }
+    td.coverFile
+    {
+      text-align: left;
+      padding-left: 10px;
+      padding-right: 20px;
+      color: black;
+      background-color: LightBlue;
+      font-family: monospace;
+      font-weight: bold;
+      font-size: 110%;
+    }
+    td.coverBar
+    {
+      padding-left: 10px;
+      padding-right: 10px;
+      background-color: LightBlue;
+    }
+    td.coverBarOutline
+    {
+      background-color: white;
+    }
+    td.coverValue
+    {
+      padding-top: 2px;
+      text-align: right;
+      padding-left: 10px;
+      padding-right: 10px;
+      font-family: sans-serif;
+      white-space: nowrap;
+      font-weight: bold;
+    }
+
+    /* Link Details */
+    a.detail:link
+    {
+      color: #B8D0FF;
+      font-size:80%;
+    }
+    a.detail:visited
+    {
+      color: #B8D0FF;
+      font-size:80%;
+    }
+    a.detail:active
+    {
+      color: #FFFFFF;
+      font-size:80%;
+    }
+
+    .graphcont{
+        color:#000;
+        font-weight:700;
+        float:left
+    }
+
+    .graph{
+        float:left;
+        background-color: white;
+        position:relative;
+        width:280px;
+        padding:0
+    }
+
+    .graph .bar{
+        display:block;
+        position:relative;
+        border:black 1px solid;
+        text-align:center;
+        color:#fff;
+        height:10px;
+        font-family:Arial,Helvetica,sans-serif;
+        font-size:12px;
+        line-height:1.9em
+    }
+
+    .graph .bar span{
+        position:absolute;
+        left:1em
+    }
+
+    td.coveredLine,
+    span.coveredLine
+    {
+        background-color: LightGreen!important;
+    }
+
+    td.uncoveredLine,
+    span.uncoveredLine
+    {
+        background-color: LightPink!important;
+    }
+
+    .linebranch, .linecount
+    {
+        border-right: 1px gray solid;
+        background-color: lightgray;
+    }
+
+    span.takenBranch
+    {
+        color: Green!important;
+        cursor: help;
+    }
+
+    span.notTakenBranch
+    {
+        color: Red!important;
+        cursor: help;
+    }
+
+    .src
+    {
+        padding-left: 12px;
+    }
+
+    .srcHeader,
+    span.takenBranch,
+    span.notTakenBranch
+    {
+        font-family: monospace;
+        font-weight: bold;
+    }
+
+    pre
+    {
+        height : 15px;
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+
+    .lineno
+    {
+        background-color: #EFE383;
+        border-right: 1px solid #BBB15F;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">GCC Code Coverage Report</td></tr>
+    <tr><td class="hr"></td></tr>
+
     <tr>
-      <th scope="row">Directory:</th>
-      <td>./</td>
-    </tr>
-    <tr>
-      <th scope="row">Date:</th>
-      <td>2023-05-03 06:00:41</td>
-    </tr>
-    <tr>
-      <th scope="row">Legend:</th>
-      <td class="legend">
-        <span class="coverage-low">low: &gt;= 0%</span>
-        <span class="coverage-medium">medium: &gt;= 75.0%</span>
-        <span class="coverage-high">high: &gt;= 90.0%</span>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerName">Directory:</td>
+            <td width="35%" class="headerValue">./</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerValue" style="text-align:right;">Exec</td>
+            <td width="10%" class="headerValue" style="text-align:right;">Total</td>
+            <td width="15%" class="headerValue" style="text-align:right;">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerName">Date:</td>
+            <td class="headerValue">2023-05-02 22:19:19</td>
+            <td></td>
+            <td class="headerName">Lines:</td>
+            <td class="headerTableEntry">612</td>
+            <td class="headerTableEntry">671</td>
+            <td class="headerTableEntry" style="background-color:LightGreen">91.2 %</td>
+          </tr>
+          <tr>
+            <td class="headerName">Legend:</td>
+            <td class="headerValueLeg">
+              <span style="background-color:LightPink">low: &lt; 75.0 %</span>
+              <span style="background-color:#FFFF55">medium: &gt;= 75.0 %</span>
+              <span style="background-color:LightGreen">high: &gt;= 90.0 %</span>
+            </td>
+            <td></td>
+            <td class="headerName">Branches:</td>
+            <td class="headerTableEntry">582</td>
+            <td class="headerTableEntry">1026</td>
+            <td class="headerTableEntry" style="background-color:LightPink">56.7 %</td>
+          </tr>
+        </table>
       </td>
     </tr>
+
+    <tr><td class="hr"></td></tr>
   </table>
-</div>
 
-<div>
-  <table class="coverage">
+  <center>
+  <table width="80%" cellpadding=1 cellspacing=1 border=0>
     <tr>
-      <th></th>
-      <th scope="col">Exec</th>
-      <th scope="col">Total</th>
-      <th scope="col">Coverage</th>
+      <td width="44%"><br></td>
+      <td width="8%"></td>
+      <td width="8%"></td>
+      <td width="8%"></td>
+      <td width="8%"></td>
+      <td width="8%"></td>
     </tr>
     <tr>
-      <th scope="row">Lines:</th>
-      <td>629</td>
-      <td>687</td>
-      <td class="coverage-high">91.6%</td>
+      <td class="coverTableHead">File</td>
+      <td class="coverTableHead" colspan=3>Lines</td>
+      <td class="coverTableHead" colspan=2>Branches</td>
     </tr>
+
+
     <tr>
-      <th scope="row">Branches:</th>
-      <td>593</td>
-      <td>1044</td>
-      <td class="coverage-low">56.8%</td>
+      <td class="coverFile" ><a href="index.include_request_handler_interface.h.html">include/request_handler_interface.h</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:0.0%; border:white; background-color:red"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightPink;">0.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightPink;">0 / 1</td>
+      <td class="CoverValue" style="background-color:LightGray;">-&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightGray;">0 / 0</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.include_request_parser.h.html">include/request_parser.h</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:71.4%; background-color:red"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightPink;">71.4&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightPink;">5 / 7</td>
+      <td class="CoverValue" style="background-color:LightPink;">50.0&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">8 / 16</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_config_parser.cc.html">src/config_parser.cc</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:95.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">95.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">226 / 238</td>
+      <td class="CoverValue" style="background-color:LightPink;">63.5&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">261 / 411</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_mime_types.cc.html">src/mime_types.cc</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">5 / 5</td>
+      <td class="CoverValue" style="background-color:#FFFF55;">75.0&nbsp;%</td>
+      <td class="CoverValue" style="background-color:#FFFF55;">6 / 8</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_reply.cc.html">src/reply.cc</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:95.7%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">95.7&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">90 / 94</td>
+      <td class="CoverValue" style="background-color:LightPink;">65.6&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">63 / 96</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_request_echo_handler.cc.html">src/request_echo_handler.cc</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:89.5%; background-color:yellow"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:#FFFF55;">89.5&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:#FFFF55;">17 / 19</td>
+      <td class="CoverValue" style="background-color:LightPink;">25.0&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">1 / 4</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_request_error_handler.cc.html">src/request_error_handler.cc</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">10 / 10</td>
+      <td class="CoverValue" style="background-color:LightGray;">-&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightGray;">0 / 0</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_request_parser.cc.html">src/request_parser.cc</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:90.7%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">90.7&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">136 / 150</td>
+      <td class="CoverValue" style="background-color:#FFFF55;">79.1&nbsp;%</td>
+      <td class="CoverValue" style="background-color:#FFFF55;">102 / 129</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_request_static_handler.cc.html">src/request_static_handler.cc</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:90.5%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">90.5&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">38 / 42</td>
+      <td class="CoverValue" style="background-color:LightPink;">48.7&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">37 / 76</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_server.cc.html">src/server.cc</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:82.6%; background-color:yellow"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:#FFFF55;">82.6&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:#FFFF55;">19 / 23</td>
+      <td class="CoverValue" style="background-color:LightPink;">50.0&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">7 / 14</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_session.cc.html">src/session.cc</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:80.5%; background-color:yellow"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:#FFFF55;">80.5&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:#FFFF55;">66 / 82</td>
+      <td class="CoverValue" style="background-color:LightPink;">35.7&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">97 / 272</td>
+    </tr>
+
+
+    <tr>
+      <td width="44%"><br></td>
+      <td width="8%"></td>
+      <td width="8%"></td>
+      <td width="8%"></td>
+      <td width="8%"></td>
+      <td width="8%"></td>
     </tr>
   </table>
-</div>
-    </div>
+  </center>
 
-    <hr/>
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="hr"><td></tr>
+    <tr><td class="footer">Generated by: <a href="http://gcovr.com">GCOVR (Version 4.2)</a></td></tr>
+  </table>
+  <br>
 
-<table class="file-list">
-  <col/>
-  <colgroup span="3"/>
-  <colgroup span="2"/>
+</body>
 
-  <tr>
-    <th scope="col">File</th>
-    <th scope="colgroup" colspan=3>Lines</th>
-    <th scope="colgroup" colspan=2>Branches</th>
-  </tr>
-
-
-  <tr>
-    <th scope="row">
-      <a href="index.request_handler_interface.h.5c31b0c48f6de553af20a74b05bee789.html">include/request_handler_interface.h</a>
-    </th>
-    <td>
-      <meter class="coverage-none" min="0" max="100" value="0.0" title="0.0%">0.0</meter>
-    </td>
-    <td class="CoverValue line-coverage coverage-none">0.0%</td>
-    <td class="CoverValue line-coverage coverage-none">0 / 1</td>
-    <td class="CoverValue branch-coverage coverage-unknown">-%</td>
-    <td class="CoverValue branch-coverage coverage-unknown">0 / 0</td>
-  </tr>
-
-
-  <tr>
-    <th scope="row">
-      <a href="index.request_parser.h.57d9887187b352638d38669a80309c4c.html">include/request_parser.h</a>
-    </th>
-    <td>
-      <meter class="coverage-low" min="0" max="100" value="71.4" title="71.4%">71.4</meter>
-    </td>
-    <td class="CoverValue line-coverage coverage-low">71.4%</td>
-    <td class="CoverValue line-coverage coverage-low">5 / 7</td>
-    <td class="CoverValue branch-coverage coverage-low">50.0%</td>
-    <td class="CoverValue branch-coverage coverage-low">8 / 16</td>
-  </tr>
-
-
-  <tr>
-    <th scope="row">
-      <a href="index.config_parser.cc.31098c8ab4b6825e0940ff3e3cd9edc0.html">src/config_parser.cc</a>
-    </th>
-    <td>
-      <meter class="coverage-high" min="0" max="100" value="95.2" title="95.2%">95.2</meter>
-    </td>
-    <td class="CoverValue line-coverage coverage-high">95.2%</td>
-    <td class="CoverValue line-coverage coverage-high">239 / 251</td>
-    <td class="CoverValue branch-coverage coverage-low">63.6%</td>
-    <td class="CoverValue branch-coverage coverage-low">269 / 423</td>
-  </tr>
-
-
-  <tr>
-    <th scope="row">
-      <a href="index.mime_types.cc.6d181b753146477d82916bc7f93f6799.html">src/mime_types.cc</a>
-    </th>
-    <td>
-      <meter class="coverage-high" min="0" max="100" value="100.0" title="100.0%">100.0</meter>
-    </td>
-    <td class="CoverValue line-coverage coverage-high">100.0%</td>
-    <td class="CoverValue line-coverage coverage-high">5 / 5</td>
-    <td class="CoverValue branch-coverage coverage-medium">75.0%</td>
-    <td class="CoverValue branch-coverage coverage-medium">6 / 8</td>
-  </tr>
-
-
-  <tr>
-    <th scope="row">
-      <a href="index.reply.cc.c9374984234a99cf4fecdc8a0cbdf663.html">src/reply.cc</a>
-    </th>
-    <td>
-      <meter class="coverage-high" min="0" max="100" value="95.7" title="95.7%">95.7</meter>
-    </td>
-    <td class="CoverValue line-coverage coverage-high">95.7%</td>
-    <td class="CoverValue line-coverage coverage-high">90 / 94</td>
-    <td class="CoverValue branch-coverage coverage-low">65.6%</td>
-    <td class="CoverValue branch-coverage coverage-low">63 / 96</td>
-  </tr>
-
-
-  <tr>
-    <th scope="row">
-      <a href="index.request_echo_handler.cc.7a48f0e8eb246fd1e4798246eca4c7b8.html">src/request_echo_handler.cc</a>
-    </th>
-    <td>
-      <meter class="coverage-medium" min="0" max="100" value="89.5" title="89.5%">89.5</meter>
-    </td>
-    <td class="CoverValue line-coverage coverage-medium">89.5%</td>
-    <td class="CoverValue line-coverage coverage-medium">17 / 19</td>
-    <td class="CoverValue branch-coverage coverage-low">25.0%</td>
-    <td class="CoverValue branch-coverage coverage-low">1 / 4</td>
-  </tr>
-
-
-  <tr>
-    <th scope="row">
-      <a href="index.request_error_handler.cc.9e0e267e32d80d516749900d5a508ea1.html">src/request_error_handler.cc</a>
-    </th>
-    <td>
-      <meter class="coverage-high" min="0" max="100" value="100.0" title="100.0%">100.0</meter>
-    </td>
-    <td class="CoverValue line-coverage coverage-high">100.0%</td>
-    <td class="CoverValue line-coverage coverage-high">10 / 10</td>
-    <td class="CoverValue branch-coverage coverage-unknown">-%</td>
-    <td class="CoverValue branch-coverage coverage-unknown">0 / 0</td>
-  </tr>
-
-
-  <tr>
-    <th scope="row">
-      <a href="index.request_parser.cc.45123ad8d7efdcc613c2679afe26b1c1.html">src/request_parser.cc</a>
-    </th>
-    <td>
-      <meter class="coverage-high" min="0" max="100" value="90.7" title="90.7%">90.7</meter>
-    </td>
-    <td class="CoverValue line-coverage coverage-high">90.7%</td>
-    <td class="CoverValue line-coverage coverage-high">136 / 150</td>
-    <td class="CoverValue branch-coverage coverage-medium">79.1%</td>
-    <td class="CoverValue branch-coverage coverage-medium">102 / 129</td>
-  </tr>
-
-
-  <tr>
-    <th scope="row">
-      <a href="index.request_static_handler.cc.73d7421c37b2a9be0cf8bfb4b6fe1750.html">src/request_static_handler.cc</a>
-    </th>
-    <td>
-      <meter class="coverage-high" min="0" max="100" value="90.7" title="90.7%">90.7</meter>
-    </td>
-    <td class="CoverValue line-coverage coverage-high">90.7%</td>
-    <td class="CoverValue line-coverage coverage-high">39 / 43</td>
-    <td class="CoverValue branch-coverage coverage-low">48.7%</td>
-    <td class="CoverValue branch-coverage coverage-low">37 / 76</td>
-  </tr>
-
-
-  <tr>
-    <th scope="row">
-      <a href="index.server.cc.520f4156117065a960e3087182acf4b4.html">src/server.cc</a>
-    </th>
-    <td>
-      <meter class="coverage-medium" min="0" max="100" value="82.6" title="82.6%">82.6</meter>
-    </td>
-    <td class="CoverValue line-coverage coverage-medium">82.6%</td>
-    <td class="CoverValue line-coverage coverage-medium">19 / 23</td>
-    <td class="CoverValue branch-coverage coverage-low">50.0%</td>
-    <td class="CoverValue branch-coverage coverage-low">7 / 14</td>
-  </tr>
-
-
-  <tr>
-    <th scope="row">
-      <a href="index.session.cc.a39713a7caf4db9d7b5a9a5e778339b6.html">src/session.cc</a>
-    </th>
-    <td>
-      <meter class="coverage-medium" min="0" max="100" value="82.1" title="82.1%">82.1</meter>
-    </td>
-    <td class="CoverValue line-coverage coverage-medium">82.1%</td>
-    <td class="CoverValue line-coverage coverage-medium">69 / 84</td>
-    <td class="CoverValue branch-coverage coverage-low">36.0%</td>
-    <td class="CoverValue branch-coverage coverage-low">100 / 278</td>
-  </tr>
-
-</table>
-
-    <hr/>
-
-    <footer>
-      Generated by: <a href="http://gcovr.com">GCOVR (Version 5.0)</a>
-    </footer>
-  </body>
 </html>
+
