@@ -5,6 +5,7 @@ CONFIG_PATH=../configs/test_config
 
 # start server in the background
 $SERVER_PATH $CONFIG_PATH &
+sleep 0.2
 
 SERVER_PID=$!
 
