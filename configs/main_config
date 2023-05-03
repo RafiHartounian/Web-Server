@@ -11,6 +11,9 @@ server {
         location /static3 {
             root ../static_files/static3;
         }
+        location /coverage_info {
+            root ../static_files/coverage_info;
+        }
     }
 
 
