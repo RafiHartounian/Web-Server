@@ -112,6 +112,7 @@ void session::write_to_socket(request_handler_interface* req_h) {
   socket_.remote_endpoint(ec);
   if (!ec) {
     boost::asio::write(socket_, req_h->get_reply().to_buffers());
+    delete req_h;
     handle_write(boost::system::error_code());
   }
   else {
