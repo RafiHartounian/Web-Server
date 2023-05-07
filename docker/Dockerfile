@@ -11,6 +11,11 @@ RUN cmake ..
 RUN make
 RUN ctest --output-on_failure
 
+# Build and generage coverage report
+WORKDIR /usr/src/project/build_coverage
+RUN cmake -DCMAKE_BUILD_TYPE=Coverage ..
+RUN make coverage
+RUN cp -r /usr/src/project/build_coverage/report /usr/src/project/static_files/coverage_info
 
 ### Deploy container ###
 # Define deploy stage
