@@ -14,3 +14,4 @@ WORKDIR /usr/src/project/build_coverage
 # Build and generate coverage report
 RUN cmake -DCMAKE_BUILD_TYPE=Coverage ..
 RUN make coverage
+RUN cp -r /usr/src/project/build_coverage/report /usr/src/project/static_files/coverage_info
