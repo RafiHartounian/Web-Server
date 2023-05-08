@@ -6,6 +6,7 @@
 #include <iostream>
 #include <iterator>
 #include <regex>
+#include <memory>
 
 #include "request_echo_handler.h"
 #include "request_error_handler.h"
@@ -53,24 +54,24 @@ std::string session::handle_read(const boost::system::error_code& error, size_t 
       boost::tie(res, std::ignore) = req_parser.parse(request_, st, end);
     }
 
-    request_handler_interface* req_handler_int;
+    std::unique_ptr<request_handler_interface> req_handler_int;
     if (res == good_res) {
       BOOST_LOG_TRIVIAL(info) << "valid request received";
       path req_ep = get_endpoint();
       if (req_ep.type == endpoint_type::echo) {
-        req_handler_int = new request_echo_handler(request_, bytes_transferred);
+        req_handler_int = std::make_unique<request_echo_handler>(request_, bytes_transferred);
       }
       else if (req_ep.type == endpoint_type::static_) {
-        req_handler_int = new request_static_handler(request_, req_ep.root);
+        req_handler_int = std::make_unique<request_static_handler>(request_, req_ep.root);
       }
       else {
-        req_handler_int = new request_error_handler(
+        req_handler_int = std::make_unique<request_error_handler>(
             http::server::reply::status_type::not_found);
       }
     }
     else if (res == bad_res) {
       BOOST_LOG_TRIVIAL(info) << "received bad request";
-      req_handler_int = new request_error_handler(
+      req_handler_int = std::make_unique<request_error_handler>(
           http::server::reply::status_type::bad_request);
     }
     else {
@@ -78,7 +79,7 @@ std::string session::handle_read(const boost::system::error_code& error, size_t 
       BOOST_LOG_TRIVIAL(fatal) << "response in indeterminant state";
       exit(1);
     }
-    write_to_socket(req_handler_int);
+    write_to_socket(req_handler_int.get());
   }
   else {
     log_error("handle_read", "request parser invalid");
@@ -112,7 +113,7 @@ void session::write_to_socket(request_handler_interface* req_h) {
   socket_.remote_endpoint(ec);
   if (!ec) {
     boost::asio::write(socket_, req_h->get_reply().to_buffers());
-    delete req_h;
+    //delete req_h;
     handle_write(boost::system::error_code());
   }
   else {
