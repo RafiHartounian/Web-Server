@@ -125,7 +125,7 @@ TEST_F(NginxConfigParserTest, GetPaths) {
     path{endpoint_type::echo, "/echo2", ""},
   };
   std::vector<path> retrieved_paths = out_config.get_paths();
-  EXPECT_EQ(configured_paths.size(), retrieved_paths.size());
+  ASSERT_EQ(configured_paths.size(), retrieved_paths.size());
   for (int i = 0; i < configured_paths.size(); ++i) {
     EXPECT_EQ(retrieved_paths[i].type, configured_paths[i].type);
     EXPECT_EQ(retrieved_paths[i].endpoint, configured_paths[i].endpoint);

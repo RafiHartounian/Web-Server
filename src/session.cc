@@ -91,7 +91,7 @@ std::string session::handle_read(const boost::system::error_code& error, size_t 
 
 path session::get_endpoint() {
   path result{ endpoint_type::invalid, "" };
-  std::regex path_regex(R"((/[a-zA-Z_0-9]+)*/[a-zA-Z_0-9.]+$)");
+  std::regex path_regex("(/+[a-zA-Z_0-9]+)(/+[ax-zA-Z_0-9.]+)?/*");
   std::smatch match;
 
   if (std::regex_search(request_.uri, match, path_regex)) {
@@ -141,9 +141,9 @@ session_interface* session::get_session(boost::asio::io_service& io_service) {
 }
 
 void session::log_info(std::string func_name, std::string message) {
-  BOOST_LOG_TRIVIAL(info) << "Client IP: " << dest_ip.to_string() << "\tRequest url: " << request_.uri  << "\tsession::" << func_name << ":\t" << message;
+  BOOST_LOG_TRIVIAL(info) << "Client IP: " << dest_ip.to_string() << "\tRequest url: " << request_.uri << "\tsession::" << func_name << ":\t" << message;
 }
 
 void session::log_error(std::string func_name, std::string message) {
-  BOOST_LOG_TRIVIAL(error) << "Client IP: " << dest_ip.to_string() << "\tRequest url: " << request_.uri  << "\tsession::" << func_name << ":\t" << message;
+  BOOST_LOG_TRIVIAL(error) << "Client IP: " << dest_ip.to_string() << "\tRequest url: " << request_.uri << "\tsession::" << func_name << ":\t" << message;
 }

@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "config_parser.h"
+#include "constants.h"
 
 std::string NginxConfig::ToString(int depth)
 {
@@ -51,44 +52,29 @@ int NginxConfig::get_listen_port() {
 
 std::vector<path> NginxConfig::get_paths() {
   for (auto s : statements_) {
-    if (s->tokens_[0] == "static" && s->child_block_.get() != nullptr) {
+    if (s->tokens_[0] != kUrlPathKeyword) {
+      continue;
+    }
+    if (s->tokens_[2] == kStaticHandler) {
+      path static_path;
       for (auto child_statement : s->child_block_->statements_) {
-        if (child_statement->tokens_[0] == "location" &&
-            child_statement->tokens_.size() >= 2 &&
-            child_statement->child_block_.get() != nullptr) {
-          for (auto location_statement :
-               child_statement->child_block_->statements_) {
-            if (location_statement->tokens_[0] == "root" &&
-                location_statement->tokens_.size() >= 2 &&
-                child_statement->child_block_.get() != nullptr) {
-              path cur_path;
-              cur_path.type = static_;
-              cur_path.endpoint = child_statement->tokens_[1];
-              cur_path.root = location_statement->tokens_[1];
-              paths.push_back(cur_path);
-            }
-          }
+        if (child_statement->tokens_[0] == kResourcePathKeyword) {
+          static_path.type = static_;
+          static_path.endpoint = s->tokens_[1];
+          static_path.root = child_statement->tokens_[1];
         }
       }
+      paths.push_back(static_path);
     }
-    else if (s->tokens_[0] == "echo" && s->child_block_.get() != nullptr) {
-      for (auto child_statement : s->child_block_->statements_) {
-        if (child_statement->tokens_[0] == "location" &&
-            child_statement->tokens_.size() >= 2) {
-          path cur_path;
-          cur_path.type = echo;
-          cur_path.endpoint = child_statement->tokens_[1];
-          cur_path.root = "";
-          paths.push_back(cur_path);
-        }
-      }
-    }
-    else if (s->child_block_.get() != nullptr) {
-      for (auto path : s->child_block_->get_paths()) {
-        paths.push_back(path);
-      }
+    else if (s->tokens_[2] == kEchoHandler) {
+      path echo_path;
+      echo_path.type = echo;
+      echo_path.endpoint = s->tokens_[1];
+      echo_path.root = "";
+      paths.push_back(echo_path);
     }
   }
+
   for (auto p : paths) {
     BOOST_LOG_TRIVIAL(info) << "path endpoint_type " << p.type;
     BOOST_LOG_TRIVIAL(info) << "path endpoint: " << p.endpoint;

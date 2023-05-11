@@ -1,28 +1,20 @@
-server {
-    listen 80;
+listen 80;
 
-    static {
-        location /static1 {
-            root ../static_files/static1;
-        }
-        location /static2 {
-            root ../static_files/static2;
-        }
-        location /static3 {
-            root ../static_files/static3;
-        }
-        location /coverage_info {
-            root ../static_files/coverage_info;
-        }
-    }
+location /static1 StaticHandler {
+    root ../static_files/static1;
+}
+location /static2 StaticHandler {
+    root ../static_files/static2;
+}
+location /static3 StaticHandler {
+    root ../static_files/static3;
+}
+location /coverage_info StaticHandler {
+    root ../static_files/coverage_info;
+}
 
-
-
-    echo {
-        location /echo {
-        }
+location /echo EchoHandler {
+}
         
-        location /echo2 {
-        }
-    }
+location /echo2 EchoHandler {
 }
