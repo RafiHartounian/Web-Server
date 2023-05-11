@@ -68,7 +68,7 @@ http::server::reply request_static_handler::get_reply()
   reply.headers[0].name = "Content-Length";
   reply.headers[0].value = std::to_string(reply.content.size());
   reply.headers[1].name = "Content-Type";
-  reply.headers[1].value = http::server::mime_types::extension_to_type(extension);
+  reply.headers[1].value = mime_types::extension_to_type(extension);
   return reply;
 
 }

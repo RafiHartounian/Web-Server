@@ -10,39 +10,34 @@
 
 #include "mime_types.h"
 
-namespace http {
-  namespace server {
-    namespace mime_types {
+namespace mime_types {
 
-      struct mapping
-      {
-        const char* extension;
-        const char* mime_type;
-      } mappings[] =
-      {
-        { "gif", "image/gif" },
-        { "htm", "text/html" },
-        { "html", "text/html" },
-        { "jpg", "image/jpeg" },
-        { "jpeg", "image/jpeg" },
-        { "png", "image/png" },
-        { "txt", "text/plain" },
-        { "zip", "application/zip"}
-      };
+  struct mapping
+  {
+    const char* extension;
+    const char* mime_type;
+  } mappings[] =
+  {
+    { "gif", "image/gif" },
+    { "htm", "text/html" },
+    { "html", "text/html" },
+    { "jpg", "image/jpeg" },
+    { "jpeg", "image/jpeg" },
+    { "png", "image/png" },
+    { "txt", "text/plain" },
+    { "zip", "application/zip"}
+  };
 
-      std::string extension_to_type(const std::string& extension)
+  std::string extension_to_type(const std::string& extension)
+  {
+    for (mapping m : mappings)
+    {
+      if (m.extension == extension)
       {
-        for (mapping m : mappings)
-        {
-          if (m.extension == extension)
-          {
-            return m.mime_type;
-          }
-        }
-
-        return "text/plain";
+        return m.mime_type;
       }
+    }
 
-    } // namespace mime_types
-  } // namespace server
-} // namespace http
+    return "text/plain";
+  }
+} // namespace mime_types
