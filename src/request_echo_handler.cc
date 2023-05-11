@@ -3,35 +3,25 @@
 #include <string>
 #include <vector>
 
-
-request_echo_handler::request_echo_handler()
-{
-  request_body = "";
-  size = 0;
-}
-
-request_echo_handler::request_echo_handler(http::server::request request, size_t byte_transferred)
-  : request_body(request.original_req), size(byte_transferred)
-{
+request_echo_handler::request_echo_handler(std::string location, std::string url) 
+  : location_(location), request_url(url) {
 
 }
 
-// Set specific message
-void request_echo_handler::set_request(http::server::request request, size_t byte_transferred)
+bhttp::status request_echo_handler::handle_request(const bhttp::request<bhttp::dynamic_body> req, bhttp::response<bhttp::dynamic_body>& res)
 {
-  request_body = request.original_req;
-  size = byte_transferred;
-}
-
-// Construct echo reply
-http::server::reply request_echo_handler::get_reply()
-{
-  reply.status = http::server::reply::ok;
-  reply.content = request_body;
-  reply.headers.resize(2);
-  reply.headers[0].name = "Content-Length";
-  reply.headers[0].value = std::to_string(reply.content.size());
-  reply.headers[1].name = "Content-Type";
-  reply.headers[1].value = "text/plain";
-  return reply;
+  std::string req_input = req.target().to_string();
+  if (location_ != req_input)
+  {
+    res.result(bhttp::status::not_found);
+    boost::beast::ostream(res.body()) << rep.stock_reply(res.result_int());
+    res.content_length((res.body().size()));
+    res.set(bhttp::field::content_type, "text/html");
+    return res.result();
+  }
+  res.result(bhttp::status::ok);
+  boost::beast::ostream(res.body()) << req;
+  res.content_length((res.body().size()));
+  res.set(bhttp::field::content_type, "text/plain");
+  return res.result();
 }

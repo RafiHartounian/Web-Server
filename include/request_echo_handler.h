@@ -2,24 +2,19 @@
 #define REQUEST_ECHO_HANDLER_H
 
 #include "request_handler.h"
-#include <cstddef>
 #include <string>
 #include <vector>
-#include "request.h"
 
 class request_echo_handler: public request_handler
 {
 public:
-  request_echo_handler();
-  request_echo_handler(http::server::request request, size_t bytes_transferred);
-  void set_request(http::server::request request, size_t bytes_transferred);
-  http::server::reply get_reply();
+  request_echo_handler(std::string location, std::string url);
+  bhttp::status handle_request(const bhttp::request<bhttp::dynamic_body> req, bhttp::response<bhttp::dynamic_body>& res);
 
 private:
-  std::string request_body;
-  size_t size;
-  http::server::reply reply;
-
+  std::string location_;
+  std::string request_url;
+  reply rep;
 };
 
 #endif

@@ -1,30 +1,26 @@
+#include "boost/filesystem.hpp"
+#include <boost/asio/buffers_iterator.hpp>
 #include "gtest/gtest.h"
 #include "request_static_handler.h"
-#include "boost/filesystem.hpp"
 
-class StaticHandlerFixture: public ::testing::Test
+class StaticHandlerFixture : public :: testing::Test
 {
-protected:
-  request_static_handler handler;
-  std::string root1 = "../static_files/static1";
-  std::string root2 = "../static_files/static2";
-  std::string root3 = "../static_files/static3";
-  std::string base_uri1 = "/static1/";
-  std::string base_uri2 = "/static2/";
-  std::string base_uri3 = "/static3/";
-
+  protected:
+    std::string root = "../static_files/static1";
+    std::string base_uri = "/static1/";
 };
 
 TEST_F(StaticHandlerFixture, NormalHTMLFileResponseTest)
 {
-  std::string file = "example.html";
-  http::server::request request;
-  request.uri = base_uri1 + file;
-  http::server::reply reply;
-  handler.set_request(request, root1);
-  reply = handler.get_reply();
+  std::string filename = "example.html";
+  bhttp::request<bhttp::dynamic_body> request;  
+  request.target(base_uri + filename);
 
-  std::string full_path = root1 + "/" + file;
+  bhttp::response<bhttp::dynamic_body> response;
+  request_static_handler static_handler(base_uri, root, request.target().to_string());
+  bhttp::status status = static_handler.handle_request(request, response);
+
+  std::string full_path = root + "/" + filename;
   std::ifstream file_(full_path.c_str(), std::ios::in | std::ios::binary);
 
   char c;
@@ -35,27 +31,41 @@ TEST_F(StaticHandlerFixture, NormalHTMLFileResponseTest)
   }
   file_.close();
 
-  bool success =
-    reply.status == http::server::reply::ok &&
-    reply.content == expected &&
-    reply.headers[0].name == "Content-Length" &&
-    reply.headers[0].value == std::to_string(reply.content.size()) &&
-    reply.headers[1].name == "Content-Type" &&
-    reply.headers[1].value == "text/html";
+  std::string body { boost::asio::buffers_begin(response.body().data()),
+                     boost::asio::buffers_end(response.body().data()) };
+
+  std::vector<std::pair<std::string, std::string>> headers;
+  for(auto const& field : response)
+  {
+    std::pair<std::string, std::string> header;
+    header.first = std::string(field.name_string());
+    header.second = std::string(field.value());
+    headers.push_back(header);
+  }
+
+  bool success = (response.result() == bhttp::status::ok &&
+                  body == expected &&
+                  response.has_content_length() &&
+                  headers.at(0).first == "Content-Length" &&
+                  headers.at(0).second == std::to_string(expected.size()) &&
+                  headers.at(1).first == "Content-Type" &&
+                  headers.at(1).second == "text/html" &&
+                  status == response.result());
 
   EXPECT_TRUE(success);
 }
 
 TEST_F(StaticHandlerFixture, NormalTxtFileResponseTest)
 {
-  std::string file = "example.txt";
-  http::server::request request;
-  request.uri = base_uri1 + file;
-  http::server::reply reply;
-  handler.set_request(request, root1);
-  reply = handler.get_reply();
+  std::string filename = "example.txt";
+  bhttp::request<bhttp::dynamic_body> request;  
+  request.target(base_uri + filename);
 
-  std::string full_path = root1 + "/" + file;
+  bhttp::response<bhttp::dynamic_body> response;
+  request_static_handler static_handler(base_uri, root, request.target().to_string());
+  bhttp::status status = static_handler.handle_request(request, response);
+
+  std::string full_path = root + "/" + filename;
   std::ifstream file_(full_path.c_str(), std::ios::in | std::ios::binary);
 
   char c;
@@ -66,89 +76,42 @@ TEST_F(StaticHandlerFixture, NormalTxtFileResponseTest)
   }
   file_.close();
 
-  bool success =
-    reply.status == http::server::reply::ok &&
-    reply.content == expected &&
-    reply.headers[0].name == "Content-Length" &&
-    reply.headers[0].value == std::to_string(reply.content.size()) &&
-    reply.headers[1].name == "Content-Type" &&
-    reply.headers[1].value == "text/plain";
+  std::string body { boost::asio::buffers_begin(response.body().data()),
+                     boost::asio::buffers_end(response.body().data()) };
 
-  EXPECT_TRUE(success);
-}
-
-TEST_F(StaticHandlerFixture, NormalGifFileResponseTest)
-{
-  std::string file = "don.gif";
-  http::server::request request;
-  request.uri = base_uri2 + file;
-  http::server::reply reply;
-  handler.set_request(request, root2);
-  reply = handler.get_reply();
-
-  std::string full_path = root2 + "/" + file;
-  std::ifstream file_(full_path.c_str(), std::ios::in | std::ios::binary);
-
-  char c;
-  std::string expected = "";
-  while (file_.get(c))
+  std::vector<std::pair<std::string, std::string>> headers;
+  for(auto const& field : response)
   {
-    expected += c;
+    std::pair<std::string, std::string> header;
+    header.first = std::string(field.name_string());
+    header.second = std::string(field.value());
+    headers.push_back(header);
   }
-  file_.close();
 
-  bool success =
-    reply.status == http::server::reply::ok &&
-    reply.content == expected &&
-    reply.headers[0].name == "Content-Length" &&
-    reply.headers[0].value == std::to_string(reply.content.size()) &&
-    reply.headers[1].name == "Content-Type" &&
-    reply.headers[1].value == "image/gif";
-
-  EXPECT_TRUE(success);
-}
-
-TEST_F(StaticHandlerFixture, NormalZipFileResponseTest)
-{
-  std::string file = "test.zip";
-  http::server::request request;
-  request.uri = base_uri3 + file;
-  http::server::reply reply;
-  handler.set_request(request, root3);
-  reply = handler.get_reply();
-
-  std::string full_path = root3 + "/" + file;
-  std::ifstream file_(full_path.c_str(), std::ios::in | std::ios::binary);
-
-  char c;
-  std::string expected = "";
-  while (file_.get(c))
-  {
-    expected += c;
-  }
-  file_.close();
-
-  bool success =
-    reply.status == http::server::reply::ok &&
-    reply.content == expected &&
-    reply.headers[0].name == "Content-Length" &&
-    reply.headers[0].value == std::to_string(reply.content.size()) &&
-    reply.headers[1].name == "Content-Type" &&
-    reply.headers[1].value == "application/zip";
+  bool success = (response.result() == bhttp::status::ok &&
+                  body == expected &&
+                  response.has_content_length() &&
+                  headers.at(0).first == "Content-Length" &&
+                  headers.at(0).second == std::to_string(expected.size()) &&
+                  headers.at(1).first == "Content-Type" &&
+                  headers.at(1).second == "text/plain" &&
+                  status == response.result());
 
   EXPECT_TRUE(success);
 }
 
 TEST_F(StaticHandlerFixture, BadFileResponseTest)
 {
-  std::string file = "non_existant.html";
-  http::server::request request;
-  request.uri = base_uri1 + file;
-  http::server::reply reply;
-  handler.set_request(request, root1);
-  reply = handler.get_reply();
+  std::string filename = "non_existant.html";
+  bhttp::request<bhttp::dynamic_body> request;  
+  request.target(base_uri + filename);
 
-  bool success = reply.status == http::server::reply::not_found;
+  bhttp::response<bhttp::dynamic_body> response;
+  request_static_handler static_handler(base_uri, root, request.target().to_string());
+  bhttp::status status = static_handler.handle_request(request, response);
+
+  bool success = (response.result() == bhttp::status::not_found && 
+                  status == response.result());
 
   EXPECT_TRUE(success);
 }

@@ -1,21 +1,15 @@
 #include "request_error_handler.h"
 
-request_error_handler::request_error_handler()
-{
-  err_code = http::server::reply::status_type::ok;
-}
-
-request_error_handler::request_error_handler(http::server::reply::status_type ec): err_code(ec)
+request_error_handler::request_error_handler(bhttp::status ec): err_code(ec)
 {
 
 }
 
-void request_error_handler::set_error_code(http::server::reply::status_type ec)
+bhttp::status request_error_handler::handle_request(const bhttp::request<bhttp::dynamic_body> req, bhttp::response<bhttp::dynamic_body>& res)
 {
-  err_code = ec;
-}
-
-http::server::reply request_error_handler::get_reply()
-{
-  return reply.stock_reply(err_code);
+  res.result(err_code);
+  boost::beast::ostream(res.body()) << rep.stock_reply(res.result_int());
+  res.content_length((res.body().size()));
+  res.set(bhttp::field::content_type, "text/html");
+  return err_code;
 }

@@ -2,20 +2,16 @@
 #define REQUEST_ERROR_HANDLER_H
 
 #include "request_handler.h"
-#include "reply.h"
 
 class request_error_handler: public request_handler
 {
 public:
-  request_error_handler();
-  request_error_handler(http::server::reply::status_type error_code);
-  void set_error_code(http::server::reply::status_type error_code);
-  http::server::reply get_reply();
+  request_error_handler(bhttp::status error_code);
+  bhttp::status handle_request(const bhttp::request<bhttp::dynamic_body> req, bhttp::response<bhttp::dynamic_body>& res);
 
 private:
-  http::server::reply::status_type err_code;
-  http::server::reply reply;
-
+  bhttp::status err_code;
+  reply rep;
 };
 
 #endif
