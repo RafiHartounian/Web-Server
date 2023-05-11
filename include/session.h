@@ -1,7 +1,7 @@
 #pragma once
 
 #include "session_interface.h"
-#include "request_handler_interface.h"
+#include "request_handler.h"
 #include "request_parser.h"
 #include "request.h"
 
@@ -23,7 +23,7 @@ public:
                           size_t bytes_transferred);
   bool handle_write(const boost::system::error_code& error);
   session_interface* get_session(boost::asio::io_service& io_service);
-  void write_to_socket(request_handler_interface* handler);
+  void write_to_socket(request_handler* handler);
   bool set_configured_paths(std::vector<path> paths);
   path get_endpoint();
 

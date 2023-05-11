@@ -1,13 +1,13 @@
 #ifndef REQUEST_ECHO_HANDLER_H
 #define REQUEST_ECHO_HANDLER_H
 
-#include "request_handler_interface.h"
+#include "request_handler.h"
 #include <cstddef>
 #include <string>
 #include <vector>
 #include "request.h"
 
-class request_echo_handler: public request_handler_interface
+class request_echo_handler: public request_handler
 {
 public:
   request_echo_handler();

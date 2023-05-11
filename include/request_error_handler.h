@@ -1,10 +1,10 @@
 #ifndef REQUEST_ERROR_HANDLER_H
 #define REQUEST_ERROR_HANDLER_H
 
-#include "request_handler_interface.h"
+#include "request_handler.h"
 #include "reply.h"
 
-class request_error_handler: public request_handler_interface
+class request_error_handler: public request_handler
 {
 public:
   request_error_handler();

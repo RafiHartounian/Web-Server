@@ -1,14 +1,14 @@
 #ifndef REQUEST_STATIC_HANDLER_H
 #define REQUEST_STATIC_HANDLER_H
 
-#include "request_handler_interface.h"
+#include "request_handler.h"
 #include <iostream>
 #include "boost/filesystem.hpp"
 #include <filesystem>
 #include "request.h"
 #include <string>
 
-class request_static_handler: public request_handler_interface
+class request_static_handler: public request_handler
 {
 public:
   request_static_handler();

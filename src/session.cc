@@ -54,7 +54,7 @@ std::string session::handle_read(const boost::system::error_code& error, size_t 
       boost::tie(res, std::ignore) = req_parser.parse(request_, st, end);
     }
 
-    std::unique_ptr<request_handler_interface> req_handler_int;
+    std::unique_ptr<request_handler> req_handler_int;
     if (res == good_res) {
       BOOST_LOG_TRIVIAL(info) << "valid request received";
       path req_ep = get_endpoint();
@@ -108,7 +108,7 @@ path session::get_endpoint() {
   }
   return result;
 }
-void session::write_to_socket(request_handler_interface* req_h) {
+void session::write_to_socket(request_handler* req_h) {
   boost::system::error_code ec;
   socket_.remote_endpoint(ec);
   if (!ec) {
