@@ -14,7 +14,7 @@ TEST(EchoHandlerTest, EmptyRequest)
   ostring << request;
   std::string request_string = ostring.str();
 
-  bhttp::response<bhttp::dynamic_body> reponse;
+  bhttp::response<bhttp::dynamic_body> response;
   request_echo_handler echo_handler("/echo", "test url");
   bhttp::status status = echo_handler.handle_request(request, response);
 
@@ -55,11 +55,11 @@ TEST(EchoHandlerTest, NormalRequest)
   request_echo_handler echo_handler("/echo", "test url");
   bhttp::status status = echo_handler.handle_request(request, response);
 
-  std::string body { boost::asio::buffers_begin(answer.body().data()),
-                     boost::asio::buffers_end(answer.body().data()) };
+  std::string body { boost::asio::buffers_begin(response.body().data()),
+                     boost::asio::buffers_end(response.body().data()) };
 
   std::vector<std::pair<std::string, std::string>> headers;
-  for(auto const& field : answer)
+  for(auto const& field : response)
   {
     std::pair<std::string, std::string> header;
     header.first = std::string(field.name_string());
@@ -91,11 +91,11 @@ TEST(EchoHandlerTest, BadRequest)
   request_echo_handler echo_handler("/echo", "test url");
   bhttp::status status = echo_handler.handle_request(request, response);
 
-  std::string body { boost::asio::buffers_begin(answer.body().data()),
-                     boost::asio::buffers_end(answer.body().data()) };
+  std::string body { boost::asio::buffers_begin(response.body().data()),
+                     boost::asio::buffers_end(response.body().data()) };
 
   std::vector<std::pair<std::string, std::string>> headers;
-  for(auto const& field : answer)
+  for(auto const& field : response)
   {
     std::pair<std::string, std::string> header;
     header.first = std::string(field.name_string());
@@ -103,8 +103,8 @@ TEST(EchoHandlerTest, BadRequest)
     headers.push_back(header);
   }
 
-  bool success = (answer.result() == bhttp::status::not_found && 
-                  status == answer.result());
+  bool success = (response.result() == bhttp::status::not_found && 
+                  status == response.result());
 
   EXPECT_TRUE(success);
 }

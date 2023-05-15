@@ -27,6 +27,8 @@ public:
   bool set_configured_paths(std::vector<path> paths);
   bool set_routes(std::map<std::string, request_handler_factory*> route);
   path get_endpoint();
+  bool set_request(bhttp::request<bhttp::dynamic_body> request);
+  std::string lngstmatchingpref(std::map<std::string, request_handler_factory*> routes, std::string url);
 
 private:
   void log_info(std::string func_name, std::string message);
@@ -40,7 +42,7 @@ private:
   char data_[max_length];
   boost::asio::ip::address dest_ip;
   http::server::request_parser req_parser;
-  http::server::request request_;
   std::vector<path> paths_;
   std::map<std::string, request_handler_factory*> routes_;
+  bhttp::request<bhttp::dynamic_body> request_;
 };
