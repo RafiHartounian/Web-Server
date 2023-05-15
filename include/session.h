@@ -25,6 +25,7 @@ public:
   session_interface* get_session(boost::asio::io_service& io_service);
   void write_to_socket(request_handler* handler);
   bool set_configured_paths(std::vector<path> paths);
+  bool set_routes(std::map<std::string, request_handler_factory*> route);
   path get_endpoint();
 
 private:
@@ -41,4 +42,5 @@ private:
   http::server::request_parser req_parser;
   http::server::request request_;
   std::vector<path> paths_;
+  std::map<std::string, request_handler_factory*> routes_;
 };

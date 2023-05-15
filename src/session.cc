@@ -25,6 +25,7 @@ bool session::set_configured_paths(std::vector<path> paths) {
   return true;
 }
 
+
 bool session::start() {
   boost::system::error_code error_code;
   auto remote_ep = socket_.remote_endpoint(error_code);
