@@ -42,11 +42,12 @@ add_library(reply_class src/reply.cc)
 add_library(request_echo_handler src/request_echo_handler.cc)
 add_library(request_static_handler src/request_static_handler.cc)
 add_library(request_error_handler src/request_error_handler.cc)
+add_library(request_404_handler src/request_404_handler.cc)
 add_library(mime_types_class src/mime_types.cc)
 
 add_executable(server src/server_main.cc)
-target_link_libraries(server mime_types_class request_echo_handler request_static_handler request_error_handler config_parser request_parser server_class session_class reply_class pthread Boost::system Boost::log_setup Boost::log)
-target_link_libraries(session_class mime_types_class request_echo_handler request_static_handler request_error_handler request_parser reply_class pthread Boost::system)
+target_link_libraries(server mime_types_class request_echo_handler request_static_handler request_error_handler request_404_handler config_parser request_parser server_class session_class reply_class pthread Boost::system Boost::log_setup Boost::log)
+target_link_libraries(session_class mime_types_class request_echo_handler request_static_handler request_error_handler request_404_handler request_parser reply_class pthread Boost::system)
 target_link_libraries(request_static_handler mime_types_class Boost::filesystem)
 
 # Testing
@@ -58,6 +59,7 @@ add_executable(server_test tests/server_test.cc)
 add_executable(request_echo_handler_test tests/request_echo_handler_test)
 add_executable(request_error_handler_test tests/request_error_handler_test)
 add_executable(request_static_handler_test tests/request_static_handler_test)
+add_executable(request_404_handler_test tests/request_404_handler_test)
 add_executable(mime_types_test tests/mime_types_test)
 
 target_link_libraries(config_parser_test config_parser gtest_main Boost::log_setup Boost::log)
@@ -68,6 +70,7 @@ target_link_libraries(server_test server_class session_class reply_class gtest_m
 target_link_libraries(request_echo_handler_test request_echo_handler reply_class gtest_main)
 target_link_libraries(request_error_handler_test request_error_handler reply_class gtest_main)
 target_link_libraries(request_static_handler_test request_static_handler reply_class mime_types_class Boost::filesystem gtest_main)
+target_link_libraries(request_404_handler_test request_404_handler reply_class gtest_main)
 target_link_libraries(mime_types_test mime_types_class gtest_main)
 
 gtest_discover_tests(config_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
@@ -78,9 +81,10 @@ gtest_discover_tests(server_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/t
 gtest_discover_tests(request_echo_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(request_error_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(request_static_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(request_404_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(mime_types_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 add_test(NAME integration_tests COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration_tests.sh WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 include(cmake/CodeCoverageReportConfig.cmake)
-generate_coverage_report(TARGETS mime_types_class request_echo_handler request_static_handler request_error_handler server_class session_class config_parser request_parser reply_class TESTS mime_types_test request_echo_handler_test request_static_handler_test request_error_handler_test session_test config_parser_test request_parser_test reply_test server_test)
+generate_coverage_report(TARGETS mime_types_class request_echo_handler request_static_handler request_error_handler request_404_handler server_class session_class config_parser request_parser reply_class TESTS mime_types_test request_echo_handler_test request_static_handler_test request_error_handler_test request_404_handler_test session_test config_parser_test request_parser_test reply_test server_test)
