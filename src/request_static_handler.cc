@@ -2,8 +2,8 @@
 #include "request_static_handler.h"
 #include "mime_types.h"
 
-request_static_handler::request_static_handler(std::string location, std::string file_path, std::string url) : 
-  location_(location), root_(file_path), request_url(url)
+request_static_handler::request_static_handler(std::string location, std::string root, std::string url) :
+  location_(location), root_(root), request_url(url)
 {
 
 }
@@ -23,23 +23,23 @@ bhttp::status request_static_handler::handle_request(const bhttp::request<bhttp:
   boost::filesystem::path boost_path(full_path);
   if (!boost::filesystem::exists(boost_path) || !boost::filesystem::is_regular_file(full_path))
   {
-      res.result(bhttp::status::not_found);
-      boost::beast::ostream(res.body()) << rep.stock_reply(res.result_int());
-      res.content_length((res.body().size()));
-      res.set(bhttp::field::content_type, "text/html");
-      return res.result();
+    res.result(bhttp::status::not_found);
+    boost::beast::ostream(res.body()) << rep.stock_reply(res.result_int());
+    res.content_length((res.body().size()));
+    res.set(bhttp::field::content_type, "text/html");
+    return res.result();
   }
 
   std::ifstream file(full_path.c_str(), std::ios::in | std::ios::binary);
   if (!file)
   {
-      res.result(bhttp::status::not_found);
-      boost::beast::ostream(res.body()) << rep.stock_reply(res.result_int());
-      res.content_length((res.body().size()));
-      res.set(bhttp::field::content_type, "text/html");
-      return res.result();
+    res.result(bhttp::status::not_found);
+    boost::beast::ostream(res.body()) << rep.stock_reply(res.result_int());
+    res.content_length((res.body().size()));
+    res.set(bhttp::field::content_type, "text/html");
+    return res.result();
   }
-  
+
   char c;
   std::string reply_body;
   while (file.get(c))

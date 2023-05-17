@@ -12,7 +12,7 @@
 
 using boost::asio::ip::tcp;
 
-class session: public session_interface
+class session : public session_interface
 {
 public:
   session(boost::asio::io_service& io_service);
@@ -24,7 +24,6 @@ public:
   bool handle_write(const boost::system::error_code& error);
   session_interface* get_session(boost::asio::io_service& io_service);
   void write_to_socket(request_handler* handler);
-  bool set_configured_paths(std::vector<path> paths);
   bool set_routes(std::map<std::string, request_handler_factory*> route);
   path get_endpoint();
   bool set_request(bhttp::request<bhttp::dynamic_body> request);
@@ -42,7 +41,6 @@ private:
   char data_[max_length];
   boost::asio::ip::address dest_ip;
   http::server::request_parser req_parser;
-  std::vector<path> paths_;
   std::map<std::string, request_handler_factory*> routes_;
   bhttp::request<bhttp::dynamic_body> request_;
 };

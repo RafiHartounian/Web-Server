@@ -152,7 +152,7 @@ int main(int argc, char* argv[])
     session s(*io_service_ptr);
 
     server serv(s, *io_service_ptr, config.get_listen_port());
-    serv.set_configured_paths(config.get_paths());
+    serv.set_config(config);
 
     serv.start_accept();
 

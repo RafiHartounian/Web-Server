@@ -15,7 +15,6 @@ public:
   virtual bool start() = 0;
   virtual session_interface*
     get_session(boost::asio::io_service& io_service) = 0;
-  virtual bool set_configured_paths(std::vector<path> paths) = 0;
   virtual bool set_routes(std::map<std::string, request_handler_factory*> route) = 0;
 };
 

@@ -3,7 +3,7 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
-class ServerTest: public ::testing::Test
+class ServerTest : public ::testing::Test
 {
 protected:
   mock_session mock_sesh;

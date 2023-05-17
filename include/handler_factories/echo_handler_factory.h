@@ -7,11 +7,11 @@
 class echo_handler_factory : public request_handler_factory
 {
 public:
-  echo_handler_factory(std::string requested_path, NginxConfig config);
+  echo_handler_factory(std::string location, NginxConfig config);
 
   request_handler* create(std::string location, std::string url);
 
 private:
-  std::string requested_path_;
+  std::string location_;
   NginxConfig config_;
 };

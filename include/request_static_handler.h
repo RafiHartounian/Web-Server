@@ -7,10 +7,10 @@
 #include <filesystem>
 #include <string>
 
-class request_static_handler: public request_handler
+class request_static_handler : public request_handler
 {
 public:
-  request_static_handler(std::string location, std::string file_path, std::string url);
+  request_static_handler(std::string location, std::string root, std::string url);
   bhttp::status handle_request(const bhttp::request<bhttp::dynamic_body> req, bhttp::response<bhttp::dynamic_body>& res);
 
 private:

@@ -14,13 +14,13 @@ public:
   bool start_accept();
   bool handle_accept(session_interface* new_session,
                      const boost::system::error_code& error);
-  bool set_configured_paths(std::vector<path> paths);
+  bool set_config(NginxConfig config);
   bool set_routes(std::map<std::string, request_handler_factory*> routes);
 
 private:
   boost::asio::io_service& io_service_;
   session_interface& session_;
   tcp::acceptor acceptor_;
-  std::vector<path> paths_;
+  NginxConfig config_;
   std::map<std::string, request_handler_factory*> routes_;
 };

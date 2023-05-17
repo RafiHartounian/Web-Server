@@ -69,7 +69,7 @@ target_link_libraries(config_parser_test config_parser gtest_main Boost::log_set
 target_link_libraries(reply_test reply_class gtest_main Boost::system)
 target_link_libraries(request_parser_test request_parser gtest_main)
 target_link_libraries(session_test session_class reply_class gtest_main Boost::log_setup Boost::log)
-target_link_libraries(server_test server_class session_class reply_class gtest_main gmock_main Boost::log_setup Boost::log)
+target_link_libraries(server_test server_class session_class reply_class config_parser gtest_main gmock_main Boost::log_setup Boost::log)
 target_link_libraries(request_echo_handler_test request_echo_handler reply_class gtest_main)
 target_link_libraries(request_error_handler_test request_error_handler reply_class gtest_main)
 target_link_libraries(request_static_handler_test request_static_handler reply_class mime_types_class Boost::filesystem gtest_main)

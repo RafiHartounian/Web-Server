@@ -20,6 +20,7 @@ struct path
 {
   endpoint_type type = echo;
   std::string endpoint = "";
+  std::string root = "";
 };
 
 // The parsed representation of a single config statement.
@@ -38,6 +39,7 @@ public:
   std::string ToString(int depth = 0);
   std::vector<std::shared_ptr<NginxConfigStatement>> statements_;
   int get_listen_port();
+  std::string get_root(std::string location);
   std::vector<path> get_paths();
 
 private:
