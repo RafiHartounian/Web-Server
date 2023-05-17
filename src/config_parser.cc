@@ -69,6 +69,10 @@ std::vector<path> NginxConfig::get_paths() {
         if (child_statement->tokens_[0] == kResourcePathKeyword) {
           static_path.type = static_;
           static_path.endpoint = s->tokens_[1];
+          size_t last_slash_pos = static_path.endpoint.find_last_not_of('/');
+          if (last_slash_pos != std::string::npos) {
+            static_path.endpoint = static_path.endpoint.substr(0, last_slash_pos + 1);
+          }
           static_path.root = child_statement->tokens_[1];
         }
       }
@@ -78,6 +82,10 @@ std::vector<path> NginxConfig::get_paths() {
       path echo_path;
       echo_path.type = echo;
       echo_path.endpoint = s->tokens_[1];
+      size_t last_slash_pos = echo_path.endpoint.find_last_not_of('/');
+      if (last_slash_pos != std::string::npos) {
+        echo_path.endpoint = echo_path.endpoint.substr(0, last_slash_pos + 1);
+      }
       paths.push_back(echo_path);
     }
   }

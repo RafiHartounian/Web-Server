@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-request_echo_handler::request_echo_handler(std::string location, std::string url) 
+request_echo_handler::request_echo_handler(std::string location, std::string url)
   : location_(location), request_url(url) {
 
 }
@@ -11,6 +11,11 @@ request_echo_handler::request_echo_handler(std::string location, std::string url
 bhttp::status request_echo_handler::handle_request(const bhttp::request<bhttp::dynamic_body> req, bhttp::response<bhttp::dynamic_body>& res)
 {
   std::string req_input = req.target().to_string();
+  size_t last_slash_pos = req_input.find_last_not_of('/');
+  if (last_slash_pos != std::string::npos) {
+    req_input = req_input.substr(0, last_slash_pos + 1);
+  }
+
   if (location_ != req_input)
   {
     res.result(bhttp::status::not_found);

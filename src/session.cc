@@ -8,7 +8,6 @@
 #include <cstdlib>
 #include <iostream>
 #include <iterator>
-#include <regex>
 #include <memory>
 
 #include "request_echo_handler.h"
@@ -58,7 +57,7 @@ std::string session::handle_read(const boost::system::error_code& error, size_t 
   std::string request_string = ostring.str();
   if (!error) {
     log_info("handle_read", "request parser valid");
-    std::string location = lngstmatchingpref(routes_, std::string(request_.target()));
+    std::string location = match(routes_, std::string(request_.target()));
     request_handler_factory* factory = routes_[location];
     request_handler* handler = factory->create(location, std::string(request_.target()));
     write_to_socket(handler);
@@ -72,18 +71,18 @@ std::string session::handle_read(const boost::system::error_code& error, size_t 
   return request_string;
 }
 
-std::string session::lngstmatchingpref(std::map<std::string, request_handler_factory*> routes, std::string url)
+std::string session::match(std::map<std::string, request_handler_factory*> routes, std::string url)
 {
-  std::string string_to_match = url.substr(0, url.length());
-  size_t pos;
-  while (url.length() != std::string::npos)
+  std::string matched_str = url.substr(0, url.length());
+  size_t pos = url.length();
+  while (pos != std::string::npos)
   {
-    string_to_match = string_to_match.substr(0, url.length());
-    if (routes.find(string_to_match) != routes.end())
+    matched_str = matched_str.substr(0, pos);
+    if (routes.find(matched_str) != routes.end())
     {
-      return string_to_match;
+      return matched_str;
     }
-    pos = string_to_match.rfind('/');
+    pos = matched_str.rfind('/');
   }
   return "/";
 }

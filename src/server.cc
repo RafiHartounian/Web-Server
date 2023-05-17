@@ -40,12 +40,11 @@ bool server::start_accept()
       case endpoint_type::echo:
         routes_.emplace(p.endpoint, new echo_handler_factory(p.endpoint, config_));
         break;
-      default:
-        routes_.emplace(p.endpoint, new handler404factory(p.endpoint, config_));
-        break;
     }
   }
+  routes_.emplace("/", new handler404factory("/", config_));
 
+  new_session->set_routes(routes_);
   acceptor_.async_accept(new_session->socket(),
                          boost::bind(&server::handle_accept, this, new_session,
                            boost::asio::placeholders::error));

@@ -1,4 +1,3 @@
-#include <regex>
 #include "request_static_handler.h"
 #include "mime_types.h"
 
@@ -11,6 +10,11 @@ request_static_handler::request_static_handler(std::string location, std::string
 bhttp::status request_static_handler::handle_request(const bhttp::request<bhttp::dynamic_body> req, bhttp::response<bhttp::dynamic_body>& res)
 {
   std::string req_input = req.target().to_string();
+  size_t last_slash_pos = req_input.find_last_not_of('/');
+  if (last_slash_pos != std::string::npos) {
+    req_input = req_input.substr(0, last_slash_pos + 1);
+  }
+
   std::string file_name = req_input.substr(location_.size(), std::string::npos);
   size_t ext_start = file_name.find_last_of(".");
   if (ext_start != std::string::npos)
