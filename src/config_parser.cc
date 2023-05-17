@@ -61,7 +61,6 @@ std::vector<path> NginxConfig::get_paths() {
         if (child_statement->tokens_[0] == kResourcePathKeyword) {
           static_path.type = static_;
           static_path.endpoint = s->tokens_[1];
-          static_path.root = child_statement->tokens_[1];
         }
       }
       paths.push_back(static_path);
@@ -70,7 +69,6 @@ std::vector<path> NginxConfig::get_paths() {
       path echo_path;
       echo_path.type = echo;
       echo_path.endpoint = s->tokens_[1];
-      echo_path.root = "";
       paths.push_back(echo_path);
     }
   }
@@ -78,7 +76,6 @@ std::vector<path> NginxConfig::get_paths() {
   for (auto p : paths) {
     BOOST_LOG_TRIVIAL(info) << "path endpoint_type " << p.type;
     BOOST_LOG_TRIVIAL(info) << "path endpoint: " << p.endpoint;
-    BOOST_LOG_TRIVIAL(info) << "path root: " << p.root;
   }
 
   return paths;

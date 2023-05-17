@@ -36,9 +36,9 @@ bool session::set_request(bhttp::request<bhttp::dynamic_body> request)
   request_ = request;
   return true;
 }
-bool session::set_routes(std::map<std::string, request_handler_factory*> route)
+bool session::set_routes(std::map<std::string, request_handler_factory*> routes)
 {
-  routes_ = route;
+  routes_ = routes;
   return true;
 }
 
@@ -80,7 +80,7 @@ std::string session::lngstmatchingpref(std::map<std::string, request_handler_fac
 {
   std::string string_to_match = url.substr(0, url.length());
   size_t pos;
-  while (url.length() != std::string::npos) 
+  while (url.length() != std::string::npos)
   {
     string_to_match = string_to_match.substr(0, url.length());
     if (routes.find(string_to_match) != routes.end())
@@ -89,17 +89,17 @@ std::string session::lngstmatchingpref(std::map<std::string, request_handler_fac
     }
     pos = string_to_match.rfind('/');
   }
-  return "/"; 
+  return "/";
 }
 
 void session::write_to_socket(request_handler* req_h) {
   boost::system::error_code ec;
   socket_.remote_endpoint(ec);
   if (!ec) {
-      bhttp::response <bhttp::dynamic_body> response_;
-      req_h->handle_request(request_, response_);
-      bhttp::write(socket_, response_);
-      handle_write(boost::system::error_code());
+    bhttp::response <bhttp::dynamic_body> response_;
+    req_h->handle_request(request_, response_);
+    bhttp::write(socket_, response_);
+    handle_write(boost::system::error_code());
   }
   else {
     BOOST_LOG_TRIVIAL(error) << "Unable to write to socket. Error code: " << boost::system::system_error(ec).what();

@@ -8,18 +8,20 @@
 #include <vector>
 
 class NginxConfig;
+
 enum endpoint_type
 {
   static_,
   echo,
   invalid
 };
+
 struct path
 {
   endpoint_type type = echo;
   std::string endpoint = "";
-  std::string root = "";
 };
+
 // The parsed representation of a single config statement.
 class NginxConfigStatement
 {

@@ -5,12 +5,12 @@
 
 class handler404factory : public request_handler_factory
 {
-  public:
-    handler404factory(std::string location, path root_file_path);
+public:
+  handler404factory(std::string requested_path_, NginxConfig config);
 
-    request_handler* create(std::string location, std::string request_url);
+  request_handler* create(std::string location, std::string url);
 
-  private:
-    std::string location_;
-    path root_file_path_;
+private:
+  std::string requested_path_;
+  NginxConfig config_;
 };
