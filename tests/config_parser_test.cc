@@ -115,20 +115,20 @@ TEST_F(NginxConfigParserTest, GetListenPortOutOfRange) {
   EXPECT_THROW(out_config.get_listen_port(), std::invalid_argument);
 }
 
-// TEST_F(NginxConfigParserTest, GetPaths) {
-//   bool success = parser.Parse("paths_config", &out_config);
-//   std::vector<path> configured_paths = {
-//     path{endpoint_type::static_, "/static1", "../static_files/static1"},
-//     path{endpoint_type::static_, "/static2", "../static_files/static2"},
-//     path{endpoint_type::static_, "/static3", "../static_files/static3"},
-//     path{endpoint_type::echo, "/echo", ""},
-//     path{endpoint_type::echo, "/echo2", ""},
-//   };
-//   std::vector<path> retrieved_paths = out_config.get_paths();
-//   ASSERT_EQ(configured_paths.size(), retrieved_paths.size());
-//   for (int i = 0; i < configured_paths.size(); ++i) {
-//     EXPECT_EQ(retrieved_paths[i].type, configured_paths[i].type);
-//     EXPECT_EQ(retrieved_paths[i].endpoint, configured_paths[i].endpoint);
-//     EXPECT_EQ(retrieved_paths[i].root, configured_paths[i].root);
-//   }
-// }
+TEST_F(NginxConfigParserTest, GetPaths) {
+  bool success = parser.Parse("paths_config", &out_config);
+  std::vector<path> configured_paths = {
+    path{endpoint_type::static_, "/static1", "../static_files/static1"},
+    path{endpoint_type::static_, "/static2", "../static_files/static2"},
+    path{endpoint_type::static_, "/static3", "../static_files/static3"},
+    path{endpoint_type::echo, "/echo", ""},
+    path{endpoint_type::echo, "/echo2", ""},
+  };
+  std::vector<path> retrieved_paths = out_config.get_paths();
+  ASSERT_EQ(configured_paths.size(), retrieved_paths.size());
+  for (int i = 0; i < configured_paths.size(); ++i) {
+    EXPECT_EQ(retrieved_paths[i].type, configured_paths[i].type);
+    EXPECT_EQ(retrieved_paths[i].endpoint, configured_paths[i].endpoint);
+    EXPECT_EQ(retrieved_paths[i].root, configured_paths[i].root);
+  }
+}

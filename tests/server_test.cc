@@ -16,6 +16,10 @@ TEST_F(ServerTest, StartServer)
   session s(io_service);
 
   server serv(s, io_service, port);
+  NginxConfig config;
+  NginxConfigParser parser;
+  parser.Parse("../configs/test_config", &config);
+  serv.set_config(config);
 
   EXPECT_TRUE(serv.start_accept());
 }
