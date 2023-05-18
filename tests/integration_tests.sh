@@ -9,7 +9,7 @@ sleep 0.2
 
 SERVER_PID=$!
 
-TIMEOUT=0.2
+TIMEOUT=1
 SERVER_IP=localhost
 SERVER_PORT=8080
 

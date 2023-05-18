@@ -7,6 +7,7 @@
 #include "handler_factories/static_handler_factory.h"
 #include "handler_factories/echo_handler_factory.h"
 #include "handler_factories/handler404factory.h"
+#include "handler_factories/api_handler_factory.h"
 
 using boost::asio::ip::tcp;
 
@@ -39,6 +40,9 @@ bool server::start_accept()
         break;
       case endpoint_type::echo:
         routes_.emplace(p.endpoint, new echo_handler_factory(p.endpoint, config_));
+        break;
+      case endpoint_type::api:
+        routes_.emplace(p.endpoint, new api_handler_factory(p.endpoint, config_));
         break;
     }
   }

@@ -13,6 +13,10 @@ location /coverage_info StaticHandler {
     root ../static_files/coverage_info;
 }
 
+#location /api APIHandler {
+#    root ../crud;
+#}
+
 location /echo EchoHandler {
 }
         

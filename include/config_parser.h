@@ -13,6 +13,7 @@ enum endpoint_type
 {
   static_,
   echo,
+  api,
   invalid
 };
 

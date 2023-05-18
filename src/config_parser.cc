@@ -52,7 +52,7 @@ int NginxConfig::get_listen_port() {
 
 std::string NginxConfig::get_root(std::string location) {
   for (path p : paths) {
-    if (p.endpoint != location || p.type != endpoint_type::static_) continue;
+    if (p.endpoint != location && (p.type != endpoint_type::static_ || p.type != endpoint_type::api)) continue;
     return p.root;
   }
   return "";
@@ -87,6 +87,21 @@ std::vector<path> NginxConfig::get_paths() {
         echo_path.endpoint = echo_path.endpoint.substr(0, last_slash_pos + 1);
       }
       paths.push_back(echo_path);
+    }
+    else if (s->tokens_[2] == kAPIHandler) {
+        path api_path; 
+        for (auto child_statement : s->child_block_->statements_) {
+            if (child_statement->tokens_[0] == kResourcePathKeyword) {
+            api_path.type = api;
+            api_path.endpoint = s->tokens_[1];
+            size_t last_slash_pos = api_path.endpoint.find_last_not_of('/');
+            if (last_slash_pos != std::string::npos) {
+                api_path.endpoint = api_path.endpoint.substr(0, last_slash_pos + 1);
+            }
+            api_path.root = child_statement->tokens_[1];
+        }
+      }
+      paths.push_back(api_path);
     }
   }
 
