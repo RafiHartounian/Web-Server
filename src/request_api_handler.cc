@@ -3,11 +3,52 @@
 #include "mime_types.h"
 #include <boost/log/trivial.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/log/trivial.hpp>
 
-request_api_handler::request_api_handler(std::string location, std::string root, std::string url, std::map<std::string, int>& path_counts) :
+request_api_handler::request_api_handler(std::string location, std::string root, std::string url, std::map<std::string, std::vector<int>>& path_counts) :
   location_(location), root_(root), request_url(url), path_counts(path_counts)
 {
+}
+
+//checks the list of IDs associated with the given directory to find the lowest ID available
+int request_api_handler::getNextID(std::string directory)
+{
+  std::vector<int> id_list = path_counts[directory];
+  int index = 1;
+  int id = 0;
+  if(id_list.size() == 0)
+  {
+    id = 1;
+  }
+  else if(id_list.size() == 1)
+  {
+    if(id_list[0] == 1)
+    {
+      id = 2;
+    }
+    else
+    {
+      id = 1;
+    }
+  }
+  else
+  {
+    while(index != id_list.size() && (id_list[index] == id_list[index-1]+1))
+    {
+      index++;
+    }
+    id = id_list[index-1]+1;
+    index++;
+  }
+  BOOST_LOG_TRIVIAL(info) << "index: " << index;
+  BOOST_LOG_TRIVIAL(info) << "id list size: " << id_list.size();
+  BOOST_LOG_TRIVIAL(info) << "id: " << id;
+
+  id_list.insert(id_list.begin()+index-1,id);
+  BOOST_LOG_TRIVIAL(info) << "inserted at " << 0 + index - 1;
+  BOOST_LOG_TRIVIAL(info) << "id list size 2: " << id_list.size();
+  path_counts[directory] = id_list;
+
+  return id;
 }
 
 bhttp::status request_api_handler::handle_post(bhttp::request<bhttp::dynamic_body> req, bhttp::response<bhttp::dynamic_body>& res, std::string directory)
@@ -15,7 +56,7 @@ bhttp::status request_api_handler::handle_post(bhttp::request<bhttp::dynamic_bod
   std::string path = root_ + "/" + directory;
   boost::system::error_code ec;
   //create the specified path if it doesn't already exist in the file system
-  if (path_counts.find(directory) == path_counts.end() && !boost::filesystem::exists(path)) 
+  if (!boost::filesystem::exists(path)) 
   {
     boost::filesystem::create_directory(path,ec);
     if(ec)
@@ -25,10 +66,8 @@ bhttp::status request_api_handler::handle_post(bhttp::request<bhttp::dynamic_bod
     }
   }
 
-  //path_counts maps entity names to the number of files in the directory
-  //IDs are assigned using the (current max ID in the directory)+1
-  int count = path_counts[directory];
-  int id = count+1;
+  int id = getNextID(directory);
+
   std::string file_path = path + "/" + std::to_string(id);
   std::string json = boost::beast::buffers_to_string(req.body().data());
 
@@ -41,8 +80,6 @@ bhttp::status request_api_handler::handle_post(bhttp::request<bhttp::dynamic_bod
   std::ofstream file(file_path);
   file << body;
   file.close();
-
-  path_counts[directory] = count+1;
 
   res.result(bhttp::status::created);
   std::string stock_reply = "<html>"

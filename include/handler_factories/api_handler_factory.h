@@ -12,5 +12,5 @@ public:
 private:
   std::string location_;
   NginxConfig config_;
-  std::map<std::string, int> path_counts;
+  std::map<std::string, std::vector<int>> path_counts;
 };
