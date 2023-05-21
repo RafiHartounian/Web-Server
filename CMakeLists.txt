@@ -95,6 +95,7 @@ gtest_discover_tests(mime_types_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DI
 gtest_discover_tests(request_api_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 add_test(NAME integration_tests COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration_tests.sh WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+add_test(NAME api_integration_tests COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/api_integration_tests.sh WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 include(cmake/CodeCoverageReportConfig.cmake)
 generate_coverage_report(TARGETS mime_types_class request_echo_handler request_static_handler request_error_handler request_404_handler request_api_handler server_class session_class config_parser request_parser reply_class TESTS mime_types_test request_echo_handler_test request_static_handler_test request_error_handler_test request_404_handler_test request_api_handler_test session_test config_parser_test request_parser_test reply_test server_test)
