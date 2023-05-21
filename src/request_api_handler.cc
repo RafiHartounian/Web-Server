@@ -92,6 +92,66 @@ bhttp::status request_api_handler::handle_post(bhttp::request<bhttp::dynamic_bod
   return res.result();
 }
 
+bhttp::status request_api_handler::handle_delete(bhttp::request<bhttp::dynamic_body> req, bhttp::response<bhttp::dynamic_body>& res, std::string directory)
+{
+  std::string path = root_ + "/" + directory;
+  boost::filesystem::path boost_path(path);
+  //if the file doesn't exist, bad request 
+  if (!boost::filesystem::exists(boost_path)) 
+  {
+    BOOST_LOG_TRIVIAL(error) << "request_api_handler::handle_delete path does not exist: " << path << std::endl; 
+    return send_bad_request(res);
+  }
+  if (boost::filesystem::is_directory(boost_path)) {
+    BOOST_LOG_TRIVIAL(error) << "request_api_handler::handle_delete path is a directory: " << path << std::endl; 
+    return send_bad_request(res); 
+  }
+  // get id 
+  std::size_t found = directory.find_last_of("/");
+  std::string id_str = directory.substr(found+1);
+  std::string entity = directory.substr(0, found);
+  // id string -> int 
+  int id; 
+  try 
+  {
+    id = std::stoi(id_str); 
+  }
+  catch(const std::exception&) 
+  {
+    BOOST_LOG_TRIVIAL(error) << "request_api_handler::handle_delete invalid id: " << id_str << std::endl; 
+    return send_bad_request(res); 
+  }
+  
+  if (path_counts.find(entity) != path_counts.end()) 
+  {
+    if (boost::filesystem::remove(boost_path)) {
+      // Remove from path_counts
+      std::vector<int>::iterator vector_it; 
+      vector_it = find(path_counts[entity].begin(), path_counts[entity].end(), id);
+      if (vector_it == path_counts[entity].end()) {
+        BOOST_LOG_TRIVIAL(error) << "Entity: " << entity << "/ID: " << id << " not found in path_counts\n";
+        return send_bad_request(res); 
+      } 
+      path_counts[entity].erase(vector_it);
+
+      BOOST_LOG_TRIVIAL(info) << "Deleting file:" << std::endl;
+      res.result(bhttp::status::ok);
+      std::string stock_reply = "<html>"
+                "<head><title>Deleted</title></head>"
+                "<body><h1>File Deleted.</h1></body>"
+                "</html>";
+      boost::beast::ostream(res.body()) << stock_reply;
+      res.content_length((res.body().size()));
+      res.set(bhttp::field::content_type, "text/html");
+      return res.result();
+    }
+  }
+
+  // remove 
+  return send_bad_request(res); 
+
+}
+
 bhttp::status request_api_handler::send_bad_request(bhttp::response<bhttp::dynamic_body>& res)
 {
   res.result(bhttp::status::bad_request);
@@ -148,12 +208,14 @@ bhttp::status request_api_handler::handle_request(const bhttp::request<bhttp::dy
         return res.result();
       break; 
     
-    case bhttp::verb::delete_: // TODO: DELETE CODE INSIDE BLOCK, ONLY ECHOES RIGHT NOW
-        res.result(bhttp::status::ok);
-        boost::beast::ostream(res.body()) << req;
-        res.content_length((res.body().size()));
-        res.set(bhttp::field::content_type, "text/plain");
-        return res.result();
+    case bhttp::verb::delete_: 
+        //delete requests must have 1 id 
+        if(directory.find("/") == -1)
+        {
+          BOOST_LOG_TRIVIAL(error) << "request_api_handler::handle_request : invalid directory for delete request";
+          return send_bad_request(res);
+        }
+        return handle_delete(req,res,directory);
       break; 
     default: // Bad request 
         BOOST_LOG_TRIVIAL(error) << "request_api_handler::handle_request : invalid method";

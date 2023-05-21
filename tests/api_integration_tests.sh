@@ -33,11 +33,29 @@ else
   echo "Test POST Request Succeeded"
 fi
 
-rm ../crud/test/1
+DELETE_REQ_SUCCESS=0
+
+# Curl server and delete
+timeout $TIMEOUT curl -s -i -X DELETE -H "Host:" -H "User-Agent:" $SERVER_IP:$SERVER_PORT/api/test/1
+
+# Check if file exists or not
+FILE=../database/test/1
+
+test -f "$FILE";
+RESULT=$?
+
+if [ $RESULT -ne 1 ]; 
+then
+    echo "Test DELETE request failed"
+else 
+    DELETE_REQ_SUCCESS=1
+    echo "Test DELETE request succeeded"
+fi
+
 # kill server and return test results
 kill -9 $SERVER_PID
 
-if [ $POST_REQ_SUCCESS -eq 1 ];
+if [ $POST_REQ_SUCCESS -eq 1 ] && [ $DELETE_REQ_SUCCESS -eq 1 ];
 then
   exit 0
 fi

@@ -212,6 +212,162 @@ TEST_F(APIHandlerFixture, PostWithDeleteds) {
     boost::filesystem::remove_all("../crud/Books");
 }
 
+TEST_F(APIHandlerFixture, DeleteInvalidPath) { 
+    bhttp::request<bhttp::dynamic_body> request; 
+    request.target("/api/invalid"); 
+    request.method(bhttp::verb::delete_);
+    bhttp::response<bhttp::dynamic_body> response; 
+    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts); 
+    bhttp::status status1 = api_handler.handle_request(request, response);
+    
+    EXPECT_EQ(bhttp::status::bad_request, status1);
+}
+
+TEST_F(APIHandlerFixture, DeleteNotInPathCounts) { 
+    bhttp::request<bhttp::dynamic_body> request; 
+    request.target("/api/invalid/1"); 
+    request.method(bhttp::verb::delete_);
+    bhttp::response<bhttp::dynamic_body> response; 
+    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts); 
+    bhttp::status status1 = api_handler.handle_request(request, response);
+    
+    EXPECT_EQ(bhttp::status::bad_request, status1);
+}
+TEST_F(APIHandlerFixture, DeleteOnDirectory) { 
+    bhttp::request<bhttp::dynamic_body> request; 
+    boost::filesystem::path dir_path(root + "/test");
+    boost::filesystem::create_directory(dir_path);
+    boost::filesystem::path final_path(root + "/test" + "/dir");
+    boost::filesystem::create_directory(final_path);
+
+    request.target("/api/test/dir"); 
+    request.method(bhttp::verb::delete_);
+    bhttp::response<bhttp::dynamic_body> response; 
+    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts); 
+    bhttp::status status1 = api_handler.handle_request(request, response);
+    
+    EXPECT_EQ(bhttp::status::bad_request, status1);
+
+    // cleanup 
+    boost::filesystem::remove_all(dir_path); 
+}
+
+TEST_F(APIHandlerFixture, DeleteIDNotInt) { 
+    bhttp::request<bhttp::dynamic_body> request; 
+    boost::filesystem::path dir_path(root + "/unit_test");
+    boost::filesystem::create_directory(dir_path);
+    // cleanup first in case files exist 
+    boost::filesystem::remove_all(dir_path); 
+
+    // Create file: code from https://stackoverflow.com/questions/30029343/how-do-i-create-a-file-with-boost-filesystem-without-opening-it 
+    boost::filesystem::ofstream( root + "/unit_test/abc" );
+    request.target("/api/unit_test/abc"); 
+    request.method(bhttp::verb::delete_);
+    bhttp::response<bhttp::dynamic_body> response; 
+    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts); 
+    bhttp::status status1 = api_handler.handle_request(request, response);
+    
+    EXPECT_EQ(bhttp::status::bad_request, status1);
+
+    // cleanup 
+    boost::filesystem::remove_all(dir_path); 
+}
+
+TEST_F(APIHandlerFixture, DeleteIDNotInPathCounts) { 
+    bhttp::request<bhttp::dynamic_body> request; 
+    boost::filesystem::path dir_path(root + "/unit_test");
+    boost::filesystem::create_directory(dir_path);
+    // cleanup first in case files exist 
+    boost::filesystem::remove_all(dir_path); 
+
+    // Create file: code from https://stackoverflow.com/questions/30029343/how-do-i-create-a-file-with-boost-filesystem-without-opening-it 
+    boost::filesystem::ofstream( root + "/unit_test/1" );
+    request.target("/api/unit_test/1"); 
+    request.method(bhttp::verb::delete_);
+    bhttp::response<bhttp::dynamic_body> response; 
+    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts); 
+    bhttp::status status1 = api_handler.handle_request(request, response);
+    
+    EXPECT_EQ(bhttp::status::bad_request, status1);
+
+    // cleanup 
+    boost::filesystem::remove_all(dir_path); 
+}
+
+TEST_F(APIHandlerFixture, DeleteValidRequest) { 
+
+    
+    bhttp::request<bhttp::dynamic_body> request; 
+
+    boost::filesystem::path dir_path(root + "/unit_test");
+    // cleanup first in case files exist 
+    boost::filesystem::remove_all(dir_path); 
+
+    boost::filesystem::create_directory(dir_path);
+
+    std::vector<int> ids = {1};
+    path_counts["unit_test"] = ids; 
+    // Create file: code from https://stackoverflow.com/questions/30029343/how-do-i-create-a-file-with-boost-filesystem-without-opening-it 
+    boost::filesystem::ofstream( root + "/unit_test/1" );
+    request.target("/api/unit_test/1"); 
+    request.method(bhttp::verb::delete_);
+    bhttp::response<bhttp::dynamic_body> response; 
+    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts); 
+    bhttp::status status1 = api_handler.handle_request(request, response);
+    
+    EXPECT_EQ(bhttp::status::ok, status1);
+    EXPECT_EQ(path_counts["unit_test"].size(), 0);
+
+    // cleanup 
+    boost::filesystem::remove_all(dir_path); 
+}
+
+// If we have the map for unit_test to a vector of {1, 2, 3}
+// and we delete 2 and post again,
+// The POST should have an ID of 2. 
+TEST_F(APIHandlerFixture, DeleteThenPost) { 
+    bhttp::request<bhttp::dynamic_body> request; 
+    boost::filesystem::path dir_path(root + "/unit_test");
+    // cleanup first in case files exist 
+    boost::filesystem::remove_all(dir_path); 
+    boost::filesystem::create_directory(dir_path);
+
+    std::vector<int> ids = {1, 2, 3};
+    path_counts["unit_test"] = ids; 
+    // Create file: code from https://stackoverflow.com/questions/30029343/how-do-i-create-a-file-with-boost-filesystem-without-opening-it 
+    boost::filesystem::ofstream( root + "/unit_test/2" );
+    request.target("/api/unit_test/2"); 
+    request.method(bhttp::verb::delete_);
+    bhttp::response<bhttp::dynamic_body> response; 
+    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts); 
+    bhttp::status status1 = api_handler.handle_request(request, response);
+    
+    EXPECT_EQ(bhttp::status::ok, status1);
+    EXPECT_EQ(path_counts["unit_test"].size(), 2);
+
+    // POST 
+    bhttp::request<bhttp::dynamic_body> request2; 
+    request2.target("/api/unit_test"); 
+    request2.method(bhttp::verb::post);
+    boost::beast::ostream(request2.body()) << "\'{\"name\":\"John\", \"age\":30, \"car\":null}\'";
+    bhttp::response<bhttp::dynamic_body> response2; 
+    request_api_handler api_handler2(base_uri, root, request.target().to_string(), path_counts); 
+    bhttp::status status2 = api_handler2.handle_request(request2, response2);
+    EXPECT_EQ(bhttp::status::created, status2);
+
+    // Check that 2 is in path_counts 
+    std::map<std::string, std::vector<int>>::iterator map_it;
+    map_it = path_counts.find("unit_test");
+    
+    std::vector<int>::iterator vector_it; 
+    vector_it = find(map_it->second.begin(), map_it->second.end(), 2); 
+
+    EXPECT_NE(vector_it, map_it->second.end());
+
+    // cleanup 
+    boost::filesystem::remove_all(dir_path); 
+}
+
 // TODO: Delete/modify this once GET functionality is created. 
 // Before implementing post functionality, GET requests simply echo. 
 TEST_F(APIHandlerFixture, GETRequestEcho) { 
@@ -229,17 +385,6 @@ TEST_F(APIHandlerFixture, PUTRequestEcho) {
     bhttp::request<bhttp::dynamic_body> request; 
     request.target("/api/Shoes/1"); 
     request.method(bhttp::verb::put);
-    bhttp::response<bhttp::dynamic_body> response; 
-    request_api_handler api_handler(base_uri, root, "/api/Shoes/1", path_counts); 
-    bhttp::status status = api_handler.handle_request(request, response); 
-    EXPECT_EQ(bhttp::status::ok, status); 
-}
-// TODO: Delete/modify this once DELETE functionality is created. 
-// Before implementing post functionality, DELETE requests simply echo. 
-TEST_F(APIHandlerFixture, DELETERequestEcho) { 
-    bhttp::request<bhttp::dynamic_body> request; 
-    request.target("/api/Shoes/1");
-    request.method(bhttp::verb::delete_);
     bhttp::response<bhttp::dynamic_body> response; 
     request_api_handler api_handler(base_uri, root, "/api/Shoes/1", path_counts); 
     bhttp::status status = api_handler.handle_request(request, response); 

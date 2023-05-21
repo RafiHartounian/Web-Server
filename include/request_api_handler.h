@@ -18,6 +18,7 @@ class request_api_handler : public request_handler
 
     int getNextID(std::string directory);
     bhttp::status handle_post(bhttp::request<bhttp::dynamic_body> req, bhttp::response<bhttp::dynamic_body>& res, std::string directory);
+    bhttp::status handle_delete(bhttp::request<bhttp::dynamic_body> req, bhttp::response<bhttp::dynamic_body>& res, std::string directory);
     bhttp::status send_bad_request(bhttp::response<bhttp::dynamic_body>& res);
 };
 
