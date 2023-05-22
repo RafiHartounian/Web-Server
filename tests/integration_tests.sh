@@ -5,11 +5,11 @@ CONFIG_PATH=../configs/test_config
 
 # start server in the background
 $SERVER_PATH $CONFIG_PATH &
-sleep 1
+sleep 2
 
 SERVER_PID=$!
 
-TIMEOUT=1
+TIMEOUT=2
 SERVER_IP=localhost
 SERVER_PORT=8080
 

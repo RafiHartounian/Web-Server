@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Clean the test dir
+rm -rf ../crud/test
+
+echo '{"a":2}' > ../crud/test/1 
+
 SERVER_PATH=../build/bin/server
 CONFIG_PATH=../configs/api_test_config
 
@@ -13,16 +18,13 @@ TIMEOUT=1
 SERVER_IP=localhost
 SERVER_PORT=8080
 
-# Clean the test dir
-rm -rf ../crud/test
-
 # POST Test
 POST_REQ_SUCCESS=0 
 echo "POST test"
 timeout $TIMEOUT curl -s -i -X POST -H "Host:" -H "User-Agent:" $SERVER_IP:$SERVER_PORT/api/test -d '{"a":1}'
 sleep 1
 echo "Compare the result" ../
-diff ../crud/test/1 POST_test
+diff ../crud/test/2 POST_test #testing for persistent storage across server restarts
 MATCHES=$?
 echo $MATCHES
 if [ $MATCHES -eq 1 ];
@@ -39,7 +41,7 @@ DELETE_REQ_SUCCESS=0
 timeout $TIMEOUT curl -s -i -X DELETE -H "Host:" -H "User-Agent:" $SERVER_IP:$SERVER_PORT/api/test/1
 
 # Check if file exists or not
-FILE=../database/test/1
+FILE=../crud/test/1
 
 test -f "$FILE";
 RESULT=$?
@@ -51,6 +53,8 @@ else
     DELETE_REQ_SUCCESS=1
     echo "Test DELETE request succeeded"
 fi
+
+rm -rf ../crud/test
 
 # kill server and return test results
 kill -9 $SERVER_PID

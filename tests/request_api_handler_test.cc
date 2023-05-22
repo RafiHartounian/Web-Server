@@ -80,7 +80,6 @@ TEST_F(APIHandlerFixture, PostRequest) {
     request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts); 
     bhttp::status status1 = api_handler.handle_request(request, response);
     std::string body1 = boost::beast::buffers_to_string(response.body().data());
-    std::cerr << "id list size final: " << path_counts["Shoes"].size() << std::endl;
 
     bhttp::request<bhttp::dynamic_body> request2; 
     request2.target("/api/Shoes"); 
@@ -90,7 +89,6 @@ TEST_F(APIHandlerFixture, PostRequest) {
     request_api_handler api_handler2(base_uri, root, request2.target().to_string(), path_counts); 
     bhttp::status status2 = api_handler2.handle_request(request2, response2); 
     std::string body2 = boost::beast::buffers_to_string(response2.body().data());
-    std::cerr << "id list size final: " << path_counts["Shoes"].size() << std::endl;
 
     bhttp::request<bhttp::dynamic_body> request3; 
     request3.target("/api/Books"); 
@@ -100,7 +98,6 @@ TEST_F(APIHandlerFixture, PostRequest) {
     request_api_handler api_handler3(base_uri, root, request3.target().to_string(), path_counts); 
     bhttp::status status3 = api_handler3.handle_request(request3, response3); 
     std::string body3 = boost::beast::buffers_to_string(response3.body().data());
-    std::cerr << "id list size final: " << path_counts["Shoes"].size() << std::endl;
     
     EXPECT_EQ(bhttp::status::created, status1);
     EXPECT_EQ(bhttp::status::created, status2);
@@ -153,7 +150,6 @@ TEST_F(APIHandlerFixture, PostWithDeleteds) {
     request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts); 
     bhttp::status status1 = api_handler.handle_request(request, response);
     std::string body1 = boost::beast::buffers_to_string(response.body().data());
-    std::cerr << "id list size final: " << path_counts["Shoes"].size() << std::endl;
 
     bhttp::request<bhttp::dynamic_body> request2; 
     request2.target("/api/Books"); 
@@ -163,7 +159,6 @@ TEST_F(APIHandlerFixture, PostWithDeleteds) {
     request_api_handler api_handler2(base_uri, root, request2.target().to_string(), path_counts); 
     bhttp::status status2 = api_handler2.handle_request(request2, response2); 
     std::string body2 = boost::beast::buffers_to_string(response2.body().data());
-    std::cerr << "id list size final: " << path_counts["Books"].size() << std::endl;
 
     bhttp::request<bhttp::dynamic_body> request3; 
     request3.target("/api/Books"); 
@@ -173,7 +168,6 @@ TEST_F(APIHandlerFixture, PostWithDeleteds) {
     request_api_handler api_handler3(base_uri, root, request3.target().to_string(), path_counts); 
     bhttp::status status3 = api_handler3.handle_request(request3, response3); 
     std::string body3 = boost::beast::buffers_to_string(response3.body().data());
-    std::cerr << "id list size final: " << path_counts["Books"].size() << std::endl;
     
     EXPECT_EQ(bhttp::status::created, status1);
     EXPECT_EQ(bhttp::status::created, status2);
@@ -210,6 +204,40 @@ TEST_F(APIHandlerFixture, PostWithDeleteds) {
 
     boost::filesystem::remove_all("../crud/Shoes");
     boost::filesystem::remove_all("../crud/Books");
+}
+
+TEST_F(APIHandlerFixture, PostWithExistingFiles) {
+    boost::filesystem::create_directory("../crud/Shoes");
+    std::ostringstream oss;     
+    oss << "\'{\"name\":\"John\", \"age\":30, \"car\":null}\'";
+    std::string body = oss.str();
+    oss.clear();
+    std::ofstream file("../crud/Shoes/2");
+    file << body;
+    file.close();
+    
+    std::ostringstream oss2;     
+    oss2 << "\'{\"name\":\"Jeff\", \"age\":32, \"car\":null}\'";
+    body = oss2.str();
+    oss2.clear();
+    std::ofstream file2("../crud/Shoes/1");
+    file2 << body;
+    file2.close();
+
+    std::ostringstream oss3;     
+    oss3 << "\'{\"name\":\"Jessie\", \"age\":45, \"car\":null}\'";
+    body = oss3.str();
+    oss3.clear();
+    std::ofstream file3("../crud/Shoes/3");
+    file3 << body;
+    file3.close();
+
+    request_api_handler api_handler(base_uri, root, "/api/Shoes", path_counts); 
+    
+    std::vector<int> ids = {1,2,3};
+    EXPECT_EQ(path_counts["Shoes"], ids);
+
+    boost::filesystem::remove_all("../crud/Shoes");
 }
 
 TEST_F(APIHandlerFixture, DeleteInvalidPath) { 
@@ -305,8 +333,6 @@ TEST_F(APIHandlerFixture, DeleteValidRequest) {
 
     boost::filesystem::create_directory(dir_path);
 
-    std::vector<int> ids = {1};
-    path_counts["unit_test"] = ids; 
     // Create file: code from https://stackoverflow.com/questions/30029343/how-do-i-create-a-file-with-boost-filesystem-without-opening-it 
     boost::filesystem::ofstream( root + "/unit_test/1" );
     request.target("/api/unit_test/1"); 
@@ -332,7 +358,7 @@ TEST_F(APIHandlerFixture, DeleteThenPost) {
     boost::filesystem::remove_all(dir_path); 
     boost::filesystem::create_directory(dir_path);
 
-    std::vector<int> ids = {1, 2, 3};
+    std::vector<int> ids = {1, 3};
     path_counts["unit_test"] = ids; 
     // Create file: code from https://stackoverflow.com/questions/30029343/how-do-i-create-a-file-with-boost-filesystem-without-opening-it 
     boost::filesystem::ofstream( root + "/unit_test/2" );

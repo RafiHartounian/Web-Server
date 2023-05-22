@@ -7,6 +7,60 @@
 request_api_handler::request_api_handler(std::string location, std::string root, std::string url, std::map<std::string, std::vector<int>>& path_counts) :
   location_(location), root_(root), request_url(url), path_counts(path_counts)
 {
+  for (auto file : boost::filesystem::recursive_directory_iterator(root)) {
+    if (!is_regular_file(file)) {
+        BOOST_LOG_TRIVIAL(info) << "ignoring non-file in crud directory: " << absolute(file).string() << std::endl;
+        continue;
+    }
+
+    boost::filesystem::path file_path = absolute(file);
+    std::string file_path_str = file_path.string();
+
+    int id;
+    // check that the filename is an integer
+    if(isdigit(file_path_str[file_path_str.length()-1])) 
+    {
+      id = std::stoi(file_path.stem().string());
+    }
+    else
+    {
+      BOOST_LOG_TRIVIAL(info) << "ignoring file with incorrect name";
+      continue;
+    }
+
+    // remove the id and trailing slash part of the file path
+    std::string entity = file_path_str.substr(0,file_path_str.find_last_of("/"));
+    entity = entity.substr(entity.find_last_of("/")+1);
+
+    std::vector<int> ids = path_counts[entity];
+    //find where to insert id into the id list
+    if(ids.size() == 0)
+    {
+      ids.push_back(id);
+    }
+    else if(ids.size() == 1)
+    {
+      if(ids[0] < id)
+      {
+        ids.push_back(id);
+      }
+      else
+      {
+        ids.insert(ids.begin(), id);
+      }
+    }
+    else
+    {
+      int index = 1;
+      while(index != ids.size() && (ids[index] == ids[index-1]+1))
+      {
+        index++;
+      }
+      ids.insert(ids.begin()+index,id);
+    }
+
+    path_counts[entity] = ids;
+  }
 }
 
 //checks the list of IDs associated with the given directory to find the lowest ID available
@@ -39,13 +93,8 @@ int request_api_handler::getNextID(std::string directory)
     id = id_list[index-1]+1;
     index++;
   }
-  BOOST_LOG_TRIVIAL(info) << "index: " << index;
-  BOOST_LOG_TRIVIAL(info) << "id list size: " << id_list.size();
-  BOOST_LOG_TRIVIAL(info) << "id: " << id;
 
   id_list.insert(id_list.begin()+index-1,id);
-  BOOST_LOG_TRIVIAL(info) << "inserted at " << 0 + index - 1;
-  BOOST_LOG_TRIVIAL(info) << "id list size 2: " << id_list.size();
   path_counts[directory] = id_list;
 
   return id;
@@ -178,7 +227,7 @@ bhttp::status request_api_handler::handle_request(const bhttp::request<bhttp::dy
   }
 
   bhttp::verb method = req.method(); 
-  BOOST_LOG_TRIVIAL(info) << "request_api_handler::handle_post : handling " << req.method_string() << " request with directory " << directory;
+  BOOST_LOG_TRIVIAL(info) << "request_api_handler::handle_request : handling " << req.method_string() << " request with directory " << directory;
 
   switch(method) 
   {
