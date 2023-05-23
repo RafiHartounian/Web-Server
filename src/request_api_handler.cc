@@ -1,6 +1,7 @@
 
 #include "request_api_handler.h"
 #include "mime_types.h"
+#include <bits/c++config.h>
 #include <boost/log/trivial.hpp>
 #include <boost/filesystem.hpp>
 
@@ -162,7 +163,6 @@ bhttp::status request_api_handler::handle_delete(bhttp::request<bhttp::dynamic_b
   std::size_t found = directory.find_last_of("/");
   std::string id_str = directory.substr(found+1);
   std::string entity = directory.substr(0, found);
-  // id string -> int 
   int id; 
   try 
   {
@@ -180,7 +180,8 @@ bhttp::status request_api_handler::handle_delete(bhttp::request<bhttp::dynamic_b
       // Remove from path_counts
       std::vector<int>::iterator vector_it; 
       vector_it = find(path_counts[entity].begin(), path_counts[entity].end(), id);
-      if (vector_it == path_counts[entity].end()) {
+      if (vector_it == path_counts[entity].end()) 
+      {
         BOOST_LOG_TRIVIAL(error) << "Entity: " << entity << "/ID: " << id << " not found in path_counts\n";
         return send_bad_request(res); 
       } 
@@ -202,6 +203,151 @@ bhttp::status request_api_handler::handle_delete(bhttp::request<bhttp::dynamic_b
   // remove 
   return send_bad_request(res); 
 
+}
+
+bhttp::status request_api_handler::handle_get(bhttp::request<bhttp::dynamic_body> req, bhttp::response<bhttp::dynamic_body>& res, std::string directory)
+{
+  std::string path = root_ + "/" + directory;
+  boost::filesystem::path boost_path(path);
+  //if the file doesn't exist, bad request 
+  if (!boost::filesystem::exists(boost_path)) 
+  {
+    BOOST_LOG_TRIVIAL(error) << "request_api_handler::handle_get path does not exist: " << path << std::endl; 
+    return send_bad_request(res);
+  }
+  if (boost::filesystem::is_directory(boost_path)) {
+    BOOST_LOG_TRIVIAL(error) << "request_api_handler::handle_get path is a directory: " << path << std::endl; 
+    return send_bad_request(res); 
+  }
+  // get id 
+  std::size_t found = directory.find_last_of("/");
+  std::string id_str = directory.substr(found+1);
+  std::string entity = directory.substr(0, found);
+  int id; 
+  try 
+  {
+    id = std::stoi(id_str); 
+  }
+  catch(const std::exception&) 
+  {
+    BOOST_LOG_TRIVIAL(error) << "request_api_handler::handle_get invalid id: " << id_str << std::endl; 
+    return send_bad_request(res); 
+  }
+
+  if (path_counts.find(entity) != path_counts.end()) 
+  {
+    std::vector<int>::iterator vector_it; 
+    vector_it = find(path_counts[entity].begin(), path_counts[entity].end(), id);
+    if (vector_it == path_counts[entity].end()) 
+    {
+      BOOST_LOG_TRIVIAL(error) << "Entity: " << entity << "/ID: " << id << " not found in path_counts\n";
+      return send_bad_request(res); 
+    }
+
+    std::ifstream file(path);
+    std::stringstream body;
+    body << file.rdbuf();
+    // Close the file
+    file.close();
+    
+    // Write GET response
+    res.result(bhttp::status::ok);
+    boost::beast::ostream(res.body()) << body.str();
+    res.content_length((res.body().size()));
+    res.set(bhttp::field::content_type, "text/html");
+    return res.result();
+  }
+
+  return send_bad_request(res);
+
+}
+
+bhttp::status request_api_handler::handle_list(bhttp::request<bhttp::dynamic_body> req, bhttp::response<bhttp::dynamic_body>& res, std::string directory)
+{
+  std::string path = root_ + "/" + directory;
+  boost::filesystem::path boost_path(path);
+  // if the directory doesn't exist, bad request 
+  if (!boost::filesystem::is_directory(boost_path)) {
+    BOOST_LOG_TRIVIAL(error) << "request_api_handler::handle_list path is not a directory: " << path << std::endl; 
+    return send_bad_request(res); 
+  }
+
+  std::size_t found = directory.find_last_of("/");
+  std::string entity = directory.substr(0, found);
+
+  if (path_counts.find(entity) != path_counts.end()) 
+  {
+    // create list of IDs in path_counts[entity]
+    std::ostringstream oss;
+    oss << "[";
+    for(int i : path_counts[entity])
+    {
+        oss << std::to_string(i) << ",";
+    }
+    oss.seekp(-1, std::ios_base::end); // this replaces the extra ',' with ']' at the end
+    oss << "]";
+    std::string body = oss.str();
+    oss.clear();
+
+    // Write LIST response
+    res.result(bhttp::status::ok);
+    boost::beast::ostream(res.body()) << body;
+    res.content_length((res.body().size()));
+    res.set(bhttp::field::content_type, "text/html");
+    return res.result();
+  }
+
+  BOOST_LOG_TRIVIAL(error) << "request_api_handler::handle_list directory is empty: " << path << std::endl;
+  return send_bad_request(res);
+}
+
+bhttp::status request_api_handler::handle_put(bhttp::request<bhttp::dynamic_body> req, bhttp::response<bhttp::dynamic_body>& res, std::string directory)
+{
+  std::string path = root_ + "/" + directory;
+  boost::filesystem::path boost_path(path);
+  // if the file doesn't exist, bad request 
+  if (!boost::filesystem::exists(boost_path)) 
+  {
+    BOOST_LOG_TRIVIAL(error) << "request_api_handler::handle_put path does not exist: " << path << std::endl; 
+    return send_bad_request(res);
+  }
+  if (boost::filesystem::is_directory(boost_path)) {
+    BOOST_LOG_TRIVIAL(error) << "request_api_handler::handle_put path is a directory: " << path << std::endl; 
+    return send_bad_request(res); 
+  }
+  // get id 
+  std::size_t found = directory.find_last_of("/");
+  std::string id_str = directory.substr(found+1);
+  std::string entity = directory.substr(0, found);
+  int id; 
+  try 
+  {
+    id = std::stoi(id_str); 
+  }
+  catch(const std::exception&) 
+  {
+    BOOST_LOG_TRIVIAL(error) << "request_api_handler::handle_get invalid id: " << id_str << std::endl; 
+    return send_bad_request(res); 
+  }
+
+  std::string json = boost::beast::buffers_to_string(req.body().data());
+
+  BOOST_LOG_TRIVIAL(info) << "request_api_handler::handle_put : modifying file at path: " << path;
+
+  std::ostringstream oss;     
+  oss << json;
+  std::string body = oss.str();
+  oss.clear();
+  std::ofstream file(path);
+  file << body;
+  file.close();
+
+  // Write PUT response
+  res.result(bhttp::status::ok);
+  boost::beast::ostream(res.body()) << body;
+  res.content_length((res.body().size()));
+  res.set(bhttp::field::content_type, "text/html");
+  return res.result();
 }
 
 bhttp::status request_api_handler::send_bad_request(bhttp::response<bhttp::dynamic_body>& res)
@@ -244,20 +390,24 @@ bhttp::status request_api_handler::handle_request(const bhttp::request<bhttp::dy
         return handle_post(req,res,directory);
       break;
     
-    case bhttp::verb::get: // TODO: DELETE CODE INSIDE BLOCK, ONLY ECHOES RIGHT NOW
-        res.result(bhttp::status::ok);
-        boost::beast::ostream(res.body()) << req;
-        res.content_length((res.body().size()));
-        res.set(bhttp::field::content_type, "text/plain");
-        return res.result();
+    case bhttp::verb::get:
+        if(directory.find("/") != -1) 
+        { // specific file was requested with GET request
+            return handle_get(req,res,directory);
+        }
+        else
+        { // specific directory was requested with GET request
+            return handle_list(req,res,directory);
+        }
       break; 
     
-    case bhttp::verb::put: // TODO: DELETE CODE INSIDE BLOCK, ONLY ECHOES RIGHT NOW
-        res.result(bhttp::status::ok);
-        boost::beast::ostream(res.body()) << req;
-        res.content_length((res.body().size()));
-        res.set(bhttp::field::content_type, "text/plain");
-        return res.result();
+    case bhttp::verb::put: 
+        if(directory.find("/") == -1)
+        {
+          BOOST_LOG_TRIVIAL(error) << "request_api_handler::handle_request : invalid file for put request";
+          return send_bad_request(res);
+        }
+        return handle_put(req,res,directory);
       break; 
     
     case bhttp::verb::delete_: 

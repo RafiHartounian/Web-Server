@@ -33,7 +33,11 @@ TEST_F(APIHandlerFixture, BadRequest) {
 }
 
 TEST_F(APIHandlerFixture, InvalidNoEntity) { 
-    bhttp::request<bhttp::dynamic_body> request; 
+    boost::filesystem::path dir_path(root + "/unit_test");
+    // cleanup first in case files exist
+    boost::filesystem::remove_all(dir_path);
+
+    bhttp::request<bhttp::dynamic_body> request;
     request.target("/api/"); 
     request.method(bhttp::verb::post);
     boost::beast::ostream(request.body()) << "\'{\"name\":\"John\", \"age\":30, \"car\":null}\'";
@@ -322,9 +326,7 @@ TEST_F(APIHandlerFixture, DeleteIDNotInPathCounts) {
     boost::filesystem::remove_all(dir_path); 
 }
 
-TEST_F(APIHandlerFixture, DeleteValidRequest) { 
-
-    
+TEST_F(APIHandlerFixture, DeleteValidRequest) {     
     bhttp::request<bhttp::dynamic_body> request; 
 
     boost::filesystem::path dir_path(root + "/unit_test");
@@ -394,25 +396,179 @@ TEST_F(APIHandlerFixture, DeleteThenPost) {
     boost::filesystem::remove_all(dir_path); 
 }
 
-// TODO: Delete/modify this once GET functionality is created. 
-// Before implementing post functionality, GET requests simply echo. 
-TEST_F(APIHandlerFixture, GETRequestEcho) { 
+TEST_F(APIHandlerFixture, GETValidFile) { 
+    boost::filesystem::path dir_path(root + "/unit_test");
+    // cleanup first in case files exist AND create empty file
+    boost::filesystem::remove_all(dir_path); 
+    boost::filesystem::create_directory(dir_path);
+    boost::filesystem::ofstream( root + "/unit_test/1" );
+
     bhttp::request<bhttp::dynamic_body> request; 
-    request.target("/api/Shoes/1"); 
+    request.target("/api/unit_test/1"); 
     request.method(bhttp::verb::get);
     bhttp::response<bhttp::dynamic_body> response; 
-    request_api_handler api_handler(base_uri, root, "/api/Shoes/1", path_counts); 
+    request_api_handler api_handler(base_uri, root, "/api/unit_test/1", path_counts); 
     bhttp::status status = api_handler.handle_request(request, response); 
     EXPECT_EQ(bhttp::status::ok, status); 
 }
-// TODO: Delete/modify this once PUT functionality is created. 
-// Before implementing post functionality, PUT requests simply echo. 
-TEST_F(APIHandlerFixture, PUTRequestEcho) { 
+
+TEST_F(APIHandlerFixture, GETInvalidFile) { 
+    boost::filesystem::path dir_path(root + "/unit_test");
+    // cleanup first in case files exist AND create empty file
+    boost::filesystem::remove_all(dir_path); 
+    boost::filesystem::create_directory(dir_path);
+    boost::filesystem::ofstream( root + "/unit_test/1" );
+
     bhttp::request<bhttp::dynamic_body> request; 
-    request.target("/api/Shoes/1"); 
-    request.method(bhttp::verb::put);
+    request.target("/api/unit_test/2"); // FILE doesn't exist
+    request.method(bhttp::verb::get);
     bhttp::response<bhttp::dynamic_body> response; 
-    request_api_handler api_handler(base_uri, root, "/api/Shoes/1", path_counts); 
+    request_api_handler api_handler(base_uri, root, "/api/unit_test/2", path_counts); 
     bhttp::status status = api_handler.handle_request(request, response); 
-    EXPECT_EQ(bhttp::status::ok, status); 
+    EXPECT_EQ(bhttp::status::bad_request, status); 
+}
+
+TEST_F(APIHandlerFixture, GETAfterPOST) { 
+    boost::filesystem::path dir_path(root + "/unit_test");
+    // cleanup first in case files exist AND create empty file
+    boost::filesystem::remove_all(dir_path); 
+    boost::filesystem::create_directory(dir_path);
+
+    // POST
+    std::string body = "\'{\"name\":\"John\", \"age\":30, \"car\":null}\'";
+    bhttp::request<bhttp::dynamic_body> request2; 
+    request2.target("/api/unit_test"); 
+    request2.method(bhttp::verb::post);
+    boost::beast::ostream(request2.body()) << body;
+    bhttp::response<bhttp::dynamic_body> response2; 
+    request_api_handler api_handler2(base_uri, root, request2.target().to_string(), path_counts); 
+    bhttp::status status2 = api_handler2.handle_request(request2, response2);
+    EXPECT_EQ(bhttp::status::created, status2);
+
+    // GET
+    bhttp::request<bhttp::dynamic_body> request; 
+    request.target("/api/unit_test/1"); 
+    request.method(bhttp::verb::get);
+    bhttp::response<bhttp::dynamic_body> response; 
+    request_api_handler api_handler(base_uri, root, "/api/unit_test/1", path_counts); 
+    bhttp::status status = api_handler.handle_request(request, response); 
+    EXPECT_EQ(bhttp::status::ok, status);
+    EXPECT_EQ(body, boost::beast::buffers_to_string(response.body().data()));
+}
+
+TEST_F(APIHandlerFixture, LISTValidDir) { 
+    boost::filesystem::path dir_path(root + "/unit_test");
+    // cleanup first in case files exist AND create empty files
+    boost::filesystem::remove_all(dir_path); 
+    boost::filesystem::create_directory(dir_path);
+    boost::filesystem::ofstream( root + "/unit_test/1" );
+    boost::filesystem::ofstream( root + "/unit_test/2" );
+    boost::filesystem::ofstream( root + "/unit_test/3" );
+
+    std::string list = "[1,2,3]";
+
+    bhttp::request<bhttp::dynamic_body> request; 
+    request.target("/api/unit_test"); 
+    request.method(bhttp::verb::get);
+    bhttp::response<bhttp::dynamic_body> response; 
+    request_api_handler api_handler(base_uri, root, "/api/unit_test", path_counts); 
+    bhttp::status status = api_handler.handle_request(request, response); 
+    EXPECT_EQ(bhttp::status::ok, status);
+    EXPECT_EQ(list, boost::beast::buffers_to_string(response.body().data()));
+}
+
+TEST_F(APIHandlerFixture, LISTInvalidDir) { 
+    boost::filesystem::path dir_path(root + "/unit_test");
+    // cleanup first in case files exist AND create empty file
+    boost::filesystem::remove_all(dir_path); 
+    boost::filesystem::create_directory(dir_path);
+    boost::filesystem::ofstream( root + "/unit_test/1" );
+
+    bhttp::request<bhttp::dynamic_body> request; 
+    request.target("/api/unit_test2"); // DIR doesn't exist
+    request.method(bhttp::verb::get);
+    bhttp::response<bhttp::dynamic_body> response; 
+    request_api_handler api_handler(base_uri, root, "/api/unit_test2", path_counts); 
+    bhttp::status status = api_handler.handle_request(request, response); 
+    EXPECT_EQ(bhttp::status::bad_request, status);
+}
+
+TEST_F(APIHandlerFixture, LISTAfterDELETE) { 
+    boost::filesystem::path dir_path(root + "/unit_test");
+    // cleanup first in case files exist AND create empty files
+    boost::filesystem::remove_all(dir_path); 
+    boost::filesystem::create_directory(dir_path);
+    boost::filesystem::ofstream( root + "/unit_test/1" );
+    boost::filesystem::ofstream( root + "/unit_test/2" );
+    boost::filesystem::ofstream( root + "/unit_test/3" );
+
+    std::string list = "[1,2,3]";
+
+    // LIST before DELETE
+    bhttp::request<bhttp::dynamic_body> request; 
+    request.target("/api/unit_test"); 
+    request.method(bhttp::verb::get);
+    bhttp::response<bhttp::dynamic_body> response; 
+    request_api_handler api_handler(base_uri, root, "/api/unit_test", path_counts); 
+    bhttp::status status = api_handler.handle_request(request, response); 
+    EXPECT_EQ(bhttp::status::ok, status);
+    EXPECT_EQ(list, boost::beast::buffers_to_string(response.body().data()));
+
+    // DELETE
+    bhttp::request<bhttp::dynamic_body> request2; 
+    request2.target("/api/unit_test/1"); 
+    request2.method(bhttp::verb::delete_);
+    bhttp::response<bhttp::dynamic_body> response2; 
+    request_api_handler api_handler2(base_uri, root, request2.target().to_string(), path_counts); 
+    bhttp::status status2 = api_handler2.handle_request(request2, response2);
+    EXPECT_EQ(bhttp::status::ok, status2);
+
+    std::string list2 = "[2,3]"; // 1 was removed, should no longer be outputted by LIST
+    // LIST after DELETE
+    bhttp::request<bhttp::dynamic_body> request3; 
+    request3.target("/api/unit_test"); 
+    request3.method(bhttp::verb::get);
+    bhttp::response<bhttp::dynamic_body> response3; 
+    request_api_handler api_handler3(base_uri, root, "/api/unit_test", path_counts); 
+    bhttp::status status3 = api_handler3.handle_request(request3, response3); 
+    EXPECT_EQ(bhttp::status::ok, status);
+    EXPECT_EQ(list2, boost::beast::buffers_to_string(response3.body().data()));
+
+}
+
+TEST_F(APIHandlerFixture, PUTValidFile) { 
+    boost::filesystem::path dir_path(root + "/unit_test");
+    // cleanup first in case files exist AND create empty files
+    boost::filesystem::remove_all(dir_path); 
+    boost::filesystem::create_directory(dir_path);
+    boost::filesystem::ofstream( root + "/unit_test/1" );
+
+    std::string body = "\'{\"name\":\"John\", \"age\":30, \"car\":null}\'";
+    bhttp::request<bhttp::dynamic_body> request; 
+    request.target("/api/unit_test/1"); 
+    request.method(bhttp::verb::put);
+    boost::beast::ostream(request.body()) << body;
+    bhttp::response<bhttp::dynamic_body> response; 
+    request_api_handler api_handler(base_uri, root, "/api/unit_test/1", path_counts); 
+    bhttp::status status = api_handler.handle_request(request, response); 
+    EXPECT_EQ(bhttp::status::ok, status);
+    EXPECT_EQ(body, boost::beast::buffers_to_string(response.body().data()));
+}
+
+TEST_F(APIHandlerFixture, PUTInvalidFile) { 
+    boost::filesystem::path dir_path(root + "/unit_test");
+    // cleanup first in case files exist AND create empty files
+    boost::filesystem::remove_all(dir_path); 
+    boost::filesystem::create_directory(dir_path);
+    boost::filesystem::ofstream( root + "/unit_test/1" );
+
+    std::string body = "\'{\"name\":\"John\", \"age\":30, \"car\":null}\'";
+    bhttp::request<bhttp::dynamic_body> request; 
+    request.target("/api/unit_test/2"); // FILE doesn't exist
+    request.method(bhttp::verb::put);
+    boost::beast::ostream(request.body()) << body;
+    bhttp::response<bhttp::dynamic_body> response; 
+    request_api_handler api_handler(base_uri, root, "/api/unit_test/2", path_counts); 
+    bhttp::status status = api_handler.handle_request(request, response); 
+    EXPECT_EQ(bhttp::status::bad_request, status);
 }
