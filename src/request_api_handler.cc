@@ -33,32 +33,35 @@ request_api_handler::request_api_handler(std::string location, std::string root,
     entity = entity.substr(entity.find_last_of("/")+1);
 
     std::vector<int> ids = path_counts[entity];
-    //find where to insert id into the id list
-    if(ids.size() == 0)
-    {
-      ids.push_back(id);
-    }
-    else if(ids.size() == 1)
-    {
-      if(ids[0] < id)
-      {
-        ids.push_back(id);
-      }
-      else
-      {
-        ids.insert(ids.begin(), id);
-      }
-    }
-    else
-    {
-      int index = 1;
-      while(index != ids.size() && (ids[index] == ids[index-1]+1))
-      {
-        index++;
-      }
-      ids.insert(ids.begin()+index,id);
-    }
 
+    // Only insert if id is NOT in ids (otherwise we get duplicates due to short-lived handlers)
+    if(std::find(ids.begin(), ids.end(), id) == ids.end()) 
+    {
+        if(ids.size() == 0)
+        {
+        ids.push_back(id);
+        }
+        else if(ids.size() == 1)
+        {
+        if(ids[0] < id)
+        {
+            ids.push_back(id);
+        }
+        else
+        {
+            ids.insert(ids.begin(), id);
+        }
+        }
+        else
+        {
+        int index = 1;
+        while(index != ids.size() && (ids[index] == ids[index-1]+1))
+        {
+            index++;
+        }
+        ids.insert(ids.begin()+index,id);
+        }
+    }
     path_counts[entity] = ids;
   }
 }
