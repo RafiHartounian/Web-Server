@@ -17,6 +17,9 @@ location /coverage_info StaticHandler {
 #    root ../crud;
 #}
 
+#location /health HealthHandler {
+#}
+
 location /echo EchoHandler {
 }
         

@@ -63,6 +63,25 @@ else
 fi
 
 rm integ_test_example_text_out
+
+#health
+#HEALTH_SUCCESS=0
+#timeout $TIMEOUT curl -s -i -H "Host:" -H "User-Agent:" $SERVER_IP:$SERVER_PORT/health > integ_test_health_text_out
+#diff integ_test_health_text_out integ_test_health_expected
+
+#MATCHES=$?
+#echo $MATCHES
+#if [ $MATCHES -eq 1 ];
+#then
+#  echo "Test Health Text Request Failed"
+#else 
+#  HEALTH_SUCCESS=1
+#  echo "Test Health Text Request Succeeded"
+#fi
+
+#rm integ_test_health_text_out
+
+
 #empty header
 NOT_FOUND_SUCCESS=0
 timeout $TIMEOUT curl -s -i -H "Host:" -H "User-Agent:" $SERVER_IP:$SERVER_PORT > integ_test_not_found_res_out
@@ -103,7 +122,7 @@ rm integ_test_invalid_req_out
 # kill server and return test results
 kill -9 $SERVER_PID
 
-if [ $VALID_REQ_SUCCESS -eq 1 ] && [ $VALID_STATIC_SUCCESS -eq 1 ] && [ $INVALID_REQ_SUCCESS -eq 1 ] && [ $NOT_FOUND_SUCCESS -eq 1 ] && [ $VALID_TEXT_SUCCESS -eq 1 ];
+if [ $VALID_REQ_SUCCESS -eq 1 ] && [ $VALID_STATIC_SUCCESS -eq 1 ] && [ $INVALID_REQ_SUCCESS -eq 1 ]  && [ $NOT_FOUND_SUCCESS -eq 1 ] && [ $VALID_TEXT_SUCCESS -eq 1 ] ;
 then
   exit 0
 fi

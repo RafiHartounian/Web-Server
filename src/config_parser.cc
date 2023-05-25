@@ -103,6 +103,17 @@ std::vector<path> NginxConfig::get_paths() {
       }
       paths.push_back(api_path);
     }
+    else if (s->tokens_[2] == kHealthHandler){
+      path health_path;
+      health_path.type = health;
+      health_path.endpoint = s->tokens_[1];
+      size_t last_slash_pos = health_path.endpoint.find_last_not_of('/');
+      if (last_slash_pos != std::string::npos) {
+        health_path.endpoint = health_path.endpoint.substr(0, last_slash_pos + 1);
+      }
+      paths.push_back(health_path);
+
+    }
   }
 
   for (auto p : paths) {

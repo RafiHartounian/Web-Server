@@ -8,6 +8,7 @@
 #include "handler_factories/echo_handler_factory.h"
 #include "handler_factories/handler404factory.h"
 #include "handler_factories/api_handler_factory.h"
+#include "handler_factories/health_handler_factory.h"
 
 using boost::asio::ip::tcp;
 
@@ -43,6 +44,9 @@ bool server::start_accept()
         break;
       case endpoint_type::api:
         routes_.emplace(p.endpoint, new api_handler_factory(p.endpoint, config_));
+        break;
+      case endpoint_type::health:
+        routes_.emplace(p.endpoint, new health_handler_factory(p.endpoint, config_));
         break;
     }
   }
