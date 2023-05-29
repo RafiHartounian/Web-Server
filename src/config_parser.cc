@@ -114,6 +114,17 @@ std::vector<path> NginxConfig::get_paths() {
       paths.push_back(health_path);
 
     }
+    else if (s->tokens_[2] == kSleepHandler){
+      path sleep_path;
+      sleep_path.type = sleep_;
+      sleep_path.endpoint = s->tokens_[1];
+      size_t last_slash_pos = sleep_path.endpoint.find_last_not_of('/');
+      if (last_slash_pos != std::string::npos) {
+        sleep_path.endpoint = sleep_path.endpoint.substr(0, last_slash_pos + 1);
+      }
+      paths.push_back(sleep_path);
+
+    }
   }
 
   for (auto p : paths) {

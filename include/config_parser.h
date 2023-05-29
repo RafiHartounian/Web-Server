@@ -15,6 +15,7 @@ enum endpoint_type
   echo,
   api,
   health,
+  sleep_,
   invalid
 };
 

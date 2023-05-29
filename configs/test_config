@@ -17,11 +17,14 @@ location /coverage_info StaticHandler {
 #    root ../crud;
 #}
 
-#location /health HealthHandler {
-#}
-
 location /echo EchoHandler {
 }
         
 location /echo2 EchoHandler {
 }
+
+# location /health HealthHandler {
+# }
+
+# location /sleep SleepHandler {
+# }
