@@ -433,5 +433,5 @@ bhttp::status request_api_handler::handle_request(const bhttp::request<bhttp::dy
 
 void request_api_handler::log_message_info(std::string res_code)
 {
-  BOOST_LOG_TRIVIAL(info) << "[MetricsForResponse] Code for response: " << res_code << " URL for request: " << request_url << " Corresponding handler: sleep handler";
+  BOOST_LOG_TRIVIAL(info) << "[MetricsForResponse] Code for response: " << res_code << " URL for request: " << request_url << " Corresponding handler: api handler";
 }
