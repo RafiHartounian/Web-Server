@@ -6,6 +6,9 @@
 #include "session_interface.h"
 
 using boost::asio::ip::tcp;
+
+static const int NUM_THREADS = 4;
+
 class server
 {
 public:

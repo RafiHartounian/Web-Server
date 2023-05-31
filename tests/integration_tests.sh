@@ -124,7 +124,7 @@ rm integ_test_invalid_req_out
 
 # test multithreading
 MULTITHREAD_SUCCESS=0
-timeout $TIMEOUT curl -s -i -H "Host:" -H "User-Agent:" $SERVER_IP:$SERVER_PORT/sleep >> integ_test_multithread_out &
+timeout 3 curl -s -i -H "Host:" -H "User-Agent:" $SERVER_IP:$SERVER_PORT/sleep >> integ_test_multithread_out &
 timeout $TIMEOUT curl -s -i -H "Host:" -H "User-Agent:" $SERVER_IP:$SERVER_PORT/echo >> integ_test_multithread_out &
 sleep 3
 
