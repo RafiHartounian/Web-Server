@@ -9,7 +9,7 @@ WORKDIR /usr/src/project/build
 # Build and test
 RUN cmake ..
 RUN make
-RUN ctest --output-on_failure
+RUN ctest --output-on_failure --verbose
 
 # Build and generage coverage report
 WORKDIR /usr/src/project/build_coverage
