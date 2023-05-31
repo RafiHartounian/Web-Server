@@ -15,7 +15,7 @@ public:
   virtual bool start() = 0;
   virtual session_interface*
     get_session(boost::asio::io_service& io_service) = 0;
-  virtual bool set_routes(std::map<std::string, request_handler_factory*> route) = 0;
+  virtual bool set_routes(std::map<std::string, std::shared_ptr<request_handler_factory>> route) = 0;
 };
 
 #endif

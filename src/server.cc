@@ -23,7 +23,7 @@ bool server::set_config(NginxConfig config) {
   return true;
 }
 
-bool server::set_routes(std::map<std::string, request_handler_factory*> routes) {
+bool server::set_routes(std::map<std::string, std::shared_ptr<request_handler_factory>> routes) {
   routes_ = routes;
   return true;
 }
@@ -38,23 +38,23 @@ bool server::start_accept()
   for (path p : config_.get_paths()) {
     switch (p.type) {
       case endpoint_type::static_:
-        routes_.emplace(p.endpoint, new static_handler_factory(p.endpoint, config_));
+        routes_.emplace(p.endpoint, std::make_shared<static_handler_factory>(p.endpoint, config_));
         break;
       case endpoint_type::echo:
-        routes_.emplace(p.endpoint, new echo_handler_factory(p.endpoint, config_));
+        routes_.emplace(p.endpoint, std::make_shared<echo_handler_factory>(p.endpoint, config_));
         break;
       case endpoint_type::api:
-        routes_.emplace(p.endpoint, new api_handler_factory(p.endpoint, config_));
+        routes_.emplace(p.endpoint, std::make_shared<api_handler_factory>(p.endpoint, config_));
         break;
       case endpoint_type::health:
-        routes_.emplace(p.endpoint, new health_handler_factory(p.endpoint, config_));
+        routes_.emplace(p.endpoint, std::make_shared<health_handler_factory>(p.endpoint, config_));
         break;
       case endpoint_type::sleep_:
-        routes_.emplace(p.endpoint, new sleep_handler_factory(p.endpoint, config_));
+        routes_.emplace(p.endpoint, std::make_shared<sleep_handler_factory>(p.endpoint, config_));
         break;
     }
   }
-  routes_.emplace("/", new handler404factory("/", config_));
+  routes_.emplace("/", std::make_shared<handler404factory>("/", config_));
 
   new_session->set_routes(routes_);
   acceptor_.async_accept(new_session->socket(),

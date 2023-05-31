@@ -24,10 +24,10 @@ public:
   bool handle_write(const boost::system::error_code& error);
   session_interface* get_session(boost::asio::io_service& io_service);
   void write_to_socket(request_handler* handler);
-  bool set_routes(std::map<std::string, request_handler_factory*> route);
+  bool set_routes(std::map<std::string, std::shared_ptr<request_handler_factory>> route);
   path get_endpoint();
   bool set_request(bhttp::request<bhttp::dynamic_body> request);
-  std::string match(std::map<std::string, request_handler_factory*> routes, std::string url);
+  std::string match(std::map<std::string, std::shared_ptr<request_handler_factory>> routes, std::string url);
 
 private:
   void log_info(std::string func_name, std::string message);
@@ -41,6 +41,6 @@ private:
   char data_[max_length];
   boost::asio::ip::address dest_ip;
   http::server::request_parser req_parser;
-  std::map<std::string, request_handler_factory*> routes_;
+  std::map<std::string, std::shared_ptr<request_handler_factory>> routes_;
   bhttp::request<bhttp::dynamic_body> request_;
 };

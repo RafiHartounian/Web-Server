@@ -18,12 +18,12 @@ public:
   bool handle_accept(session_interface* new_session,
                      const boost::system::error_code& error);
   bool set_config(NginxConfig config);
-  bool set_routes(std::map<std::string, request_handler_factory*> routes);
+  bool set_routes(std::map<std::string, std::shared_ptr<request_handler_factory>> routes);
 
 private:
   boost::asio::io_service& io_service_;
   session_interface& session_;
   tcp::acceptor acceptor_;
   NginxConfig config_;
-  std::map<std::string, request_handler_factory*> routes_;
+  std::map<std::string, std::shared_ptr<request_handler_factory>> routes_;
 };

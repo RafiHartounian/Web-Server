@@ -22,7 +22,7 @@ TEST_F(SessionFixture, SetRequest)
 TEST_F(SessionFixture, TestHasLongestMatchingPref)
 {
   session s(io_service);
-  std::map<std::string, request_handler_factory*> routes;
+  std::map<std::string, std::shared_ptr<request_handler_factory>> routes;
   routes.emplace("/static2", nullptr);
   EXPECT_EQ(s.match(routes, "/static2/testing.txt"), "/static2");
 }
@@ -30,7 +30,7 @@ TEST_F(SessionFixture, TestHasLongestMatchingPref)
 TEST_F(SessionFixture, TestHasNoLongestMatchingPref)
 {
   session s(io_service);
-  std::map<std::string, request_handler_factory*> routes;
+  std::map<std::string, std::shared_ptr<request_handler_factory>> routes;
   routes.emplace("/static1", nullptr);
   EXPECT_EQ(s.match(routes, "/static2/testing.txt"), "/");
 }

@@ -31,7 +31,7 @@ bool session::set_request(bhttp::request<bhttp::dynamic_body> request)
   request_ = request;
   return true;
 }
-bool session::set_routes(std::map<std::string, request_handler_factory*> routes)
+bool session::set_routes(std::map<std::string, std::shared_ptr<request_handler_factory>> routes)
 {
   routes_ = routes;
   return true;
@@ -58,7 +58,7 @@ std::string session::handle_read(const boost::system::error_code& error, size_t 
   if (!error) {
     log_info("handle_read", "request parser valid");
     std::string location = match(routes_, std::string(request_.target()));
-    request_handler_factory* factory = routes_[location];
+    auto factory = routes_[location];
     request_handler* handler = factory->create(location, std::string(request_.target()));
     write_to_socket(handler);
     delete handler;
@@ -71,7 +71,7 @@ std::string session::handle_read(const boost::system::error_code& error, size_t 
   return request_string;
 }
 
-std::string session::match(std::map<std::string, request_handler_factory*> routes, std::string url)
+std::string session::match(std::map<std::string, std::shared_ptr<request_handler_factory>> routes, std::string url)
 {
   std::string matched_str = url.substr(0, url.length());
   size_t pos = url.length();
