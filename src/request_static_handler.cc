@@ -56,6 +56,7 @@ bhttp::status request_static_handler::handle_request(const bhttp::request<bhttp:
   boost::beast::ostream(res.body()) << reply_body;
   res.content_length((res.body().size()));
   res.set(bhttp::field::content_type, mime_types::extension_to_type(extension));
+  log_message_info("200");
   return res.result();
 }
 

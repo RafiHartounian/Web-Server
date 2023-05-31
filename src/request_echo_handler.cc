@@ -28,6 +28,7 @@ bhttp::status request_echo_handler::handle_request(const bhttp::request<bhttp::d
   boost::beast::ostream(res.body()) << req;
   res.content_length((res.body().size()));
   res.set(bhttp::field::content_type, "text/plain");
+  log_message_info("200");
   return res.result();
 }
 
