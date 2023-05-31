@@ -7,7 +7,7 @@ class APIHandlerFixture : public ::testing::Test
 {
 public:
     APIHandlerFixture() {
-        root = "crud";
+        root = "../test_crud";
         base_uri = "/api";
 
         boost::filesystem::path root_path(root);
