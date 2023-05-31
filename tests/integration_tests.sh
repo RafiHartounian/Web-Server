@@ -128,8 +128,8 @@ timeout $TIMEOUT curl -s -i -H "Host:" -H "User-Agent:" $SERVER_IP:$SERVER_PORT/
 timeout $TIMEOUT curl -s -i -H "Host:" -H "User-Agent:" $SERVER_IP:$SERVER_PORT/echo >> integ_test_multithread_out &
 sleep 0.5
 
-sleep_loc=$( grep -n "slept" integration_test_11_result | grep -oE "^[0-9]+" )
-echo_loc=$( grep -n "echo" integration_test_11_result | grep -oE "^[0-9]+" )
+sleep_loc=$( grep -n "slept" integ_test_multithread_out | grep -oE "^[0-9]+" )
+echo_loc=$( grep -n "echo" integ_test_multithread_out | grep -oE "^[0-9]+" )
 
 if [ $sleep_loc -gt $echo_loc ] 
 then
