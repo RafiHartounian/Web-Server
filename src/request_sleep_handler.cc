@@ -4,8 +4,8 @@
 #include <vector>
 
 
-request_sleep_handler::request_sleep_handler(std::string location, std::string request_url) 
-  : location_(location), request_url_(request_url) {
+request_sleep_handler::request_sleep_handler(std::string location, std::string request_url)
+  : location_(location), request_url(request_url) {
 
 }
 
@@ -29,5 +29,5 @@ bhttp::status request_sleep_handler::handle_request(const bhttp::request<bhttp::
 
 void request_sleep_handler::log_message_info(std::string res_code)
 {
-    BOOST_LOG_TRIVIAL(info) << "[MetricsForResponse] Code for response: " << res_code << " URL for request: " << request_url_ << " Corresponding handler: sleep handler";
+  BOOST_LOG_TRIVIAL(info) << "[MetricsForResponse] Code for response: " << res_code << " URL for request: " << request_url << " Corresponding handler: sleep handler";
 }

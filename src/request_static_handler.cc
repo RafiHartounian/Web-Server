@@ -58,3 +58,8 @@ bhttp::status request_static_handler::handle_request(const bhttp::request<bhttp:
   res.set(bhttp::field::content_type, mime_types::extension_to_type(extension));
   return res.result();
 }
+
+void request_static_handler::log_message_info(std::string res_code)
+{
+  BOOST_LOG_TRIVIAL(info) << "[MetricsForResponse] Code for response: " << res_code << " URL for request: " << request_url << " Corresponding handler: sleep handler";
+}

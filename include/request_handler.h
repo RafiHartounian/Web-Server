@@ -5,6 +5,7 @@
 #include "reply.h"
 #include <boost/beast/http.hpp>
 #include <boost/beast/core.hpp>
+#include <boost/log/trivial.hpp>
 
 namespace bhttp = boost::beast::http;
 

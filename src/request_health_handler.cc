@@ -4,7 +4,7 @@
 #include <vector>
 
 request_health_handler::request_health_handler(std::string location, std::string request_url)
-    : location_(location), request_url_(request_url) {
+    : location_(location), request_url(request_url) {
 
 }
 
@@ -33,5 +33,5 @@ bhttp::status request_health_handler::handle_request(const bhttp::request<bhttp:
 }
 
 void request_health_handler::log_message_info(std::string res_code) {
-    BOOST_LOG_TRIVIAL(info) << "[MetricsForResponse] Code for response: " << res_code << " URL for request: " << request_url_ << " Corresponding handler: health handler";
+    BOOST_LOG_TRIVIAL(info) << "[MetricsForResponse] Code for response: " << res_code << " URL for request: " << request_url << " Corresponding handler: health handler";
 }

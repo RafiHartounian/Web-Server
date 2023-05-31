@@ -14,6 +14,6 @@ class request_health_handler : public request_handler
     void log_message_info(std::string res_code);
 
     std::string location_;
-    std::string request_url_;
+    std::string request_url;
     reply rep;
 };
