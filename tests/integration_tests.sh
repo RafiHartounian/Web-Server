@@ -126,7 +126,7 @@ rm integ_test_invalid_req_out
 MULTITHREAD_SUCCESS=0
 timeout $TIMEOUT curl -s -i -H "Host:" -H "User-Agent:" $SERVER_IP:$SERVER_PORT/sleep >> integ_test_multithread_out &
 timeout $TIMEOUT curl -s -i -H "Host:" -H "User-Agent:" $SERVER_IP:$SERVER_PORT/echo >> integ_test_multithread_out &
-sleep 0.5
+sleep 3
 
 sleep_loc=$( grep -n "slept" integ_test_multithread_out | grep -oE "^[0-9]+" )
 echo_loc=$( grep -n "echo" integ_test_multithread_out | grep -oE "^[0-9]+" )

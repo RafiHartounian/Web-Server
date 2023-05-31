@@ -11,7 +11,7 @@ request_sleep_handler::request_sleep_handler(std::string location, std::string r
 
 bhttp::status request_sleep_handler::handle_request(const bhttp::request<bhttp::dynamic_body> req, bhttp::response<bhttp::dynamic_body>& res)
 {
-  usleep(200000);
+  usleep(2000000);
   std::string input = req.target().to_string();
   size_t last_slash_pos = input.find_last_not_of('/');
   if (last_slash_pos != std::string::npos) {
