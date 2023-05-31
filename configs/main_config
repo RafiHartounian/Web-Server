@@ -14,7 +14,7 @@ location /coverage_info StaticHandler {
 }
 
 location /api APIHandler {
-    root ../crud;
+    root ../mnt/storage/crud;
 }
 
 location /echo EchoHandler {
