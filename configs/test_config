@@ -23,8 +23,8 @@ location /echo EchoHandler {
 location /echo2 EchoHandler {
 }
 
-# location /health HealthHandler {
-# }
+location /health HealthHandler {
+}
 
-# location /sleep SleepHandler {
-# }
+location /sleep SleepHandler {
+}
