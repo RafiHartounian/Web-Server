@@ -22,6 +22,7 @@ bhttp::status request_echo_handler::handle_request(const bhttp::request<bhttp::d
     boost::beast::ostream(res.body()) << rep.stock_reply(res.result_int());
     res.content_length((res.body().size()));
     res.set(bhttp::field::content_type, "text/html");
+    log_message_info("404");
     return res.result();
   }
   res.result(bhttp::status::ok);

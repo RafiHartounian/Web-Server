@@ -31,6 +31,7 @@ bhttp::status request_static_handler::handle_request(const bhttp::request<bhttp:
     boost::beast::ostream(res.body()) << rep.stock_reply(res.result_int());
     res.content_length((res.body().size()));
     res.set(bhttp::field::content_type, "text/html");
+    log_message_info("404");
     return res.result();
   }
 
@@ -41,6 +42,7 @@ bhttp::status request_static_handler::handle_request(const bhttp::request<bhttp:
     boost::beast::ostream(res.body()) << rep.stock_reply(res.result_int());
     res.content_length((res.body().size()));
     res.set(bhttp::field::content_type, "text/html");
+    log_message_info("404");
     return res.result();
   }
 
