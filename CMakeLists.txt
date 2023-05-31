@@ -86,7 +86,7 @@ target_link_libraries(request_health_handler_test request_health_handler reply_c
 target_link_libraries(request_sleep_handler_test request_sleep_handler reply_class Boost::filesystem gtest_main Boost::log)
 target_link_libraries(request_static_handler_test request_static_handler reply_class mime_types_class Boost::filesystem gtest_main)
 target_link_libraries(request_404_handler_test request_404_handler reply_class gtest_main)
-target_link_libraries(request_api_handler_test request_api_handler reply_class Boost::filesystem gtest_main Boost::log)
+target_link_libraries(request_api_handler_test request_api_handler reply_class Boost::filesystem gtest_main gmock_main Boost::log)
 target_link_libraries(mime_types_test mime_types_class gtest_main)
 
 gtest_discover_tests(config_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)

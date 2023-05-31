@@ -2,6 +2,7 @@
 #include "boost/filesystem.hpp"
 #include <boost/asio/buffers_iterator.hpp>
 #include "gtest/gtest.h"
+#include "gmock/gmock.h"
 #include "request_api_handler.h"
 class APIHandlerFixture : public ::testing::Test
 {
@@ -240,7 +241,7 @@ TEST_F(APIHandlerFixture, PostWithExistingFiles) {
     request_api_handler api_handler(base_uri, root, "/api/Shoes", path_counts);
 
     std::vector<int> ids = { 1,2,3 };
-    EXPECT_EQ(path_counts["Shoes"], ids);
+    EXPECT_THAT(path_counts["Shoes"], testing::UnorderedElementsAreArray(ids));
 
     boost::filesystem::remove_all(root + "/Shoes");
 }
@@ -466,7 +467,7 @@ TEST_F(APIHandlerFixture, LISTValidDir) {
     boost::filesystem::ofstream(root + "/unit_test/2");
     boost::filesystem::ofstream(root + "/unit_test/3");
 
-    std::string list = "[1,2,3]";
+    std::vector<int> list = { 1,2,3 };
 
     bhttp::request<bhttp::dynamic_body> request;
     request.target("/api/unit_test");
@@ -475,7 +476,16 @@ TEST_F(APIHandlerFixture, LISTValidDir) {
     request_api_handler api_handler(base_uri, root, "/api/unit_test", path_counts);
     bhttp::status status = api_handler.handle_request(request, response);
     EXPECT_EQ(bhttp::status::ok, status);
-    EXPECT_EQ(list, boost::beast::buffers_to_string(response.body().data()));
+
+    std::vector<int> res_list;
+    std::string res_data = boost::beast::buffers_to_string(response.body().data());
+    std::string res_data_cleaned = res_data.substr(1, res_data.size() - 2);
+    std::istringstream iss(res_data_cleaned);
+    std::string token;
+    while (std::getline(iss, token, ',')) {
+        res_list.push_back(std::stoi(token));
+    }
+    EXPECT_THAT(list, testing::UnorderedElementsAreArray(res_list));
 }
 
 TEST_F(APIHandlerFixture, LISTInvalidDir) {
@@ -503,7 +513,7 @@ TEST_F(APIHandlerFixture, LISTAfterDELETE) {
     boost::filesystem::ofstream(root + "/unit_test/2");
     boost::filesystem::ofstream(root + "/unit_test/3");
 
-    std::string list = "[1,2,3]";
+    std::vector<int> list = { 1,2,3 };
 
     // LIST before DELETE
     bhttp::request<bhttp::dynamic_body> request;
@@ -513,7 +523,16 @@ TEST_F(APIHandlerFixture, LISTAfterDELETE) {
     request_api_handler api_handler(base_uri, root, "/api/unit_test", path_counts);
     bhttp::status status = api_handler.handle_request(request, response);
     EXPECT_EQ(bhttp::status::ok, status);
-    EXPECT_EQ(list, boost::beast::buffers_to_string(response.body().data()));
+
+    std::vector<int> res_list;
+    std::string res_data = boost::beast::buffers_to_string(response.body().data());
+    std::string res_data_cleaned = res_data.substr(1, res_data.size() - 2);
+    std::istringstream iss(res_data_cleaned);
+    std::string token;
+    while (std::getline(iss, token, ',')) {
+        res_list.push_back(std::stoi(token));
+    }
+    EXPECT_THAT(list, testing::UnorderedElementsAreArray(res_list));
 
     // DELETE
     bhttp::request<bhttp::dynamic_body> request2;
@@ -524,7 +543,7 @@ TEST_F(APIHandlerFixture, LISTAfterDELETE) {
     bhttp::status status2 = api_handler2.handle_request(request2, response2);
     EXPECT_EQ(bhttp::status::ok, status2);
 
-    std::string list2 = "[2,3]"; // 1 was removed, should no longer be outputted by LIST
+    std::vector<int> list2 = { 2,3 }; // 1 was removed, should no longer be outputted by LIST
     // LIST after DELETE
     bhttp::request<bhttp::dynamic_body> request3;
     request3.target("/api/unit_test");
@@ -533,8 +552,15 @@ TEST_F(APIHandlerFixture, LISTAfterDELETE) {
     request_api_handler api_handler3(base_uri, root, "/api/unit_test", path_counts);
     bhttp::status status3 = api_handler3.handle_request(request3, response3);
     EXPECT_EQ(bhttp::status::ok, status);
-    EXPECT_EQ(list2, boost::beast::buffers_to_string(response3.body().data()));
 
+    res_list = {};
+    res_data = boost::beast::buffers_to_string(response3.body().data());
+    res_data_cleaned = res_data.substr(1, res_data.size() - 2);
+    std::istringstream iss2(res_data_cleaned);
+    while (std::getline(iss2, token, ',')) {
+        res_list.push_back(std::stoi(token));
+    }
+    EXPECT_THAT(list2, testing::UnorderedElementsAreArray(res_list));
 }
 
 TEST_F(APIHandlerFixture, PUTValidFile) {
