@@ -158,20 +158,18 @@ int main(int argc, char* argv[])
 
     BOOST_LOG_TRIVIAL(info) << "Now accepting connections";
 
-    io_service_ptr->run();
-
-    // boost::asio::io_service::work work(*io_service_ptr);
-    // std::vector<std::thread> threads;
-    // unsigned int num_threads = std::thread::hardware_concurrency();
-    // for (unsigned int i = 0; i < num_threads; ++i) {
-    //   threads.emplace_back([io_service_ptr]() {
-    //     io_service_ptr->run();
-    //   });
-    // }
-    // // serv.run();
-    // for (auto& thread : threads) {
-    //   thread.join();
-    // }
+    boost::asio::io_service::work work(*io_service_ptr);
+    std::vector<std::thread> threads;
+    unsigned int num_threads = std::thread::hardware_concurrency();
+    for (unsigned int i = 0; i < num_threads; ++i) {
+      threads.emplace_back([io_service_ptr]() {
+        io_service_ptr->run();
+      });
+    }
+    // serv.run();
+    for (auto& thread : threads) {
+      thread.join();
+    }
   }
   catch (std::exception& e)
   {
