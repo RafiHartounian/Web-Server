@@ -55,8 +55,52 @@ add_library(sleep_handler_factory_lib src/handler_factories/sleep_handler_factor
 add_library(mime_types_class src/mime_types.cc)
 
 add_executable(server src/server_main.cc)
-target_link_libraries(server echo_handler_factory_lib static_handler_factory_lib api_handler_factory_lib  health_handler_factory_lib sleep_handler_factory_lib handler404factory_lib mime_types_class request_echo_handler request_health_handler request_static_handler request_sleep_handler request_error_handler request_404_handler request_api_handler config_parser request_parser server_class session_class reply_class pthread Boost::system Boost::log_setup Boost::log)
-target_link_libraries(session_class echo_handler_factory_lib static_handler_factory_lib api_handler_factory_lib health_handler_factory_lib sleep_handler_factory_lib handler404factory_lib request_404_handler mime_types_class request_echo_handler request_health_handler request_sleep_handler request_static_handler request_error_handler request_404_handler request_api_handler request_parser reply_class pthread Boost::system)
+target_link_libraries(server
+    echo_handler_factory_lib
+    static_handler_factory_lib
+    api_handler_factory_lib
+    health_handler_factory_lib
+    sleep_handler_factory_lib
+    handler404factory_lib
+    mime_types_class
+    request_echo_handler
+    request_health_handler
+    request_static_handler
+    request_sleep_handler
+    request_error_handler
+    request_404_handler
+    request_api_handler
+    config_parser
+    request_parser
+    server_class
+    session_class
+    reply_class
+    pthread
+    Boost::system
+    Boost::log_setup
+    Boost::log
+)
+target_link_libraries(session_class
+    echo_handler_factory_lib
+    static_handler_factory_lib
+    api_handler_factory_lib
+    health_handler_factory_lib
+    sleep_handler_factory_lib
+    handler404factory_lib
+    request_404_handler
+    mime_types_class
+    request_echo_handler
+    request_health_handler
+    request_sleep_handler
+    request_static_handler
+    request_error_handler
+    request_404_handler
+    request_api_handler
+    request_parser
+    reply_class
+    pthread
+    Boost::system
+)
 target_link_libraries(request_static_handler mime_types_class Boost::filesystem)
 target_link_libraries(request_api_handler Boost::filesystem)
 
@@ -107,4 +151,32 @@ add_test(NAME integration_tests COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integr
 add_test(NAME api_integration_tests COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/api_integration_tests.sh WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 include(cmake/CodeCoverageReportConfig.cmake)
-generate_coverage_report(TARGETS mime_types_class request_echo_handler request_static_handler request_error_handler request_404_handler request_api_handler request_sleep_handler server_class session_class config_parser request_parser reply_class TESTS mime_types_test request_echo_handler_test request_static_handler_test request_error_handler_test request_404_handler_test request_sleep_handler_test request_health_handler_test request_api_handler_test session_test config_parser_test request_parser_test reply_test server_test request_health_handler_test)
+generate_coverage_report(TARGETS
+    mime_types_class
+    request_echo_handler
+    request_static_handler
+    request_error_handler
+    request_404_handler
+    request_api_handler
+    request_sleep_handler
+    server_class
+    session_class
+    config_parser
+    request_parser
+    reply_class
+    TESTS
+    mime_types_test
+    request_echo_handler_test
+    request_static_handler_test
+    request_error_handler_test
+    request_404_handler_test
+    request_sleep_handler_test
+    request_health_handler_test
+    request_api_handler_test
+    session_test
+    config_parser_test
+    request_parser_test
+    reply_test
+    server_test
+    request_health_handler_test
+)
