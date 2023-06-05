@@ -10,6 +10,7 @@
 #include "handler_factories/api_handler_factory.h"
 #include "handler_factories/health_handler_factory.h"
 #include "handler_factories/sleep_handler_factory.h"
+#include "handler_factories/authentication_handler_factory.h"
 
 using boost::asio::ip::tcp;
 
@@ -51,6 +52,9 @@ bool server::start_accept()
         break;
       case endpoint_type::sleep_:
         routes_.emplace(p.endpoint, std::make_shared<sleep_handler_factory>(p.endpoint, config_));
+        break;
+      case endpoint_type::auth:
+        routes_.emplace(p.endpoint, std::make_shared<authentication_handler_factory>(p.endpoint, config_));
         break;
     }
   }

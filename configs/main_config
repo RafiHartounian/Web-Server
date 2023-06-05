@@ -28,3 +28,9 @@ location /health HealthHandler {
 
 location /sleep SleepHandler {
 }
+
+location /auth AuthenticationHandler {
+  data_path auth;
+  root credentials;
+  signup /signup;
+}

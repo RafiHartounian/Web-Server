@@ -101,3 +101,4 @@ std::string reply::stock_reply(int err_code)
     }
     return stock_reply;
 }
+

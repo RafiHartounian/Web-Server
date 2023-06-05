@@ -3,6 +3,7 @@
 #define CONFIG_PARSER_H
 
 #include <iostream>
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -16,6 +17,8 @@ enum endpoint_type
   api,
   health,
   sleep_,
+  profile,
+  auth,
   invalid
 };
 
@@ -24,6 +27,7 @@ struct path
   endpoint_type type = echo;
   std::string endpoint = "";
   std::string root = "";
+  std::map<std::string, std::string> config_key_to_path_map;
 };
 
 // The parsed representation of a single config statement.
@@ -43,6 +47,7 @@ public:
   std::vector<std::shared_ptr<NginxConfigStatement>> statements_;
   int get_listen_port();
   std::string get_root(std::string location);
+  std::map<std::string, std::string> get_auth_path_map(std::string location);
   std::vector<path> get_paths();
 
 private:

@@ -58,6 +58,15 @@ std::string NginxConfig::get_root(std::string location) {
   return "";
 }
 
+std::map<std::string, std::string> NginxConfig::get_auth_path_map(std::string location) {
+  for (path p : paths) {
+    if (p.endpoint != location && (p.type != endpoint_type::auth)) continue;
+    return p.config_key_to_path_map;
+  }
+  std::map<std::string, std::string> emptyMap;
+  return emptyMap;
+}
+
 std::vector<path> NginxConfig::get_paths() {
   for (auto s : statements_) {
     if (s->tokens_[0] != kUrlPathKeyword) {
@@ -125,6 +134,27 @@ std::vector<path> NginxConfig::get_paths() {
       paths.push_back(sleep_path);
 
     }
+    else if (s->tokens_[2] == kAuthenticationHandler)
+      {
+        path auth_path;
+        auth_path.type = auth;
+        for (const std::shared_ptr<NginxConfigStatement> child_statement : s->child_block_->statements_)
+        {
+          // Locate login, logout, signup statements with corresponding sub-endpoints
+          if (child_statement->tokens_.size() == 2)
+          {
+            auth_path.type = auth;
+            auth_path.endpoint = s->tokens_[1];
+            size_t last_slash_pos = auth_path.endpoint.find_last_not_of('/');
+            if (last_slash_pos != std::string::npos) {
+              auth_path.endpoint = auth_path.endpoint.substr(0, last_slash_pos + 1);
+            }
+            auth_path.config_key_to_path_map[child_statement->tokens_[0]] = child_statement->tokens_[1];
+            auth_path.root = auth_path.config_key_to_path_map["root"];
+          }
+        }
+        paths.push_back(auth_path);
+      }
   }
 
   for (auto p : paths) {

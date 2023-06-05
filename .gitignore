@@ -6,3 +6,4 @@ build_*
 mirror
 *.log
 crud
+user_database.txt

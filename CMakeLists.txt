@@ -32,6 +32,10 @@ set(Boost_USE_STATIC_LIBS ON)
 find_package(Boost 1.50 REQUIRED COMPONENTS system log_setup log)
 message(STATUS "Boost version: ${Boost_VERSION}")
 
+# Include OpenSSL for password hashing
+set(OPENSSL_USE_STATIC_LIBS TRUE)
+find_package (OpenSSL REQUIRED)
+
 include_directories(include)
 
 add_library(server_class src/server.cc)
@@ -46,13 +50,16 @@ add_library(request_404_handler src/request_404_handler.cc)
 add_library(request_api_handler src/request_api_handler.cc)
 add_library(request_health_handler src/request_health_handler.cc)
 add_library(request_sleep_handler src/request_sleep_handler.cc)
+add_library(request_authentication_handler src/request_authentication_handler.cc)
 add_library(echo_handler_factory_lib src/handler_factories/echo_handler_factory.cc)
 add_library(static_handler_factory_lib src/handler_factories/static_handler_factory.cc)
 add_library(handler404factory_lib src/handler_factories/handler404factory.cc)
 add_library(api_handler_factory_lib src/handler_factories/api_handler_factory.cc)
 add_library(health_handler_factory_lib src/handler_factories/health_handler_factory.cc)
 add_library(sleep_handler_factory_lib src/handler_factories/sleep_handler_factory.cc)
+add_library(authentication_handler_factory_lib src/handler_factories/authentication_handler_factory.cc)
 add_library(mime_types_class src/mime_types.cc)
+add_library(profile_manager src/profile_manager.cc)
 
 add_executable(server src/server_main.cc)
 target_link_libraries(server
@@ -62,6 +69,7 @@ target_link_libraries(server
     health_handler_factory_lib
     sleep_handler_factory_lib
     handler404factory_lib
+    authentication_handler_factory_lib
     mime_types_class
     request_echo_handler
     request_health_handler
@@ -70,12 +78,15 @@ target_link_libraries(server
     request_error_handler
     request_404_handler
     request_api_handler
+    request_authentication_handler
     config_parser
     request_parser
     server_class
     session_class
     reply_class
+    profile_manager
     pthread
+    OpenSSL::SSL
     Boost::system
     Boost::log_setup
     Boost::log
@@ -87,6 +98,7 @@ target_link_libraries(session_class
     health_handler_factory_lib
     sleep_handler_factory_lib
     handler404factory_lib
+    authentication_handler_factory_lib
     request_404_handler
     mime_types_class
     request_echo_handler
@@ -96,13 +108,17 @@ target_link_libraries(session_class
     request_error_handler
     request_404_handler
     request_api_handler
+    request_authentication_handler
     request_parser
     reply_class
+    profile_manager
     pthread
+    OpenSSL::SSL
     Boost::system
 )
 target_link_libraries(request_static_handler mime_types_class Boost::filesystem)
 target_link_libraries(request_api_handler Boost::filesystem)
+target_link_libraries(request_authentication_handler profile_manager)
 
 # Testing
 add_executable(config_parser_test tests/config_parser_test.cc)
@@ -117,6 +133,7 @@ add_executable(request_sleep_handler_test tests/request_sleep_handler_test)
 add_executable(request_static_handler_test tests/request_static_handler_test)
 add_executable(request_404_handler_test tests/request_404_handler_test)
 add_executable(request_api_handler_test tests/request_api_handler_test)
+add_executable(request_authentication_handler_test tests/authentication_handler_test.cc)
 add_executable(mime_types_test tests/mime_types_test)
 
 target_link_libraries(config_parser_test config_parser gtest_main Boost::log_setup Boost::log)
@@ -132,6 +149,7 @@ target_link_libraries(request_static_handler_test request_static_handler reply_c
 target_link_libraries(request_404_handler_test request_404_handler reply_class gtest_main Boost::log)
 target_link_libraries(request_api_handler_test request_api_handler reply_class Boost::filesystem gtest_main gmock_main Boost::log)
 target_link_libraries(mime_types_test mime_types_class gtest_main)
+target_link_libraries(request_authentication_handler_test request_authentication_handler reply_class profile_manager Boost::log_setup Boost::log gtest_main OpenSSL::SSL)
 
 gtest_discover_tests(config_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(reply_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
@@ -144,6 +162,7 @@ gtest_discover_tests(request_health_handler_test WORKING_DIRECTORY ${CMAKE_CURRE
 gtest_discover_tests(request_sleep_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(request_static_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(request_404_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(request_authentication_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(mime_types_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(request_api_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
@@ -173,6 +192,7 @@ generate_coverage_report(TARGETS
     request_sleep_handler_test
     request_health_handler_test
     request_api_handler_test
+    request_authentication_handler_test
     session_test
     config_parser_test
     request_parser_test
