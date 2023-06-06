@@ -22,6 +22,7 @@ protected:
     std::string root;
     std::string base_uri;
     std::map<std::string, std::vector<int>> path_counts;
+    user_profile profile = {0, "", "", true};
 };
 // Bad request if the method is not GET, PUT, POST, DELETE
 TEST_F(APIHandlerFixture, BadRequest) {
@@ -29,7 +30,7 @@ TEST_F(APIHandlerFixture, BadRequest) {
     request.target("/api/Shoes");
     request.method(bhttp::verb::patch);
     bhttp::response<bhttp::dynamic_body> response;
-    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts);
+    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts, profile);
     bhttp::status status = api_handler.handle_request(request, response);
     EXPECT_EQ(bhttp::status::bad_request, status);
 }
@@ -44,7 +45,7 @@ TEST_F(APIHandlerFixture, InvalidNoEntity) {
     request.method(bhttp::verb::post);
     boost::beast::ostream(request.body()) << "\'{\"name\":\"John\", \"age\":30, \"car\":null}\'";
     bhttp::response<bhttp::dynamic_body> response;
-    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts);
+    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts, profile);
     bhttp::status status1 = api_handler.handle_request(request, response);
 
     EXPECT_EQ(bhttp::status::bad_request, status1);
@@ -57,7 +58,7 @@ TEST_F(APIHandlerFixture, InvalidBadURI) {
     request.method(bhttp::verb::post);
     boost::beast::ostream(request.body()) << "\'{\"name\":\"John\", \"age\":30, \"car\":null}\'";
     bhttp::response<bhttp::dynamic_body> response;
-    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts);
+    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts, profile);
     bhttp::status status1 = api_handler.handle_request(request, response);
 
     EXPECT_EQ(bhttp::status::bad_request, status1);
@@ -70,7 +71,7 @@ TEST_F(APIHandlerFixture, PostInvalidDirectory) {
     request.method(bhttp::verb::post);
     boost::beast::ostream(request.body()) << "\'{\"name\":\"John\", \"age\":30, \"car\":null}\'";
     bhttp::response<bhttp::dynamic_body> response;
-    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts);
+    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts, profile);
     bhttp::status status1 = api_handler.handle_request(request, response);
 
     EXPECT_EQ(bhttp::status::bad_request, status1);
@@ -83,7 +84,7 @@ TEST_F(APIHandlerFixture, PostRequest) {
     request.method(bhttp::verb::post);
     boost::beast::ostream(request.body()) << "\'{\"name\":\"John\", \"age\":30, \"car\":null}\'";
     bhttp::response<bhttp::dynamic_body> response;
-    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts);
+    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts, profile);
     bhttp::status status1 = api_handler.handle_request(request, response);
     std::string body1 = boost::beast::buffers_to_string(response.body().data());
 
@@ -92,7 +93,7 @@ TEST_F(APIHandlerFixture, PostRequest) {
     request2.method(bhttp::verb::post);
     boost::beast::ostream(request2.body()) << "\'{\"name\":\"Jeff\", \"age\":32, \"car\":null}\'";
     bhttp::response<bhttp::dynamic_body> response2;
-    request_api_handler api_handler2(base_uri, root, request2.target().to_string(), path_counts);
+    request_api_handler api_handler2(base_uri, root, request2.target().to_string(), path_counts, profile);
     bhttp::status status2 = api_handler2.handle_request(request2, response2);
     std::string body2 = boost::beast::buffers_to_string(response2.body().data());
 
@@ -101,7 +102,7 @@ TEST_F(APIHandlerFixture, PostRequest) {
     request3.method(bhttp::verb::post);
     boost::beast::ostream(request3.body()) << "\'{\"name\":\"Jessie\", \"age\":45, \"car\":null}\'";
     bhttp::response<bhttp::dynamic_body> response3;
-    request_api_handler api_handler3(base_uri, root, request3.target().to_string(), path_counts);
+    request_api_handler api_handler3(base_uri, root, request3.target().to_string(), path_counts, profile);
     bhttp::status status3 = api_handler3.handle_request(request3, response3);
     std::string body3 = boost::beast::buffers_to_string(response3.body().data());
 
@@ -153,7 +154,7 @@ TEST_F(APIHandlerFixture, PostWithDeleteds) {
     request.method(bhttp::verb::post);
     boost::beast::ostream(request.body()) << "\'{\"name\":\"John\", \"age\":30, \"car\":null}\'";
     bhttp::response<bhttp::dynamic_body> response;
-    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts);
+    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts, profile);
     bhttp::status status1 = api_handler.handle_request(request, response);
     std::string body1 = boost::beast::buffers_to_string(response.body().data());
 
@@ -162,7 +163,7 @@ TEST_F(APIHandlerFixture, PostWithDeleteds) {
     request2.method(bhttp::verb::post);
     boost::beast::ostream(request2.body()) << "\'{\"name\":\"Jeff\", \"age\":32, \"car\":null}\'";
     bhttp::response<bhttp::dynamic_body> response2;
-    request_api_handler api_handler2(base_uri, root, request2.target().to_string(), path_counts);
+    request_api_handler api_handler2(base_uri, root, request2.target().to_string(), path_counts, profile);
     bhttp::status status2 = api_handler2.handle_request(request2, response2);
     std::string body2 = boost::beast::buffers_to_string(response2.body().data());
 
@@ -171,7 +172,7 @@ TEST_F(APIHandlerFixture, PostWithDeleteds) {
     request3.method(bhttp::verb::post);
     boost::beast::ostream(request3.body()) << "\'{\"name\":\"Jessie\", \"age\":45, \"car\":null}\'";
     bhttp::response<bhttp::dynamic_body> response3;
-    request_api_handler api_handler3(base_uri, root, request3.target().to_string(), path_counts);
+    request_api_handler api_handler3(base_uri, root, request3.target().to_string(), path_counts, profile);
     bhttp::status status3 = api_handler3.handle_request(request3, response3);
     std::string body3 = boost::beast::buffers_to_string(response3.body().data());
 
@@ -238,7 +239,7 @@ TEST_F(APIHandlerFixture, PostWithExistingFiles) {
     file3 << body;
     file3.close();
 
-    request_api_handler api_handler(base_uri, root, "/api/Shoes", path_counts);
+    request_api_handler api_handler(base_uri, root, "/api/Shoes", path_counts, profile);
 
     std::vector<int> ids = { 1,2,3 };
     EXPECT_THAT(path_counts["Shoes"], testing::UnorderedElementsAreArray(ids));
@@ -251,7 +252,7 @@ TEST_F(APIHandlerFixture, DeleteInvalidPath) {
     request.target("/api/invalid");
     request.method(bhttp::verb::delete_);
     bhttp::response<bhttp::dynamic_body> response;
-    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts);
+    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts, profile);
     bhttp::status status1 = api_handler.handle_request(request, response);
 
     EXPECT_EQ(bhttp::status::bad_request, status1);
@@ -262,7 +263,7 @@ TEST_F(APIHandlerFixture, DeleteNotInPathCounts) {
     request.target("/api/invalid/1");
     request.method(bhttp::verb::delete_);
     bhttp::response<bhttp::dynamic_body> response;
-    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts);
+    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts, profile);
     bhttp::status status1 = api_handler.handle_request(request, response);
 
     EXPECT_EQ(bhttp::status::bad_request, status1);
@@ -277,7 +278,7 @@ TEST_F(APIHandlerFixture, DeleteOnDirectory) {
     request.target("/api/test/dir");
     request.method(bhttp::verb::delete_);
     bhttp::response<bhttp::dynamic_body> response;
-    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts);
+    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts, profile);
     bhttp::status status1 = api_handler.handle_request(request, response);
 
     EXPECT_EQ(bhttp::status::bad_request, status1);
@@ -298,7 +299,7 @@ TEST_F(APIHandlerFixture, DeleteIDNotInt) {
     request.target("/api/unit_test/abc");
     request.method(bhttp::verb::delete_);
     bhttp::response<bhttp::dynamic_body> response;
-    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts);
+    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts, profile);
     bhttp::status status1 = api_handler.handle_request(request, response);
 
     EXPECT_EQ(bhttp::status::bad_request, status1);
@@ -319,7 +320,7 @@ TEST_F(APIHandlerFixture, DeleteIDNotInPathCounts) {
     request.target("/api/unit_test/1");
     request.method(bhttp::verb::delete_);
     bhttp::response<bhttp::dynamic_body> response;
-    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts);
+    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts, profile);
     bhttp::status status1 = api_handler.handle_request(request, response);
 
     EXPECT_EQ(bhttp::status::bad_request, status1);
@@ -342,7 +343,7 @@ TEST_F(APIHandlerFixture, DeleteValidRequest) {
     request.target("/api/unit_test/1");
     request.method(bhttp::verb::delete_);
     bhttp::response<bhttp::dynamic_body> response;
-    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts);
+    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts, profile);
     bhttp::status status1 = api_handler.handle_request(request, response);
 
     EXPECT_EQ(bhttp::status::ok, status1);
@@ -369,7 +370,7 @@ TEST_F(APIHandlerFixture, DeleteThenPost) {
     request.target("/api/unit_test/2");
     request.method(bhttp::verb::delete_);
     bhttp::response<bhttp::dynamic_body> response;
-    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts);
+    request_api_handler api_handler(base_uri, root, request.target().to_string(), path_counts, profile);
     bhttp::status status1 = api_handler.handle_request(request, response);
 
     EXPECT_EQ(bhttp::status::ok, status1);
@@ -381,7 +382,7 @@ TEST_F(APIHandlerFixture, DeleteThenPost) {
     request2.method(bhttp::verb::post);
     boost::beast::ostream(request2.body()) << "\'{\"name\":\"John\", \"age\":30, \"car\":null}\'";
     bhttp::response<bhttp::dynamic_body> response2;
-    request_api_handler api_handler2(base_uri, root, request.target().to_string(), path_counts);
+    request_api_handler api_handler2(base_uri, root, request.target().to_string(), path_counts, profile);
     bhttp::status status2 = api_handler2.handle_request(request2, response2);
     EXPECT_EQ(bhttp::status::created, status2);
 
@@ -409,7 +410,7 @@ TEST_F(APIHandlerFixture, GETValidFile) {
     request.target("/api/unit_test/1");
     request.method(bhttp::verb::get);
     bhttp::response<bhttp::dynamic_body> response;
-    request_api_handler api_handler(base_uri, root, "/api/unit_test/1", path_counts);
+    request_api_handler api_handler(base_uri, root, "/api/unit_test/1", path_counts, profile);
     bhttp::status status = api_handler.handle_request(request, response);
     EXPECT_EQ(bhttp::status::ok, status);
 }
@@ -425,7 +426,7 @@ TEST_F(APIHandlerFixture, GETInvalidFile) {
     request.target("/api/unit_test/2"); // FILE doesn't exist
     request.method(bhttp::verb::get);
     bhttp::response<bhttp::dynamic_body> response;
-    request_api_handler api_handler(base_uri, root, "/api/unit_test/2", path_counts);
+    request_api_handler api_handler(base_uri, root, "/api/unit_test/2", path_counts, profile);
     bhttp::status status = api_handler.handle_request(request, response);
     EXPECT_EQ(bhttp::status::bad_request, status);
 }
@@ -443,7 +444,7 @@ TEST_F(APIHandlerFixture, GETAfterPOST) {
     request2.method(bhttp::verb::post);
     boost::beast::ostream(request2.body()) << body;
     bhttp::response<bhttp::dynamic_body> response2;
-    request_api_handler api_handler2(base_uri, root, request2.target().to_string(), path_counts);
+    request_api_handler api_handler2(base_uri, root, request2.target().to_string(), path_counts, profile);
     bhttp::status status2 = api_handler2.handle_request(request2, response2);
     EXPECT_EQ(bhttp::status::created, status2);
 
@@ -452,7 +453,7 @@ TEST_F(APIHandlerFixture, GETAfterPOST) {
     request.target("/api/unit_test/1");
     request.method(bhttp::verb::get);
     bhttp::response<bhttp::dynamic_body> response;
-    request_api_handler api_handler(base_uri, root, "/api/unit_test/1", path_counts);
+    request_api_handler api_handler(base_uri, root, "/api/unit_test/1", path_counts, profile);
     bhttp::status status = api_handler.handle_request(request, response);
     EXPECT_EQ(bhttp::status::ok, status);
     EXPECT_EQ(body, boost::beast::buffers_to_string(response.body().data()));
@@ -473,7 +474,7 @@ TEST_F(APIHandlerFixture, LISTValidDir) {
     request.target("/api/unit_test");
     request.method(bhttp::verb::get);
     bhttp::response<bhttp::dynamic_body> response;
-    request_api_handler api_handler(base_uri, root, "/api/unit_test", path_counts);
+    request_api_handler api_handler(base_uri, root, "/api/unit_test", path_counts, profile);
     bhttp::status status = api_handler.handle_request(request, response);
     EXPECT_EQ(bhttp::status::ok, status);
 
@@ -499,7 +500,7 @@ TEST_F(APIHandlerFixture, LISTInvalidDir) {
     request.target("/api/unit_test2"); // DIR doesn't exist
     request.method(bhttp::verb::get);
     bhttp::response<bhttp::dynamic_body> response;
-    request_api_handler api_handler(base_uri, root, "/api/unit_test2", path_counts);
+    request_api_handler api_handler(base_uri, root, "/api/unit_test2", path_counts, profile);
     bhttp::status status = api_handler.handle_request(request, response);
     EXPECT_EQ(bhttp::status::bad_request, status);
 }
@@ -520,7 +521,7 @@ TEST_F(APIHandlerFixture, LISTAfterDELETE) {
     request.target("/api/unit_test");
     request.method(bhttp::verb::get);
     bhttp::response<bhttp::dynamic_body> response;
-    request_api_handler api_handler(base_uri, root, "/api/unit_test", path_counts);
+    request_api_handler api_handler(base_uri, root, "/api/unit_test", path_counts, profile);
     bhttp::status status = api_handler.handle_request(request, response);
     EXPECT_EQ(bhttp::status::ok, status);
 
@@ -539,7 +540,7 @@ TEST_F(APIHandlerFixture, LISTAfterDELETE) {
     request2.target("/api/unit_test/1");
     request2.method(bhttp::verb::delete_);
     bhttp::response<bhttp::dynamic_body> response2;
-    request_api_handler api_handler2(base_uri, root, request2.target().to_string(), path_counts);
+    request_api_handler api_handler2(base_uri, root, request2.target().to_string(), path_counts, profile);
     bhttp::status status2 = api_handler2.handle_request(request2, response2);
     EXPECT_EQ(bhttp::status::ok, status2);
 
@@ -549,7 +550,7 @@ TEST_F(APIHandlerFixture, LISTAfterDELETE) {
     request3.target("/api/unit_test");
     request3.method(bhttp::verb::get);
     bhttp::response<bhttp::dynamic_body> response3;
-    request_api_handler api_handler3(base_uri, root, "/api/unit_test", path_counts);
+    request_api_handler api_handler3(base_uri, root, "/api/unit_test", path_counts, profile);
     bhttp::status status3 = api_handler3.handle_request(request3, response3);
     EXPECT_EQ(bhttp::status::ok, status);
 
@@ -576,7 +577,7 @@ TEST_F(APIHandlerFixture, PUTValidFile) {
     request.method(bhttp::verb::put);
     boost::beast::ostream(request.body()) << body;
     bhttp::response<bhttp::dynamic_body> response;
-    request_api_handler api_handler(base_uri, root, "/api/unit_test/1", path_counts);
+    request_api_handler api_handler(base_uri, root, "/api/unit_test/1", path_counts, profile);
     bhttp::status status = api_handler.handle_request(request, response);
     EXPECT_EQ(bhttp::status::ok, status);
     EXPECT_EQ(body, boost::beast::buffers_to_string(response.body().data()));
@@ -595,7 +596,7 @@ TEST_F(APIHandlerFixture, PUTInvalidFile) {
     request.method(bhttp::verb::put);
     boost::beast::ostream(request.body()) << body;
     bhttp::response<bhttp::dynamic_body> response;
-    request_api_handler api_handler(base_uri, root, "/api/unit_test/2", path_counts);
+    request_api_handler api_handler(base_uri, root, "/api/unit_test/2", path_counts, profile);
     bhttp::status status = api_handler.handle_request(request, response);
     EXPECT_EQ(bhttp::status::bad_request, status);
 }

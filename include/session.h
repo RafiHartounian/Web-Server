@@ -4,6 +4,7 @@
 #include "request_handler.h"
 #include "request_parser.h"
 #include "request.h"
+#include "user_profile.h"
 
 #include <boost/asio/ip/address.hpp>
 #include <boost/bind.hpp>
@@ -43,4 +44,5 @@ private:
   http::server::request_parser req_parser;
   std::map<std::string, std::shared_ptr<request_handler_factory>> routes_;
   bhttp::request<bhttp::dynamic_body> request_;
+  user_profile profile = {0, "", "", false};
 };

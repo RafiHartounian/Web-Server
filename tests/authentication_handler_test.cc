@@ -11,6 +11,7 @@ class AutheticationHandlerFixture : public :: testing::Test
   protected:
     bhttp::request<bhttp::dynamic_body> request_;
     bhttp::response<bhttp::dynamic_body> answer;
+    user_profile profile = {0, "", "", true};
 };
 
 // Test for empty request body.
@@ -25,7 +26,7 @@ TEST_F(AutheticationHandlerFixture, emptyRequest)
 
 
   // Get the return reply struct from the handler function call.
-  request_authentication_handler auth_test_handle("/auth", "test url", "test", "test", "/signup", "/login");
+  request_authentication_handler auth_test_handle("/auth", "test url", "test", "test", "/signup", "/login", profile);
   bhttp::status status_ = auth_test_handle.handle_request(request_, answer);
 
   EXPECT_TRUE(status_ == bhttp::status::not_found);
@@ -42,7 +43,7 @@ TEST_F(AutheticationHandlerFixture, signupHandler)
   std::string request_string = ostring.str();
 
   // Get the return reply struct from the handler function call.
-  request_authentication_handler auth_test_handle("/auth", "test url", "test", "test", "/signup", "/login");
+  request_authentication_handler auth_test_handle("/auth", "test url", "test", "test", "/signup", "/login", profile);
   bhttp::status status_ = auth_test_handle.handle_request(request_, answer);
 
   std::vector<std::pair<std::string, std::string>> headers;
@@ -77,7 +78,7 @@ TEST_F(AutheticationHandlerFixture, goodSignupSubmitHandler)
   std::string request_string = ostring.str();
 
   // Get the return reply struct from the handler function call.
-  request_authentication_handler auth_test_handle("/auth", "test url", "test", "test", "/signup", "/login");
+  request_authentication_handler auth_test_handle("/auth", "test url", "test", "test", "/signup", "/login", profile);
   bhttp::status status_ = auth_test_handle.handle_request(request_, answer);
 
   // Check reply struct correctness.
@@ -101,7 +102,7 @@ TEST_F(AutheticationHandlerFixture, badSignupSubmitHandler)
 
   // Get the return reply struct from the handler function call.
   bhttp::response<bhttp::dynamic_body> answer;
-  request_authentication_handler auth_test_handle("/auth", "test url", "test", "test", "/signup", "/login");
+  request_authentication_handler auth_test_handle("/auth", "test url", "test", "test", "/signup", "/login", profile);
   bhttp::status status_ = auth_test_handle.handle_request(request_, answer);
 
   // Check reply struct correctness.
@@ -120,7 +121,7 @@ TEST_F(AutheticationHandlerFixture, loginHandler)
   std::string request_string = ostring.str();
 
   // Get the return reply struct from the handler function call.
-  request_authentication_handler auth_test_handle("/auth", "test url", "test", "test", "/signup", "/login");
+  request_authentication_handler auth_test_handle("/auth", "test url", "test", "test", "/signup", "/login", profile);
   bhttp::status status_ = auth_test_handle.handle_request(request_, answer);
 
   std::vector<std::pair<std::string, std::string>> headers;

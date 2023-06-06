@@ -17,7 +17,7 @@ api_handler_factory::api_handler_factory(std::string location, NginxConfig confi
     }
   }
 
-request_handler* api_handler_factory::create(std::string location, std::string url)
+request_handler* api_handler_factory::create(std::string location, std::string url, user_profile profile)
 {
-  return new request_api_handler(location, config_.get_root(location), url, path_counts);
+  return new request_api_handler(location, config_.get_root(location), url, path_counts, profile);
 }

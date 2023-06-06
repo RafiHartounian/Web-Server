@@ -8,8 +8,8 @@
 #include "request_authentication_handler.h"
 
 
-request_authentication_handler::request_authentication_handler(std::string location, std::string request_url, std::string root, std::string data_path, std::string signup, std::string login)
-  : location_(location), request_url_(request_url), root_(root), data_path_(data_path), signup_(signup), login_(login) {
+request_authentication_handler::request_authentication_handler(std::string location, std::string request_url, std::string root, std::string data_path, std::string signup, std::string login, user_profile profile)
+  : location_(location), request_url_(request_url), root_(root), data_path_(data_path), signup_(signup), login_(login), profile_(profile) {
   
 }
 
@@ -110,6 +110,11 @@ bhttp::status request_authentication_handler::handle_request(const bhttp::reques
   }
 
   return res.result();
+}
+
+user_profile request_authentication_handler::get_profile()
+{
+   return profile_;
 }
 
 void request_authentication_handler::log_message_info(std::string res_code)

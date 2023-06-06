@@ -8,7 +8,7 @@ sleep_handler_factory::sleep_handler_factory(std::string location, NginxConfig c
 
 }
 
-request_handler* sleep_handler_factory::create(std::string location, std::string request_url)
+request_handler* sleep_handler_factory::create(std::string location, std::string request_url, user_profile profile)
 {
   return new request_sleep_handler(location, request_url);
 }

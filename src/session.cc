@@ -59,7 +59,7 @@ std::string session::handle_read(const boost::system::error_code& error, size_t 
     log_info("handle_read", "request parser valid");
     std::string location = match(routes_, std::string(request_.target()));
     auto factory = routes_[location];
-    request_handler* handler = factory->create(location, std::string(request_.target()));
+    request_handler* handler = factory->create(location, std::string(request_.target()), profile);
     write_to_socket(handler);
     delete handler;
   }

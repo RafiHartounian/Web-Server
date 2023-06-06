@@ -7,7 +7,7 @@ class api_handler_factory : public request_handler_factory
 {
 public:
   api_handler_factory(std::string location_, NginxConfig config);
-  request_handler* create(std::string location, std::string url);
+  request_handler* create(std::string location, std::string url, user_profile profile);
 
 private:
   std::string location_;

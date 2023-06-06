@@ -7,7 +7,7 @@ health_handler_factory::health_handler_factory(std::string location, NginxConfig
 
 }
 
-request_handler* health_handler_factory::create(std::string location, std::string request_url)
+request_handler* health_handler_factory::create(std::string location, std::string request_url, user_profile profile)
 {
   return new request_health_handler(location, request_url);
 }

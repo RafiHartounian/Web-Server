@@ -5,8 +5,8 @@
 #include <boost/log/trivial.hpp>
 #include <boost/filesystem.hpp>
 
-request_api_handler::request_api_handler(std::string location, std::string root, std::string url, std::map<std::string, std::vector<int>>& path_counts) :
-  location_(location), root_(root), request_url(url), path_counts(path_counts)
+request_api_handler::request_api_handler(std::string location, std::string root, std::string url, std::map<std::string, std::vector<int>>& path_counts, user_profile profile) :
+  location_(location), root_(root), request_url(url), path_counts(path_counts), profile_(profile)
 {
   for (auto file : boost::filesystem::recursive_directory_iterator(root)) {
     if (!is_regular_file(file)) {
@@ -368,6 +368,7 @@ bhttp::status request_api_handler::send_bad_request(bhttp::response<bhttp::dynam
 bhttp::status request_api_handler::handle_request(const bhttp::request<bhttp::dynamic_body> req, bhttp::response<bhttp::dynamic_body>& res)
 {
   std::string req_input = req.target().to_string();
+  bool logged_in = profile_.login_status;
 
   std::string directory;
   // target needs to be /api/ followed by an entity
@@ -393,6 +394,11 @@ bhttp::status request_api_handler::handle_request(const bhttp::request<bhttp::dy
         BOOST_LOG_TRIVIAL(error) << "request_api_handler::handle_request : invalid directory for post request";
         return send_bad_request(res);
       }
+      if (!logged_in) 
+      {
+        BOOST_LOG_TRIVIAL(error) << "Not logged in";
+        return send_bad_request(res);
+      }
       return handle_post(req, res, directory);
       break;
 
@@ -413,6 +419,11 @@ bhttp::status request_api_handler::handle_request(const bhttp::request<bhttp::dy
         BOOST_LOG_TRIVIAL(error) << "request_api_handler::handle_request : invalid file for put request";
         return send_bad_request(res);
       }
+      if (!logged_in) 
+      {
+        BOOST_LOG_TRIVIAL(error) << "Not logged in";
+        return send_bad_request(res);
+      }
       return handle_put(req, res, directory);
       break;
 
@@ -421,6 +432,11 @@ bhttp::status request_api_handler::handle_request(const bhttp::request<bhttp::dy
       if (directory.find("/") == -1)
       {
         BOOST_LOG_TRIVIAL(error) << "request_api_handler::handle_request : invalid directory for delete request";
+        return send_bad_request(res);
+      }
+      if (!logged_in) 
+      {
+        BOOST_LOG_TRIVIAL(error) << "Not logged in";
         return send_bad_request(res);
       }
       return handle_delete(req, res, directory);
@@ -439,5 +455,10 @@ bhttp::status request_api_handler::handle_request(const bhttp::request<bhttp::dy
 
 void request_api_handler::log_message_info(std::string res_code)
 {
-  BOOST_LOG_TRIVIAL(info) << "[MetricsForResponse] Code for response: " << res_code << " URL for request: " << request_url << " Corresponding handler: api handler";
+  std::string user;
+  if (profile_.login_status)
+  {
+    user = std::to_string(profile_.user_id) + " ";
+  }
+  BOOST_LOG_TRIVIAL(info) << "[MetricsForResponse] Code for response: " << res_code << " URL for request: " << request_url << "user ID: " << user << " Corresponding handler: api handler";
 }

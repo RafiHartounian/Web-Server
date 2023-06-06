@@ -9,7 +9,7 @@ class echo_handler_factory : public request_handler_factory
 public:
   echo_handler_factory(std::string location, NginxConfig config);
 
-  request_handler* create(std::string location, std::string url);
+  request_handler* create(std::string location, std::string url, user_profile profile);
 
 private:
   std::string location_;

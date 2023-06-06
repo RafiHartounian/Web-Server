@@ -20,7 +20,7 @@ class authentication_handler_factory : public request_handler_factory
 public:
   authentication_handler_factory(std::string location, NginxConfig config_);
 
-  request_handler* create(std::string location, std::string request_url);
+  request_handler* create(std::string location, std::string request_url, user_profile profile);
 
 private:
   std::string location_;
