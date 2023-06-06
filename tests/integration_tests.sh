@@ -30,6 +30,23 @@ fi
 
 rm integ_test_valid_req_out
 
+# test valid authentication signup
+AUTH_SIGNUP_SUCCESS=0
+timeout $TIMEOUT curl -s -i -H "Host:" -H "User-Agent:" $SERVER_IP:$SERVER_PORT/auth/signup > integ_test_valid_auth_signup_out
+diff integ_test_valid_auth_signup_out integ_test_valid_auth_signup_expected
+
+MATCHES=$?
+echo $MATCHES
+if [ $MATCHES -eq 1 ];
+then
+  echo "Test Valid Authentication Signup Request Failed"
+else 
+  AUTH_SIGNUP_SUCCESS=1
+  echo "Test Valid Authentication Signup Succeeded"
+fi
+
+rm integ_test_valid_auth_signup_out
+
 # #static
 VALID_STATIC_SUCCESS=0
 timeout $TIMEOUT curl -s -i -H "Host:" -H "User-Agent:" $SERVER_IP:$SERVER_PORT/static1/example.html > integ_test_html_res_out
@@ -144,7 +161,7 @@ rm integ_test_multithread_out
 # kill server and return test results
 kill -9 $SERVER_PID
 
-if [ $VALID_REQ_SUCCESS -eq 1 ] && [ $VALID_STATIC_SUCCESS -eq 1 ] && [ $INVALID_REQ_SUCCESS -eq 1 ]  && [ $NOT_FOUND_SUCCESS -eq 1 ] && [ $VALID_TEXT_SUCCESS -eq 1 ] && [ $MULTITHREAD_SUCCESS -eq 1 ];
+if [ $VALID_REQ_SUCCESS -eq 1 ] && [ $AUTH_SIGNUP_SUCCESS -eq 1 ] && [ $VALID_STATIC_SUCCESS -eq 1 ] && [ $INVALID_REQ_SUCCESS -eq 1 ]  && [ $NOT_FOUND_SUCCESS -eq 1 ] && [ $VALID_TEXT_SUCCESS -eq 1 ] && [ $MULTITHREAD_SUCCESS -eq 1 ];
 then
   exit 0
 fi
