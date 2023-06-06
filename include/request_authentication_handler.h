@@ -7,7 +7,7 @@
 class request_authentication_handler : public request_handler
 {
 public:
-  request_authentication_handler(std::string location, std::string request_url,std::string root_, std::string data_path, std::string signup_);
+  request_authentication_handler(std::string location, std::string request_url,std::string root_, std::string data_path, std::string signup_, std::string login_);
   bhttp::status handle_request(const bhttp::request<bhttp::dynamic_body> req, bhttp::response<bhttp::dynamic_body>& res);
 
 private:
@@ -17,6 +17,7 @@ private:
   std::string request_url_;
   std::string root_;
   std::string data_path_;
+  std::string login_;
   std::string signup_;
   reply rep;
 };

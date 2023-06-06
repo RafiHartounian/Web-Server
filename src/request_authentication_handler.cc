@@ -8,8 +8,8 @@
 #include "request_authentication_handler.h"
 
 
-request_authentication_handler::request_authentication_handler(std::string location, std::string request_url, std::string root, std::string data_path, std::string signup)
-  : location_(location), request_url_(request_url), root_(root), data_path_(data_path), signup_(signup) {
+request_authentication_handler::request_authentication_handler(std::string location, std::string request_url, std::string root, std::string data_path, std::string signup, std::string login)
+  : location_(location), request_url_(request_url), root_(root), data_path_(data_path), signup_(signup), login_(login) {
   
 }
 
@@ -21,8 +21,34 @@ bhttp::status request_authentication_handler::handle_request(const bhttp::reques
    * TODO: still need to checkout if the user is trying to login and then subsequently logout.
    */
   std::string input = req.target().to_string();
-  // check for signup sub-handler
-  if (location_ + signup_ == input)
+  if (location_ + login_ == input)
+  {
+    res.result(bhttp::status::ok);
+    std::string login_page;
+
+    std::string path = root_ + "/" + "login.html";
+    fs::path filePath(path);
+    if (exists(filePath) && is_regular_file(filePath))
+    {
+      // read file
+      std::ifstream f(path);
+      std::string temp_data;
+      char c;
+      if (f.is_open())
+      {
+        while (f.get(c))
+        {
+          temp_data += c;
+        }
+        f.close();
+        login_page = temp_data;
+      }
+    }
+    boost::beast::ostream(res.body()) << login_page;
+    
+    res.content_length((res.body().size()));
+    res.set(bhttp::field::content_type, "text/html");
+  }else if (location_ + signup_ == input)
   {
     res.result(bhttp::status::ok);
     std::string signup_page;

@@ -10,5 +10,5 @@ authentication_handler_factory::authentication_handler_factory(std::string locat
 request_handler* authentication_handler_factory::create(std::string location, std::string request_url)
 {
   std::map<std::string, std::string> path_map = config_.get_auth_path_map(location);
-  return new request_authentication_handler(location, request_url, path_map["root"], path_map["data_path"], path_map["signup"]);
+  return new request_authentication_handler(location, request_url, path_map["root"], path_map["data_path"], path_map["signup"], path_map["login"]);
 }

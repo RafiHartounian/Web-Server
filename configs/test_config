@@ -32,5 +32,6 @@ location /sleep SleepHandler {
 location /auth AuthenticationHandler {
   data_path ../tests/credentials;
   root ../tests/credentials;
+  login /login;
   signup /signup;
 }
