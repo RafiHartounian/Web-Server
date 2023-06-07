@@ -19,23 +19,8 @@ server::server(session_interface& new_s, boost::asio::io_service& io_service,
   : io_service_(io_service), session_(new_s),
   acceptor_(io_service, tcp::endpoint(tcp::v4(), port)) {}
 
-bool server::set_config(NginxConfig config) {
+bool server::init_server(NginxConfig config) {
   config_ = config;
-  return true;
-}
-
-bool server::set_routes(std::map<std::string, std::shared_ptr<request_handler_factory>> routes) {
-  routes_ = routes;
-  return true;
-}
-
-bool server::start_accept()
-{
-  session_interface* new_session = session_.get_session(io_service_);
-  if (new_session == NULL)
-  {
-    return false;
-  }
   for (path p : config_.get_paths()) {
     switch (p.type) {
       case endpoint_type::static_:
@@ -59,6 +44,21 @@ bool server::start_accept()
     }
   }
   routes_.emplace("/", std::make_shared<handler404factory>("/", config_));
+  return true;
+}
+
+bool server::set_routes(std::map<std::string, std::shared_ptr<request_handler_factory>> routes) {
+  routes_ = routes;
+  return true;
+}
+
+bool server::start_accept()
+{
+  session_interface* new_session = session_.get_session(io_service_);
+  if (new_session == NULL)
+  {
+    return false;
+  }
 
   new_session->set_routes(routes_);
   acceptor_.async_accept(new_session->socket(),

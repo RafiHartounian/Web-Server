@@ -19,7 +19,7 @@ TEST_F(ServerTest, StartServer)
   NginxConfig config;
   NginxConfigParser parser;
   parser.Parse("../configs/test_config", &config);
-  serv.set_config(config);
+  serv.init_server(config);
 
   EXPECT_TRUE(serv.start_accept());
 }

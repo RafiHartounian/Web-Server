@@ -17,7 +17,7 @@ public:
   bool start_accept();
   bool handle_accept(session_interface* new_session,
                      const boost::system::error_code& error);
-  bool set_config(NginxConfig config);
+  bool init_server(NginxConfig config);
   bool set_routes(std::map<std::string, std::shared_ptr<request_handler_factory>> routes);
 
 private:
