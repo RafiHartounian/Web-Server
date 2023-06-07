@@ -25,7 +25,7 @@ FROM ubuntu:focal as deploy
 COPY --from=builder /usr/src/project/build/bin/server .
 COPY --from=builder /usr/src/project/configs/main_config .
 COPY --from=builder /usr/src/project/static_files static_files
-COPY --from=builder /usr/src/project/creditials creditials
+COPY --from=builder /usr/src/project/credentials credentials
 # Expose some port(s)
 EXPOSE 80
 
