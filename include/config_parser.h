@@ -19,6 +19,7 @@ enum endpoint_type
   sleep_,
   profile,
   auth,
+  console,
   invalid
 };
 

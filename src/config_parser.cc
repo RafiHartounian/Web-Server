@@ -155,6 +155,22 @@ std::vector<path> NginxConfig::get_paths() {
         }
         paths.push_back(auth_path);
       }
+    else if (s->tokens_[2] == "ApiConsoleHandler")
+      {
+          for (const std::shared_ptr<NginxConfigStatement> child_statement : s->child_block_->statements_)
+        {
+          // Locate "data_path" statements with corresponding path
+          if (child_statement->tokens_.size() == 2)
+          {
+            path console_path;
+            console_path.type = console;
+            console_path.endpoint = s->tokens_[1];
+            console_path.config_key_to_path_map[child_statement->tokens_[0]] = child_statement->tokens_[1];
+            console_path.root = console_path.config_key_to_path_map["root"];
+            paths.push_back(console_path);
+          }
+        }
+      }
   }
 
   for (auto p : paths) {

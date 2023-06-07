@@ -11,6 +11,7 @@
 #include "handler_factories/health_handler_factory.h"
 #include "handler_factories/sleep_handler_factory.h"
 #include "handler_factories/authentication_handler_factory.h"
+#include "handler_factories/api_console_handler_factory.h"
 
 using boost::asio::ip::tcp;
 
@@ -40,6 +41,9 @@ bool server::init_server(NginxConfig config) {
         break;
       case endpoint_type::auth:
         routes_.emplace(p.endpoint, std::make_shared<authentication_handler_factory>(p.endpoint, config_));
+        break;
+      case endpoint_type::console:
+        routes_.emplace(p.endpoint, std::make_shared<api_console_handler_factory>(p.endpoint, config_));
         break;
     }
   }

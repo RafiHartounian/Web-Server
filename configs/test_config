@@ -35,3 +35,7 @@ location /auth AuthenticationHandler {
   login /login;
   signup /signup;
 }
+
+location /console ApiConsoleHandler {
+  root ../credentials;
+}
