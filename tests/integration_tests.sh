@@ -81,22 +81,7 @@ fi
 
 rm integ_test_example_text_out
 
-#health
-#HEALTH_SUCCESS=0
-#timeout $TIMEOUT curl -s -i -H "Host:" -H "User-Agent:" $SERVER_IP:$SERVER_PORT/health > integ_test_health_text_out
-#diff integ_test_health_text_out integ_test_health_expected
 
-#MATCHES=$?
-#echo $MATCHES
-#if [ $MATCHES -eq 1 ];
-#then
-#  echo "Test Health Text Request Failed"
-#else 
-#  HEALTH_SUCCESS=1
-#  echo "Test Health Text Request Succeeded"
-#fi
-
-#rm integ_test_health_text_out
 
 
 #empty header
@@ -158,10 +143,27 @@ fi
 
 rm integ_test_multithread_out
 
+#health
+HEALTH_SUCCESS=0
+timeout $TIMEOUT curl -s -i -H "Host:" -H "User-Agent:" $SERVER_IP:$SERVER_PORT/health > integ_test_health_text_out
+diff integ_test_health_text_out integ_test_health_expected
+
+MATCHES=$?
+echo $MATCHES
+if [ $MATCHES -eq 1 ];
+then
+ echo "Test Health Text Request Failed"
+else 
+ HEALTH_SUCCESS=1
+ echo "Test Health Text Request Succeeded"
+fi
+
+rm integ_test_health_text_out
+
 # kill server and return test results
 kill -9 $SERVER_PID
 
-if [ $VALID_REQ_SUCCESS -eq 1 ] && [ $AUTH_SIGNUP_SUCCESS -eq 1 ] && [ $VALID_STATIC_SUCCESS -eq 1 ] && [ $INVALID_REQ_SUCCESS -eq 1 ]  && [ $NOT_FOUND_SUCCESS -eq 1 ] && [ $VALID_TEXT_SUCCESS -eq 1 ] && [ $MULTITHREAD_SUCCESS -eq 1 ];
+if [ $VALID_REQ_SUCCESS -eq 1 ] && [ $AUTH_SIGNUP_SUCCESS -eq 1 ] && [ $VALID_STATIC_SUCCESS -eq 1 ] && [ $INVALID_REQ_SUCCESS -eq 1 ]  && [ $NOT_FOUND_SUCCESS -eq 1 ] && [ $VALID_TEXT_SUCCESS -eq 1 ] && [ $MULTITHREAD_SUCCESS -eq 1 ] && [ $HEALTH_SUCCESS -eq 1 ];
 then
   exit 0
 fi
