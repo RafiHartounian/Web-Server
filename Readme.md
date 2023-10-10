@@ -21,9 +21,7 @@
     * Contains some additional files that are used to test the config parsing as well as to check the output for the integration test.
 
 ## Prerequisites
-* [Set up the development environment](https://www.cs130.org/guides/development/).
-* Clone Crazy-Code repository: `git clone "ssh://${USER}@code.cs130.org:29418/crazy-code"`
-    * `${USER}` is your UCLA Logon username.
+* Clone Crazy-Code repository: `git clone https://github.com/RafiHartounian/Web-Server.git`
 
 ## How to build
 * While in the root directory create a new folder called build: `mkdir build`
