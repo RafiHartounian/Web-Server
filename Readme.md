@@ -43,13 +43,13 @@
 
 ## How to contribute a new request handler
 * Bind a new handler_factory to the corresponding endpoint locations in server.cc
-    * Refer to https://code.cs130.org/plugins/gitiles/crazy-code/+/refs/heads/main/src/server.cc#35
-* Request handlers factories inherit from this interface: https://code.cs130.org/plugins/gitiles/crazy-code/+/refs/heads/main/include/handler_factories/request_handler_factory.h
-* An example handler factory for static requests can be found here: https://code.cs130.org/plugins/gitiles/crazy-code/+/refs/heads/main/src/handler_factories/static_handler_factory.cc
+    * Refer to https://github.com/RafiHartounian/Web-Server/blob/main/src/server.cc line 27
+* Request handlers factories inherit from this interface: https://github.com/RafiHartounian/Web-Server/blob/main/include/handler_factories/request_handler_factory.h 
+* An example handler factory for static requests can be found here: https://github.com/RafiHartounian/Web-Server/blob/main/src/handler_factories/static_handler_factory.cc
     * Factories take in an endpoint location and the entire config
     * Factories correspond to individual endpoint locations and are long-lived
 * The create method in the factory interface produces an instance of a request handler
     * Request handlers are short-lived; they are created and destroyed per-request
-* Request handlers inherit from this interface: https://code.cs130.org/plugins/gitiles/crazy-code/+/refs/heads/main/include/request_handler.h
-* An example handler for static requests can be found here: https://code.cs130.org/plugins/gitiles/crazy-code/+/refs/heads/main/src/request_static_handler.cc
+* Request handlers inherit from this interface: https://github.com/RafiHartounian/Web-Server/blob/main/include/request_handler.h
+* An example handler for static requests can be found here: https://github.com/RafiHartounian/Web-Server/blob/main/src/request_static_handler.cc
     * Note that all handlers must implement a handle_request method that takes a bhttp:request object and bhttp:response object by reference (the response is effectively returned here).
